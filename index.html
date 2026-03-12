@@ -32,11 +32,66 @@
       flex-direction: column;
     }
 
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      padding: 24px;
+    }
+    #login-screen.hidden { display: none; }
+    .login-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,.12);
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 380px;
+    }
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .login-logo-icon {
+      background: var(--blue);
+      border-radius: 12px;
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .login-logo h1 { font-size: 1.1rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .login-logo p  { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .login-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+    .login-field label { font-size: .75rem; color: var(--muted); font-weight: 600; }
+    .login-field input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: .95rem;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color .15s;
+    }
+    .login-field input:focus { border-color: var(--blue); }
+    .login-error {
+      font-size: .82rem;
+      color: var(--red);
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+
     /* ── HEADER ── */
     header {
       background: var(--blue);
       color: #fff;
-      padding: 18px 16px 14px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -46,8 +101,23 @@
       z-index: 10;
     }
     header svg { flex-shrink: 0; }
-    header h1 { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
-    header p  { font-size: .78rem; opacity: .85; }
+    header h1 { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
+    header p  { font-size: .72rem; opacity: .85; }
+    .header-info { flex: 1; }
+    .btn-logout {
+      background: rgba(255,255,255,.15);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,.35);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s;
+    }
+    .btn-logout:active { background: rgba(255,255,255,.25); }
 
     /* ── TAB BAR ── */
     #tab-bar {
@@ -55,7 +125,7 @@
       display: flex;
       border-bottom: 2px solid var(--border);
       position: sticky;
-      top: 62px;
+      top: 57px;
       z-index: 9;
       box-shadow: 0 2px 6px rgba(0,0,0,.06);
     }
@@ -64,7 +134,7 @@
       padding: 13px;
       background: none;
       border: none;
-      font-size: .92rem;
+      font-size: .88rem;
       font-weight: 600;
       color: var(--muted);
       cursor: pointer;
@@ -77,6 +147,7 @@
       color: var(--blue);
       border-bottom-color: var(--blue);
     }
+    #tab-admin { display: none; }
 
     /* ── VIEWS ── */
     .view { display: none; }
@@ -111,14 +182,14 @@
     }
 
     /* ── DELIVERY META ── */
-    #delivery-meta {
+    .meta-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
     .meta-item { display: flex; flex-direction: column; gap: 3px; }
     .meta-item label { font-size: .75rem; color: var(--muted); font-weight: 600; }
-    .meta-item input {
+    .meta-item input, .meta-item select {
       border: 1.5px solid var(--border);
       border-radius: 8px;
       padding: 9px 10px;
@@ -127,8 +198,9 @@
       outline: none;
       transition: border-color .15s;
       width: 100%;
+      background: var(--card);
     }
-    .meta-item input:focus { border-color: var(--blue); }
+    .meta-item input:focus, .meta-item select:focus { border-color: var(--blue); }
     .meta-item.full { grid-column: 1 / -1; }
 
     /* ── ADD CATCH FORM ── */
@@ -214,13 +286,9 @@
       background: var(--blue);
       color: #fff;
       border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .8rem;
-      font-weight: 700;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700;
       flex-shrink: 0;
     }
     .catch-item .catch-info { flex: 1; }
@@ -244,9 +312,7 @@
       background: var(--bg);
       border-radius: 10px;
       padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      display: flex; flex-direction: column; gap: 3px;
     }
     .stat-box .stat-label { font-size: .72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
     .stat-box .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.1; }
@@ -283,7 +349,7 @@
       text-align: center;
       margin-bottom: 16px;
     }
-    .total-price-box .label { font-size: .8rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+    .total-price-box .label  { font-size: .8rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
     .total-price-box .amount { font-size: 2.2rem; font-weight: 800; line-height: 1.15; }
     .total-price-box.dim { background: linear-gradient(135deg, #78909c, #90a4ae); }
 
@@ -390,32 +456,10 @@
     #rec-totals .summary-grid { margin-bottom: 0; }
 
     /* ── RECORDS – CARDS ── */
-    .rec-card {
-      padding: 14px 16px;
-    }
-    .rec-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .rec-date {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-    }
-    .rec-meta {
-      font-size: .78rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .rec-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .rec-card { padding: 14px 16px; }
+    .rec-date { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .rec-meta { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+    .rec-pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .rec-pill {
       background: var(--bg);
       border-radius: 50px;
@@ -424,30 +468,133 @@
       font-weight: 600;
       color: var(--text);
     }
-    .rec-pill.green {
-      background: #e8f5e9;
-      color: var(--green);
+    .rec-pill.green { background: #e8f5e9; color: var(--green); }
+
+    /* ── ADMIN – USER LIST ── */
+    .user-item {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fafdff;
+      margin-bottom: 8px;
     }
+    .user-item:last-child { margin-bottom: 0; }
+    .role-badge {
+      display: inline-block;
+      border-radius: 50px;
+      padding: 2px 8px;
+      font-size: .7rem;
+      font-weight: 700;
+    }
+    .role-badge.admin { background: #fff3cd; color: #856404; }
+    .role-badge.user  { background: #e8f4fd; color: #0c63e4; }
+
+    /* ── ADMIN – ADD USER FORM ── */
+    .admin-form { display: flex; flex-direction: column; gap: 10px; }
+    .admin-form input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: .95rem;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color .15s;
+    }
+    .admin-form input:focus { border-color: var(--blue); }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
+    .checkbox-row label { font-size: .9rem; color: var(--text); cursor: pointer; }
   </style>
 </head>
 <body>
 
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+          <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.4)"/>
+          <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="white"/>
+          <circle cx="9" cy="14" r="1.5" fill="rgba(0,0,0,.35)"/>
+          <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1>Fish Harvest Logger</h1>
+        <p id="login-subtitle">Sign in to continue</p>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="login-field">
+        <label>Username</label>
+        <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username"
+               onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="login-error" id="login-error"></div>
+      <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+    </div>
+
+    <!-- FIRST-RUN SETUP FORM -->
+    <div id="setup-form" style="display:none;">
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
+        Welcome! No users exist yet. Create the admin account to get started.
+      </p>
+      <div class="login-field">
+        <label>Admin Username</label>
+        <input type="text" id="setup-username" placeholder="Choose a username" />
+      </div>
+      <div class="login-field">
+        <label>Password</label>
+        <input type="password" id="setup-password" placeholder="At least 4 characters" />
+      </div>
+      <div class="login-field">
+        <label>Confirm Password</label>
+        <input type="password" id="setup-password2" placeholder="Repeat password"
+               onkeydown="if(event.key==='Enter')doSetup()" />
+      </div>
+      <div class="login-error" id="setup-error"></div>
+      <button class="btn btn-primary" onclick="doSetup()">Create Admin Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ HEADER ══════════════ -->
 <header>
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
     <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
     <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="rgba(255,255,255,.7)"/>
     <circle cx="9" cy="14" r="1.5" fill="white"/>
     <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </svg>
-  <div>
+  <div class="header-info">
     <h1>Fish Harvest Logger</h1>
-    <p id="header-sub">New delivery</p>
+    <p id="header-sub">—</p>
   </div>
+  <button class="btn-logout" onclick="logout()">Sign out</button>
 </header>
 
 <nav id="tab-bar">
-  <button class="tab active" onclick="switchTab('logger')">Logger</button>
-  <button class="tab" onclick="switchTab('records')">View History</button>
+  <button class="tab active" id="tab-logger"  onclick="switchTab('logger')">Logger</button>
+  <button class="tab"        id="tab-records" onclick="switchTab('records')">History</button>
+  <button class="tab"        id="tab-admin"   onclick="switchTab('admin')">Admin</button>
 </nav>
 
 <main>
@@ -465,8 +612,7 @@
       </div>
       <div class="meta-item" style="margin-bottom:10px;">
         <label>Email App for Buyer Receipt</label>
-        <select id="email-app" onchange="saveSetup()"
-                style="border:1.5px solid var(--border);border-radius:8px;padding:9px 10px;font-size:.9rem;color:var(--text);background:var(--card);outline:none;width:100%;">
+        <select id="email-app" onchange="saveSetup()">
           <option value="mailto">Default mail app (mailto:)</option>
           <option value="gmail">Gmail (web)</option>
           <option value="outlook">Outlook (web)</option>
@@ -483,7 +629,7 @@
     <!-- DELIVERY INFO -->
     <div class="card">
       <div class="card-title">Delivery Info</div>
-      <div id="delivery-meta">
+      <div class="meta-grid">
         <div class="meta-item">
           <label>Vessel / Pond (optional)</label>
           <input type="text" id="vessel" placeholder="e.g. Sea Star or Pond A" />
@@ -502,7 +648,7 @@
     <!-- BUYER INFO -->
     <div class="card">
       <div class="card-title">Buyer Info</div>
-      <div id="delivery-meta">
+      <div class="meta-grid">
         <div class="meta-item full">
           <label>Buyer Name</label>
           <input type="text" id="buyer-name" placeholder="e.g. John Smith" />
@@ -554,7 +700,6 @@
     <!-- SUMMARY -->
     <div class="card">
       <div class="card-title">Summary</div>
-
       <div class="summary-grid">
         <div class="stat-box">
           <span class="stat-label">Catches</span>
@@ -577,7 +722,6 @@
           <span class="stat-unit">first → last</span>
         </div>
       </div>
-
       <div class="price-row">
         <div class="field">
           <label>Currency</label>
@@ -589,12 +733,10 @@
                  inputmode="decimal" oninput="calcTotal()" />
         </div>
       </div>
-
       <div class="total-price-box dim" id="total-box">
         <div class="label">Total Price</div>
         <div class="amount" id="total-price">—</div>
       </div>
-
       <button class="btn btn-success" onclick="openFinish()">Finalise Delivery</button>
       <div style="margin-top:10px;">
         <button class="btn btn-outline" onclick="openReset()">Reset / New Delivery</button>
@@ -606,7 +748,6 @@
   <!-- ══════════════ RECORDS VIEW ══════════════ -->
   <div id="view-records" class="view">
 
-    <!-- FILTER & SORT -->
     <div class="card">
       <div class="card-title">Filter &amp; Sort</div>
       <div class="filter-grid">
@@ -640,7 +781,6 @@
       </div>
     </div>
 
-    <!-- TOTALS -->
     <div class="card" id="rec-totals" style="display:none;">
       <div class="card-title" style="margin-bottom:12px;">Filtered Totals</div>
       <div class="summary-grid" style="margin-bottom:0;">
@@ -667,10 +807,43 @@
       </div>
     </div>
 
-    <!-- RECORD LIST -->
     <div id="rec-list"></div>
 
   </div><!-- /view-records -->
+
+  <!-- ══════════════ ADMIN VIEW ══════════════ -->
+  <div id="view-admin" class="view">
+
+    <!-- ADD USER -->
+    <div class="card">
+      <div class="card-title">Add User</div>
+      <div class="admin-form">
+        <div class="meta-item">
+          <label>Username</label>
+          <input type="text" id="new-username" placeholder="e.g. john" autocomplete="off" />
+        </div>
+        <div class="meta-item">
+          <label>Password</label>
+          <input type="password" id="new-password" placeholder="Choose a password" autocomplete="new-password" />
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="new-is-admin" />
+          <label for="new-is-admin">Grant admin privileges</label>
+        </div>
+        <div class="login-error" id="add-user-error"></div>
+        <button class="btn btn-primary" onclick="adminAddUser()">Add User</button>
+      </div>
+    </div>
+
+    <!-- USER LIST -->
+    <div class="card">
+      <div class="card-title">All Users</div>
+      <div id="user-list">
+        <div class="empty-state">No users found.</div>
+      </div>
+    </div>
+
+  </div><!-- /view-admin -->
 
 </main>
 
@@ -710,74 +883,177 @@
   </div>
 </div>
 
+<!-- DELETE USER MODAL -->
+<div class="modal-overlay" id="delete-user-modal">
+  <div class="modal">
+    <h2>Remove User?</h2>
+    <p id="delete-user-detail"></p>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('delete-user-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDeleteUser()">Remove User</button>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 
 <script>
-  // ── STATE ──────────────────────────────────────────────────────────────────
-  let catches = [];
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  let catches          = [];
   let pendingDeleteIdx = null;
+  let pendingDeleteUser = null;
+  let currentUser      = null;
 
-  // ── INIT ──────────────────────────────────────────────────────────────────
-  (function init() {
+  // ── USER STORAGE ──────────────────────────────────────────────────────────
+  function loadUsers() {
+    try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveUsers(users) {
+    localStorage.setItem('fish_users', JSON.stringify(users));
+  }
+
+  // ── PER-USER STORAGE KEYS ─────────────────────────────────────────────────
+  function stateKey()   { return `fish_state_${currentUser.username}`; }
+  function recordsKey() { return `fish_records_${currentUser.username}`; }
+
+  // ── AUTH INIT ─────────────────────────────────────────────────────────────
+  (function initAuth() {
+    const users = loadUsers();
+    if (users.length === 0) {
+      // First run: show admin setup form
+      document.getElementById('login-subtitle').textContent = 'First-time setup';
+      document.getElementById('login-form').style.display  = 'none';
+      document.getElementById('setup-form').style.display  = '';
+      return;
+    }
+    // Restore session if still valid
+    try {
+      const sess = JSON.parse(sessionStorage.getItem('fish_session') || 'null');
+      if (sess) {
+        const found = users.find(u => u.username === sess.username && u.password === sess.password);
+        if (found) { currentUser = found; showApp(); return; }
+      }
+    } catch(e) {}
+    // Show login
+    document.getElementById('login-screen').classList.remove('hidden');
+  })();
+
+  // ── FIRST-RUN SETUP ───────────────────────────────────────────────────────
+  function doSetup() {
+    const username  = document.getElementById('setup-username').value.trim();
+    const password  = document.getElementById('setup-password').value;
+    const password2 = document.getElementById('setup-password2').value;
+    const errEl     = document.getElementById('setup-error');
+
+    if (!username)          { showFormError(errEl, 'Username is required.'); return; }
+    if (password.length < 4){ showFormError(errEl, 'Password must be at least 4 characters.'); return; }
+    if (password !== password2){ showFormError(errEl, 'Passwords do not match.'); return; }
+
+    const admin = { username, password, isAdmin: true, createdAt: new Date().toISOString() };
+    saveUsers([admin]);
+    currentUser = admin;
+    sessionStorage.setItem('fish_session', JSON.stringify(admin));
+    showApp();
+  }
+
+  // ── LOGIN ─────────────────────────────────────────────────────────────────
+  function doLogin() {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    const errEl    = document.getElementById('login-error');
+
+    if (!username || !password) { showFormError(errEl, 'Please enter username and password.'); return; }
+
+    const users = loadUsers();
+    const found = users.find(u => u.username === username && u.password === password);
+    if (!found) { showFormError(errEl, 'Invalid username or password.'); return; }
+
+    currentUser = found;
+    sessionStorage.setItem('fish_session', JSON.stringify(found));
+    showApp();
+  }
+
+  // ── LOGOUT ────────────────────────────────────────────────────────────────
+  function logout() {
+    sessionStorage.removeItem('fish_session');
+    currentUser = null;
+    catches     = [];
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('login-screen').classList.remove('hidden');
+    switchTab('logger');
+  }
+
+  // ── SHOW APP ──────────────────────────────────────────────────────────────
+  function showApp() {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('header-sub').textContent = currentUser.username;
+    document.getElementById('tab-admin').style.display = currentUser.isAdmin ? '' : 'none';
+    initUserData();
+  }
+
+  // ── LOAD USER DATA ────────────────────────────────────────────────────────
+  function initUserData() {
+    catches = [];
     document.getElementById('delivery-date').value = todayISO();
-    document.getElementById('catch-time').value = nowTime();
-    const saved = localStorage.getItem('fish_harvest_state');
+    document.getElementById('catch-time').value    = nowTime();
+    // Clear fields
+    ['vessel','species','price-per-kg','catch-weight','catch-note',
+     'buyer-name','buyer-email','buyer-phone'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('currency').value  = '$';
+    document.getElementById('gas-url').value   = '';
+    document.getElementById('email-app').value = 'mailto';
+
+    const saved = localStorage.getItem(stateKey());
     if (saved) {
       try {
         const s = JSON.parse(saved);
         catches = s.catches || [];
-        document.getElementById('vessel').value        = s.vessel   || '';
-        document.getElementById('species').value       = s.species  || '';
-        document.getElementById('delivery-date').value = s.date     || todayISO();
-        document.getElementById('price-per-kg').value  = s.price    || '';
-        document.getElementById('currency').value      = s.currency || '$';
+        document.getElementById('vessel').value        = s.vessel      || '';
+        document.getElementById('species').value       = s.species     || '';
+        document.getElementById('delivery-date').value = s.date        || todayISO();
+        document.getElementById('price-per-kg').value  = s.price       || '';
+        document.getElementById('currency').value      = s.currency    || '$';
         document.getElementById('gas-url').value       = s.gasUrl      || '';
         document.getElementById('email-app').value     = s.emailApp    || 'mailto';
         document.getElementById('buyer-name').value    = s.buyerName   || '';
         document.getElementById('buyer-email').value   = s.buyerEmail  || '';
         document.getElementById('buyer-phone').value   = s.buyerPhone  || '';
-        render();
-        calcTotal();
-      } catch(e) { /* ignore */ }
+      } catch(e) {}
     }
-  })();
+    render();
+    calcTotal();
+  }
 
-  // ── TAB SWITCHING ──────────────────────────────────────────────────────────
+  // ── FORM ERROR HELPER ─────────────────────────────────────────────────────
+  function showFormError(el, msg) {
+    el.textContent = msg;
+    setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3500);
+  }
+
+  // ── TAB SWITCHING ─────────────────────────────────────────────────────────
   function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((b, i) => {
-      b.classList.toggle('active', (i === 0 && tab === 'logger') || (i === 1 && tab === 'records'));
+    ['logger','records','admin'].forEach(t => {
+      document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+      document.getElementById(`view-${t}`).classList.toggle('active', t === tab);
     });
-    document.getElementById('view-logger').classList.toggle('active', tab === 'logger');
-    document.getElementById('view-records').classList.toggle('active', tab === 'records');
     if (tab === 'records') renderRecords();
+    if (tab === 'admin')   renderAdminUsers();
   }
 
   // ── HELPERS ───────────────────────────────────────────────────────────────
-  function todayISO() {
-    return new Date().toISOString().slice(0, 10);
-  }
+  function todayISO() { return new Date().toISOString().slice(0, 10); }
   function nowTime() {
     const n = new Date();
     return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
   }
-  function fmt(n, dec=1) {
-    return Number(n).toFixed(dec);
-  }
-  function save() {
-    localStorage.setItem('fish_harvest_state', JSON.stringify({
-      catches,
-      vessel:      document.getElementById('vessel').value,
-      species:     document.getElementById('species').value,
-      date:        document.getElementById('delivery-date').value,
-      price:       document.getElementById('price-per-kg').value,
-      currency:    document.getElementById('currency').value,
-      gasUrl:      document.getElementById('gas-url').value,
-      emailApp:    document.getElementById('email-app').value,
-      buyerName:   document.getElementById('buyer-name').value,
-      buyerEmail:  document.getElementById('buyer-email').value,
-      buyerPhone:  document.getElementById('buyer-phone').value,
-    }));
+  function fmt(n, dec=1) { return Number(n).toFixed(dec); }
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
   function toast(msg) {
     const el = document.getElementById('toast');
@@ -785,45 +1061,48 @@
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2200);
   }
-  function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // ── SAVE STATE ────────────────────────────────────────────────────────────
+  function save() {
+    if (!currentUser) return;
+    localStorage.setItem(stateKey(), JSON.stringify({
+      catches,
+      vessel:     document.getElementById('vessel').value,
+      species:    document.getElementById('species').value,
+      date:       document.getElementById('delivery-date').value,
+      price:      document.getElementById('price-per-kg').value,
+      currency:   document.getElementById('currency').value,
+      gasUrl:     document.getElementById('gas-url').value,
+      emailApp:   document.getElementById('email-app').value,
+      buyerName:  document.getElementById('buyer-name').value,
+      buyerEmail: document.getElementById('buyer-email').value,
+      buyerPhone: document.getElementById('buyer-phone').value,
+    }));
   }
+  function saveSetup() { save(); }
 
   // ── RECORDS STORAGE ───────────────────────────────────────────────────────
   function loadRecords() {
-    try { return JSON.parse(localStorage.getItem('fish_harvest_records') || '[]'); }
+    try { return JSON.parse(localStorage.getItem(recordsKey()) || '[]'); }
     catch(e) { return []; }
   }
-  function saveRecords(recs) {
-    localStorage.setItem('fish_harvest_records', JSON.stringify(recs));
-  }
-  function pushRecord(rec) {
-    const recs = loadRecords();
-    recs.push(rec);
-    saveRecords(recs);
-  }
-
-  // ── SETUP ─────────────────────────────────────────────────────────────────
-  function saveSetup() { save(); }
+  function saveRecords(recs) { localStorage.setItem(recordsKey(), JSON.stringify(recs)); }
+  function pushRecord(rec)   { const r = loadRecords(); r.push(rec); saveRecords(r); }
 
   // ── ADD CATCH ─────────────────────────────────────────────────────────────
   function addCatch() {
     const timeEl   = document.getElementById('catch-time');
     const weightEl = document.getElementById('catch-weight');
     const noteEl   = document.getElementById('catch-note');
+    const time     = timeEl.value.trim();
+    const weight   = parseFloat(weightEl.value);
+    const note     = noteEl.value.trim();
 
-    const time   = timeEl.value.trim();
-    const weight = parseFloat(weightEl.value);
-    const note   = noteEl.value.trim();
-
-    if (!time)                { toast('Please enter a time.'); timeEl.focus(); return; }
+    if (!time)                        { toast('Please enter a time.');         timeEl.focus();   return; }
     if (isNaN(weight) || weight <= 0) { toast('Please enter a valid weight.'); weightEl.focus(); return; }
 
     catches.push({ time, weight, note });
-    save();
-    render();
-    calcTotal();
-
+    save(); render(); calcTotal();
     weightEl.value = '';
     noteEl.value   = '';
     document.getElementById('catch-time').value = nowTime();
@@ -835,7 +1114,6 @@
   function render() {
     const list  = document.getElementById('catch-list');
     const count = catches.length;
-
     document.getElementById('catch-count').textContent = count;
     document.getElementById('sum-count').textContent   = count;
 
@@ -855,15 +1133,11 @@
           <div class="catch-time">${c.time}${c.note ? ' · ' + escHtml(c.note) : ''}</div>
         </div>
         <button class="btn-icon-danger" onclick="askDelete(${i})">✕</button>
-      </div>
-    `).join('');
+      </div>`).join('');
 
     const total = catches.reduce((s, c) => s + c.weight, 0);
-    const avg   = total / count;
-
     document.getElementById('sum-weight').textContent = fmt(total);
-    document.getElementById('sum-avg').textContent    = fmt(avg);
-
+    document.getElementById('sum-avg').textContent    = fmt(total / count);
     const times = catches.map(c => c.time).sort();
     document.getElementById('sum-dur').textContent =
       times.length > 1 ? `${times[0]} – ${times[times.length-1]}` : times[0];
@@ -878,8 +1152,7 @@
     const total = catches.reduce((s, c) => s + c.weight, 0);
 
     if (!isNaN(price) && price > 0 && total > 0) {
-      const amount = (total * price).toFixed(2);
-      out.textContent = `${cur}${Number(amount).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+      out.textContent = `${cur}${(total * price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
       box.classList.remove('dim');
     } else {
       out.textContent = '—';
@@ -900,9 +1173,7 @@
     if (pendingDeleteIdx !== null) {
       catches.splice(pendingDeleteIdx, 1);
       pendingDeleteIdx = null;
-      save();
-      render();
-      calcTotal();
+      save(); render(); calcTotal();
       toast('Catch removed.');
     }
     closeModal('delete-modal');
@@ -911,20 +1182,20 @@
   // ── FINALISE ──────────────────────────────────────────────────────────────
   function openFinish() {
     if (catches.length === 0) { toast('No catches to finalise.'); return; }
-    const vessel      = document.getElementById('vessel').value      || '(unnamed)';
-    const species     = document.getElementById('species').value     || '(unknown)';
-    const date        = document.getElementById('delivery-date').value;
-    const total       = catches.reduce((s, c) => s + c.weight, 0);
-    const price       = parseFloat(document.getElementById('price-per-kg').value);
-    const cur         = document.getElementById('currency').value || '$';
-    const hasPrice    = !isNaN(price) && price > 0;
-    const buyerName   = document.getElementById('buyer-name').value.trim();
-    const buyerEmail  = document.getElementById('buyer-email').value.trim();
-    const buyerPhone  = document.getElementById('buyer-phone').value.trim();
+    const vessel     = document.getElementById('vessel').value     || '(unnamed)';
+    const species    = document.getElementById('species').value    || '(unknown)';
+    const date       = document.getElementById('delivery-date').value;
+    const total      = catches.reduce((s, c) => s + c.weight, 0);
+    const price      = parseFloat(document.getElementById('price-per-kg').value);
+    const cur        = document.getElementById('currency').value || '$';
+    const hasPrice   = !isNaN(price) && price > 0;
+    const buyerName  = document.getElementById('buyer-name').value.trim();
+    const buyerEmail = document.getElementById('buyer-email').value.trim();
+    const buyerPhone = document.getElementById('buyer-phone').value.trim();
 
     let txt = `Vessel: ${vessel}\nSpecies: ${species}\nDate: ${date}\n`
             + `Catches: ${catches.length}  |  Total: ${fmt(total)} kg`;
-    if (hasPrice) txt += `\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
+    if (hasPrice)   txt += `\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
     if (buyerName)  txt += `\nBuyer: ${buyerName}`;
     if (buyerEmail) txt += `  ·  ${buyerEmail}`;
     if (buyerPhone) txt += `  ·  ${buyerPhone}`;
@@ -934,35 +1205,30 @@
   }
 
   function finalise() {
-    const vessel      = document.getElementById('vessel').value      || '(unnamed)';
-    const species     = document.getElementById('species').value     || '(unknown)';
-    const date        = document.getElementById('delivery-date').value;
-    const cur         = document.getElementById('currency').value || '$';
-    const price       = parseFloat(document.getElementById('price-per-kg').value);
-    const total       = catches.reduce((s, c) => s + c.weight, 0);
-    const hasPrice    = !isNaN(price) && price > 0;
-    const buyerName   = document.getElementById('buyer-name').value.trim();
-    const buyerEmail  = document.getElementById('buyer-email').value.trim();
-    const buyerPhone  = document.getElementById('buyer-phone').value.trim();
+    const vessel     = document.getElementById('vessel').value     || '(unnamed)';
+    const species    = document.getElementById('species').value    || '(unknown)';
+    const date       = document.getElementById('delivery-date').value;
+    const cur        = document.getElementById('currency').value || '$';
+    const price      = parseFloat(document.getElementById('price-per-kg').value);
+    const total      = catches.reduce((s, c) => s + c.weight, 0);
+    const hasPrice   = !isNaN(price) && price > 0;
+    const buyerName  = document.getElementById('buyer-name').value.trim();
+    const buyerEmail = document.getElementById('buyer-email').value.trim();
+    const buyerPhone = document.getElementById('buyer-phone').value.trim();
 
-    // ── Save to records ──
     pushRecord({
       id:          Date.now(),
-      date,
-      vessel,
-      species,
+      date, vessel, species,
       catches:     catches.slice(),
       totalWeight: total,
       pricePerKg:  hasPrice ? price : null,
       currency:    cur,
       totalPrice:  hasPrice ? parseFloat((total * price).toFixed(2)) : null,
-      buyerName,
-      buyerEmail,
-      buyerPhone,
+      buyerName, buyerEmail, buyerPhone,
       savedAt:     new Date().toISOString(),
     });
 
-    // ── Build receipt text ──
+    // Build receipt
     let lines = [
       '=== FISH HARVEST DELIVERY RECORD ===',
       `Date:      ${date}`,
@@ -972,26 +1238,20 @@
     if (buyerName)  lines.push(`Buyer:     ${buyerName}`);
     if (buyerEmail) lines.push(`Email:     ${buyerEmail}`);
     if (buyerPhone) lines.push(`Phone:     ${buyerPhone}`);
-    lines.push(
-      '',
-      '#   Time    Weight (kg)  Note',
-      '--- ------  -----------  ----',
+    lines.push('', '#   Time    Weight (kg)  Note', '--- ------  -----------  ----',
       ...catches.map((c, i) =>
         `${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`
       ),
-      '',
-      `Total catches : ${catches.length}`,
-      `Total weight  : ${fmt(total,2)} kg`,
+      '', `Total catches : ${catches.length}`, `Total weight  : ${fmt(total,2)} kg`
     );
     if (hasPrice) {
       lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);
       lines.push(`TOTAL PRICE   : ${cur}${(total*price).toFixed(2)}`);
     }
     lines.push('', `Generated: ${new Date().toLocaleString()}`);
-
     const receiptText = lines.join('\n');
 
-    // ── Download receipt ──
+    // Download receipt
     const blob = new Blob([receiptText], {type: 'text/plain'});
     const a    = document.createElement('a');
     a.href     = URL.createObjectURL(blob);
@@ -1001,7 +1261,7 @@
     closeModal('finish-modal');
     toast('Delivery saved & receipt downloaded!');
 
-    // ── Email buyer ──
+    // Email buyer
     if (buyerEmail) {
       const emailApp = document.getElementById('email-app').value;
       const subject  = encodeURIComponent(`Fish Delivery Receipt – ${date}`);
@@ -1015,14 +1275,14 @@
         proton:  `https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${subject}&body=${body}`,
         zoho:    `https://mail.zoho.com/zm/#compose;to=${to};subject=${subject};body=${body}`,
       };
-      const link = document.createElement('a');
+      const link  = document.createElement('a');
       link.href   = urls[emailApp] || urls.mailto;
       link.target = emailApp === 'mailto' ? '_self' : '_blank';
       link.rel    = 'noopener noreferrer';
       link.click();
     }
 
-    // ── Send to Google Sheet ──
+    // Google Sheet
     const gasUrl = document.getElementById('gas-url').value.trim();
     if (gasUrl) {
       const payload = { vessel, species, date, catches, totalWeight: total,
@@ -1039,28 +1299,22 @@
   function openReset() { openModal('reset-modal'); }
   function resetAll() {
     catches = [];
-    document.getElementById('vessel').value        = '';
-    document.getElementById('species').value       = '';
-    document.getElementById('price-per-kg').value  = '';
-    document.getElementById('delivery-date').value = todayISO();
-    document.getElementById('catch-time').value    = nowTime();
-    document.getElementById('catch-weight').value  = '';
-    document.getElementById('catch-note').value    = '';
-    document.getElementById('buyer-name').value    = '';
-    document.getElementById('buyer-email').value   = '';
-    document.getElementById('buyer-phone').value   = '';
-    localStorage.removeItem('fish_harvest_state');
-    render();
-    calcTotal();
+    ['vessel','species','price-per-kg','delivery-date','catch-time',
+     'catch-weight','catch-note','buyer-name','buyer-email','buyer-phone']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        el.value = id === 'delivery-date' ? todayISO() : id === 'catch-time' ? nowTime() : '';
+      });
+    localStorage.removeItem(stateKey());
+    render(); calcTotal();
     closeModal('reset-modal');
     toast('Reset. Ready for new delivery.');
   }
 
-  // ── RECORDS VIEW ───────────────────────────────────────────────────────────
+  // ── RECORDS VIEW ──────────────────────────────────────────────────────────
   function renderRecords() {
     let recs = loadRecords();
 
-    // ── Filter ──
     const from    = document.getElementById('f-from').value;
     const to      = document.getElementById('f-to').value;
     const vessel  = document.getElementById('f-vessel').value.trim().toLowerCase();
@@ -1071,21 +1325,19 @@
     if (vessel)  recs = recs.filter(r => r.vessel.toLowerCase().includes(vessel));
     if (species) recs = recs.filter(r => r.species.toLowerCase().includes(species));
 
-    // ── Sort ──
     const sort = document.getElementById('f-sort').value;
     recs.sort((a, b) => {
       switch (sort) {
-        case 'date-asc':     return a.date.localeCompare(b.date);
-        case 'date-desc':    return b.date.localeCompare(a.date);
-        case 'weight-asc':   return a.totalWeight - b.totalWeight;
-        case 'weight-desc':  return b.totalWeight - a.totalWeight;
-        case 'price-asc':    return (a.totalPrice ?? -Infinity) - (b.totalPrice ?? -Infinity);
-        case 'price-desc':   return (b.totalPrice ?? -Infinity) - (a.totalPrice ?? -Infinity);
-        default:             return 0;
+        case 'date-asc':    return a.date.localeCompare(b.date);
+        case 'date-desc':   return b.date.localeCompare(a.date);
+        case 'weight-asc':  return a.totalWeight - b.totalWeight;
+        case 'weight-desc': return b.totalWeight - a.totalWeight;
+        case 'price-asc':   return (a.totalPrice ?? -Infinity) - (b.totalPrice ?? -Infinity);
+        case 'price-desc':  return (b.totalPrice ?? -Infinity) - (a.totalPrice ?? -Infinity);
+        default:            return 0;
       }
     });
 
-    // ── Totals ──
     const totalsEl = document.getElementById('rec-totals');
     if (recs.length > 0) {
       totalsEl.style.display = '';
@@ -1095,12 +1347,11 @@
       document.getElementById('rt-weight').textContent = fmt(totalW);
       document.getElementById('rt-avg').textContent    = fmt(totalW / recs.length);
       if (priced.length > 0) {
-        // group by currency for display; if mixed, show sum of first currency only with note
-        const cur = priced[0].currency;
-        const sameCur = priced.filter(r => r.currency === cur);
-        const totalP  = sameCur.reduce((s, r) => s + r.totalPrice, 0);
+        const cur    = priced[0].currency;
+        const same   = priced.filter(r => r.currency === cur);
+        const totalP = same.reduce((s, r) => s + r.totalPrice, 0);
         document.getElementById('rt-price').textContent      = `${cur}${totalP.toLocaleString(undefined,{minimumFractionDigits:2})}`;
-        document.getElementById('rt-price-unit').textContent = sameCur.length < priced.length ? '(same currency only)' : '';
+        document.getElementById('rt-price-unit').textContent = same.length < priced.length ? '(same currency only)' : '';
       } else {
         document.getElementById('rt-price').textContent      = '—';
         document.getElementById('rt-price-unit').textContent = '';
@@ -1109,7 +1360,6 @@
       totalsEl.style.display = 'none';
     }
 
-    // ── List ──
     const listEl = document.getElementById('rec-list');
     if (recs.length === 0) {
       listEl.innerHTML = '<div class="empty-state" style="padding:32px 0;">No records found.</div>';
@@ -1136,20 +1386,90 @@
     }).join('');
   }
 
-  // ── MODAL HELPERS ──────────────────────────────────────────────────────────
+  // ── ADMIN: ADD USER ───────────────────────────────────────────────────────
+  function adminAddUser() {
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value;
+    const isAdmin  = document.getElementById('new-is-admin').checked;
+    const errEl    = document.getElementById('add-user-error');
+
+    if (!username)            { showFormError(errEl, 'Username is required.'); return; }
+    if (password.length < 4)  { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
+
+    const users = loadUsers();
+    if (users.find(u => u.username === username)) {
+      showFormError(errEl, `Username "${username}" already exists.`); return;
+    }
+
+    users.push({ username, password, isAdmin, createdAt: new Date().toISOString() });
+    saveUsers(users);
+    document.getElementById('new-username').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('new-is-admin').checked = false;
+    toast(`User "${username}" added.`);
+    renderAdminUsers();
+  }
+
+  // ── ADMIN: DELETE USER ────────────────────────────────────────────────────
+  function askDeleteUser(username) {
+    pendingDeleteUser = username;
+    document.getElementById('delete-user-detail').textContent =
+      `This will permanently remove "${username}" and all their data. This cannot be undone.`;
+    openModal('delete-user-modal');
+  }
+  function confirmDeleteUser() {
+    const username = pendingDeleteUser;
+    pendingDeleteUser = null;
+    closeModal('delete-user-modal');
+    if (!username) return;
+
+    if (username === currentUser.username) { toast("You can't delete yourself."); return; }
+
+    const users    = loadUsers();
+    const remaining = users.filter(u => u.username !== username);
+    if (remaining.filter(u => u.isAdmin).length === 0) {
+      toast("Can't remove the last admin."); return;
+    }
+
+    // Remove user data
+    localStorage.removeItem(`fish_state_${username}`);
+    localStorage.removeItem(`fish_records_${username}`);
+    saveUsers(remaining);
+    toast(`User "${username}" removed.`);
+    renderAdminUsers();
+  }
+
+  // ── ADMIN: RENDER USER LIST ───────────────────────────────────────────────
+  function renderAdminUsers() {
+    const users  = loadUsers();
+    const listEl = document.getElementById('user-list');
+
+    listEl.innerHTML = users.map(u => `
+      <div class="user-item">
+        <div>
+          <div style="font-weight:700;font-size:.95rem;">${escHtml(u.username)}</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">
+            <span class="role-badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Admin' : 'User'}</span>
+            &nbsp;· Added ${new Date(u.createdAt).toLocaleDateString()}
+          </div>
+        </div>
+        ${u.username !== currentUser.username
+          ? `<button class="btn-icon-danger" onclick="askDeleteUser('${escHtml(u.username)}')">✕</button>`
+          : `<span style="font-size:.75rem;color:var(--muted);font-style:italic;">you</span>`}
+      </div>`).join('') || '<div class="empty-state">No users.</div>';
+  }
+
+  // ── MODAL HELPERS ─────────────────────────────────────────────────────────
   function openModal(id)  { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
   document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', e => {
-      if (e.target === el) el.classList.remove('open');
-    });
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
   });
 
   document.getElementById('catch-weight').addEventListener('keydown', e => {
     if (e.key === 'Enter') addCatch();
   });
-
   document.getElementById('currency').addEventListener('input', calcTotal);
 </script>
 </body>

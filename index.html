@@ -487,6 +487,25 @@
       </div>
     </div>
 
+    <!-- BUYER INFO -->
+    <div class="card">
+      <div class="card-title">Buyer Info</div>
+      <div id="delivery-meta">
+        <div class="meta-item full">
+          <label>Buyer Name</label>
+          <input type="text" id="buyer-name" placeholder="e.g. John Smith" />
+        </div>
+        <div class="meta-item full">
+          <label>Buyer Email</label>
+          <input type="email" id="buyer-email" placeholder="e.g. buyer@example.com" />
+        </div>
+        <div class="meta-item full">
+          <label>Buyer Phone</label>
+          <input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" />
+        </div>
+      </div>
+    </div>
+
     <!-- ADD CATCH -->
     <div class="card">
       <div class="card-title">Add Catch</div>
@@ -701,7 +720,10 @@
         document.getElementById('delivery-date').value = s.date     || todayISO();
         document.getElementById('price-per-kg').value  = s.price    || '';
         document.getElementById('currency').value      = s.currency || '$';
-        document.getElementById('gas-url').value       = s.gasUrl   || '';
+        document.getElementById('gas-url').value       = s.gasUrl      || '';
+        document.getElementById('buyer-name').value    = s.buyerName   || '';
+        document.getElementById('buyer-email').value   = s.buyerEmail  || '';
+        document.getElementById('buyer-phone').value   = s.buyerPhone  || '';
         render();
         calcTotal();
       } catch(e) { /* ignore */ }
@@ -732,12 +754,15 @@
   function save() {
     localStorage.setItem('fish_harvest_state', JSON.stringify({
       catches,
-      vessel:   document.getElementById('vessel').value,
-      species:  document.getElementById('species').value,
-      date:     document.getElementById('delivery-date').value,
-      price:    document.getElementById('price-per-kg').value,
-      currency: document.getElementById('currency').value,
-      gasUrl:   document.getElementById('gas-url').value,
+      vessel:      document.getElementById('vessel').value,
+      species:     document.getElementById('species').value,
+      date:        document.getElementById('delivery-date').value,
+      price:       document.getElementById('price-per-kg').value,
+      currency:    document.getElementById('currency').value,
+      gasUrl:      document.getElementById('gas-url').value,
+      buyerName:   document.getElementById('buyer-name').value,
+      buyerEmail:  document.getElementById('buyer-email').value,
+      buyerPhone:  document.getElementById('buyer-phone').value,
     }));
   }
   function toast(msg) {
@@ -872,30 +897,39 @@
   // ── FINALISE ──────────────────────────────────────────────────────────────
   function openFinish() {
     if (catches.length === 0) { toast('No catches to finalise.'); return; }
-    const vessel   = document.getElementById('vessel').value  || '(unnamed)';
-    const species  = document.getElementById('species').value || '(unknown)';
-    const date     = document.getElementById('delivery-date').value;
-    const total    = catches.reduce((s, c) => s + c.weight, 0);
-    const price    = parseFloat(document.getElementById('price-per-kg').value);
-    const cur      = document.getElementById('currency').value || '$';
-    const hasPrice = !isNaN(price) && price > 0;
+    const vessel      = document.getElementById('vessel').value      || '(unnamed)';
+    const species     = document.getElementById('species').value     || '(unknown)';
+    const date        = document.getElementById('delivery-date').value;
+    const total       = catches.reduce((s, c) => s + c.weight, 0);
+    const price       = parseFloat(document.getElementById('price-per-kg').value);
+    const cur         = document.getElementById('currency').value || '$';
+    const hasPrice    = !isNaN(price) && price > 0;
+    const buyerName   = document.getElementById('buyer-name').value.trim();
+    const buyerEmail  = document.getElementById('buyer-email').value.trim();
+    const buyerPhone  = document.getElementById('buyer-phone').value.trim();
 
     let txt = `Vessel: ${vessel}\nSpecies: ${species}\nDate: ${date}\n`
             + `Catches: ${catches.length}  |  Total: ${fmt(total)} kg`;
     if (hasPrice) txt += `\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
+    if (buyerName)  txt += `\nBuyer: ${buyerName}`;
+    if (buyerEmail) txt += `  ·  ${buyerEmail}`;
+    if (buyerPhone) txt += `  ·  ${buyerPhone}`;
 
     document.getElementById('finish-summary-text').textContent = txt;
     openModal('finish-modal');
   }
 
   function finalise() {
-    const vessel   = document.getElementById('vessel').value  || '(unnamed)';
-    const species  = document.getElementById('species').value || '(unknown)';
-    const date     = document.getElementById('delivery-date').value;
-    const cur      = document.getElementById('currency').value || '$';
-    const price    = parseFloat(document.getElementById('price-per-kg').value);
-    const total    = catches.reduce((s, c) => s + c.weight, 0);
-    const hasPrice = !isNaN(price) && price > 0;
+    const vessel      = document.getElementById('vessel').value      || '(unnamed)';
+    const species     = document.getElementById('species').value     || '(unknown)';
+    const date        = document.getElementById('delivery-date').value;
+    const cur         = document.getElementById('currency').value || '$';
+    const price       = parseFloat(document.getElementById('price-per-kg').value);
+    const total       = catches.reduce((s, c) => s + c.weight, 0);
+    const hasPrice    = !isNaN(price) && price > 0;
+    const buyerName   = document.getElementById('buyer-name').value.trim();
+    const buyerEmail  = document.getElementById('buyer-email').value.trim();
+    const buyerPhone  = document.getElementById('buyer-phone').value.trim();
 
     // ── Save to records ──
     pushRecord({
@@ -908,15 +942,23 @@
       pricePerKg:  hasPrice ? price : null,
       currency:    cur,
       totalPrice:  hasPrice ? parseFloat((total * price).toFixed(2)) : null,
+      buyerName,
+      buyerEmail,
+      buyerPhone,
       savedAt:     new Date().toISOString(),
     });
 
-    // ── Download receipt ──
+    // ── Build receipt text ──
     let lines = [
       '=== FISH HARVEST DELIVERY RECORD ===',
       `Date:      ${date}`,
       `Vessel:    ${vessel}`,
       `Species:   ${species}`,
+    ];
+    if (buyerName)  lines.push(`Buyer:     ${buyerName}`);
+    if (buyerEmail) lines.push(`Email:     ${buyerEmail}`);
+    if (buyerPhone) lines.push(`Phone:     ${buyerPhone}`);
+    lines.push(
       '',
       '#   Time    Weight (kg)  Note',
       '--- ------  -----------  ----',
@@ -926,15 +968,17 @@
       '',
       `Total catches : ${catches.length}`,
       `Total weight  : ${fmt(total,2)} kg`,
-    ];
+    );
     if (hasPrice) {
       lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);
       lines.push(`TOTAL PRICE   : ${cur}${(total*price).toFixed(2)}`);
     }
-    lines.push('');
-    lines.push(`Generated: ${new Date().toLocaleString()}`);
+    lines.push('', `Generated: ${new Date().toLocaleString()}`);
 
-    const blob = new Blob([lines.join('\n')], {type: 'text/plain'});
+    const receiptText = lines.join('\n');
+
+    // ── Download receipt ──
+    const blob = new Blob([receiptText], {type: 'text/plain'});
     const a    = document.createElement('a');
     a.href     = URL.createObjectURL(blob);
     a.download = `harvest_${date}_${vessel.replace(/\s+/g,'_')}.txt`;
@@ -943,12 +987,23 @@
     closeModal('finish-modal');
     toast('Delivery saved & receipt downloaded!');
 
+    // ── Email buyer ──
+    if (buyerEmail) {
+      const subject = encodeURIComponent(`Fish Delivery Receipt – ${date}`);
+      const body    = encodeURIComponent(receiptText);
+      const mailto  = `mailto:${encodeURIComponent(buyerEmail)}?subject=${subject}&body=${body}`;
+      const link    = document.createElement('a');
+      link.href     = mailto;
+      link.click();
+    }
+
     // ── Send to Google Sheet ──
     const gasUrl = document.getElementById('gas-url').value.trim();
     if (gasUrl) {
       const payload = { vessel, species, date, catches, totalWeight: total,
                         pricePerKg: hasPrice ? price : null, currency: cur,
-                        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null };
+                        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null,
+                        buyerName, buyerEmail, buyerPhone };
       fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) })
         .then(() => toast('Data sent to Google Sheet!'))
         .catch(() => toast('Sheet sync failed — check your URL.'));
@@ -966,6 +1021,9 @@
     document.getElementById('catch-time').value    = nowTime();
     document.getElementById('catch-weight').value  = '';
     document.getElementById('catch-note').value    = '';
+    document.getElementById('buyer-name').value    = '';
+    document.getElementById('buyer-email').value   = '';
+    document.getElementById('buyer-phone').value   = '';
     localStorage.removeItem('fish_harvest_state');
     render();
     calcTotal();
@@ -1034,13 +1092,15 @@
     }
 
     listEl.innerHTML = recs.map(r => {
-      const priceTag = r.totalPrice !== null
+      const priceTag  = r.totalPrice !== null
         ? `<span class="rec-pill green">${r.currency}${r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</span>`
         : '';
+      const buyerMeta = [r.buyerName, r.buyerEmail, r.buyerPhone].filter(Boolean).join(' · ');
       return `
         <div class="card rec-card">
           <div class="rec-date">${r.date}</div>
-          <div class="rec-meta" style="margin-bottom:10px;">${escHtml(r.vessel)} · ${escHtml(r.species)}</div>
+          <div class="rec-meta" style="margin-bottom:${buyerMeta ? 4 : 10}px;">${escHtml(r.vessel)} · ${escHtml(r.species)}</div>
+          ${buyerMeta ? `<div class="rec-meta" style="margin-bottom:10px;">${escHtml(buyerMeta)}</div>` : ''}
           <div class="rec-pills">
             <span class="rec-pill">${r.catches.length} catches</span>
             <span class="rec-pill">${fmt(r.totalWeight)} kg</span>

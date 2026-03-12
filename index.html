@@ -463,6 +463,18 @@
         <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/…/exec"
                style="font-size:.85rem;" oninput="saveSetup()" />
       </div>
+      <div class="meta-item" style="margin-bottom:10px;">
+        <label>Email App for Buyer Receipt</label>
+        <select id="email-app" onchange="saveSetup()"
+                style="border:1.5px solid var(--border);border-radius:8px;padding:9px 10px;font-size:.9rem;color:var(--text);background:var(--card);outline:none;width:100%;">
+          <option value="mailto">Default mail app (mailto:)</option>
+          <option value="gmail">Gmail (web)</option>
+          <option value="outlook">Outlook (web)</option>
+          <option value="yahoo">Yahoo Mail (web)</option>
+          <option value="proton">Proton Mail (web)</option>
+          <option value="zoho">Zoho Mail (web)</option>
+        </select>
+      </div>
       <p style="font-size:.75rem;color:var(--muted);margin:0;">
         Paste your Web App URL here. Data will be sent to your Google Sheet when you finalise a delivery.
       </p>
@@ -721,6 +733,7 @@
         document.getElementById('price-per-kg').value  = s.price    || '';
         document.getElementById('currency').value      = s.currency || '$';
         document.getElementById('gas-url').value       = s.gasUrl      || '';
+        document.getElementById('email-app').value     = s.emailApp    || 'mailto';
         document.getElementById('buyer-name').value    = s.buyerName   || '';
         document.getElementById('buyer-email').value   = s.buyerEmail  || '';
         document.getElementById('buyer-phone').value   = s.buyerPhone  || '';
@@ -760,6 +773,7 @@
       price:       document.getElementById('price-per-kg').value,
       currency:    document.getElementById('currency').value,
       gasUrl:      document.getElementById('gas-url').value,
+      emailApp:    document.getElementById('email-app').value,
       buyerName:   document.getElementById('buyer-name').value,
       buyerEmail:  document.getElementById('buyer-email').value,
       buyerPhone:  document.getElementById('buyer-phone').value,
@@ -989,11 +1003,22 @@
 
     // ── Email buyer ──
     if (buyerEmail) {
-      const subject = encodeURIComponent(`Fish Delivery Receipt – ${date}`);
-      const body    = encodeURIComponent(receiptText);
-      const mailto  = `mailto:${encodeURIComponent(buyerEmail)}?subject=${subject}&body=${body}`;
-      const link    = document.createElement('a');
-      link.href     = mailto;
+      const emailApp = document.getElementById('email-app').value;
+      const subject  = encodeURIComponent(`Fish Delivery Receipt – ${date}`);
+      const body     = encodeURIComponent(receiptText);
+      const to       = encodeURIComponent(buyerEmail);
+      const urls = {
+        mailto:  `mailto:${to}?subject=${subject}&body=${body}`,
+        gmail:   `https://mail.google.com/mail/?view=cm&to=${to}&su=${subject}&body=${body}`,
+        outlook: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}&body=${body}`,
+        yahoo:   `https://compose.mail.yahoo.com/?to=${to}&subject=${subject}&body=${body}`,
+        proton:  `https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${subject}&body=${body}`,
+        zoho:    `https://mail.zoho.com/zm/#compose;to=${to};subject=${subject};body=${body}`,
+      };
+      const link = document.createElement('a');
+      link.href   = urls[emailApp] || urls.mailto;
+      link.target = emailApp === 'mailto' ? '_self' : '_blank';
+      link.rel    = 'noopener noreferrer';
       link.click();
     }
 

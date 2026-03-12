@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0d6efd" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Fish Harvest Logger</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #0d6efd;
+      --green:  #198754;
+      --red:    #dc3545;
+      --orange: #fd7e14;
+      --bg:     #f0f4f8;
+      --card:   #ffffff;
+      --text:   #1a1a2e;
+      --muted:  #6c757d;
+      --border: #dee2e6;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(0,0,0,.10);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--blue);
+      color: #fff;
+      padding: 18px 16px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header svg { flex-shrink: 0; }
+    header h1 { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+    header p  { font-size: .78rem; opacity: .85; }
+
+    /* ── TAB BAR ── */
+    #tab-bar {
+      background: var(--card);
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 62px;
+      z-index: 9;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+    .tab {
+      flex: 1;
+      padding: 13px;
+      background: none;
+      border: none;
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: color .15s, border-color .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+
+    /* ── VIEWS ── */
+    .view { display: none; }
+    .view.active { display: contents; }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 540px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .card-title {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── DELIVERY META ── */
+    #delivery-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 3px; }
+    .meta-item label { font-size: .75rem; color: var(--muted); font-weight: 600; }
+    .meta-item input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: .95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+    }
+    .meta-item input:focus { border-color: var(--blue); }
+    .meta-item.full { grid-column: 1 / -1; }
+
+    /* ── ADD CATCH FORM ── */
+    .catch-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .catch-form .field { display: flex; flex-direction: column; gap: 4px; }
+    .catch-form label { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .catch-form input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .catch-form input:focus { border-color: var(--blue); }
+    .catch-form .field.full { grid-column: 1 / -1; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: scale(.97); filter: brightness(.92); }
+    .btn-primary  { background: var(--blue);   color: #fff; width: 100%; }
+    .btn-success  { background: var(--green);  color: #fff; width: 100%; }
+    .btn-danger   { background: var(--red);    color: #fff; width: 100%; }
+    .btn-outline  {
+      background: transparent;
+      color: var(--blue);
+      border: 1.5px solid var(--blue);
+      width: 100%;
+    }
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: .82rem;
+      border-radius: 7px;
+    }
+    .btn-icon-danger {
+      background: #fff0f0;
+      color: var(--red);
+      border: none;
+      border-radius: 7px;
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: .85rem;
+      transition: background .15s;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+    .btn-icon-danger:active { background: #ffd6d6; }
+
+    /* ── CATCH LIST ── */
+    #catch-list { display: flex; flex-direction: column; gap: 10px; }
+    .catch-item {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fafdff;
+    }
+    .catch-item .catch-num {
+      background: var(--blue);
+      color: #fff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .catch-item .catch-info { flex: 1; }
+    .catch-item .catch-weight { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+    .catch-item .catch-time   { font-size: .78rem; color: var(--muted); margin-top: 1px; }
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      font-size: .9rem;
+      padding: 24px 0;
+    }
+
+    /* ── SUMMARY ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .stat-box .stat-label { font-size: .72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+    .stat-box .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.1; }
+    .stat-box .stat-unit  { font-size: .75rem; color: var(--muted); }
+    .stat-box.highlight { background: #e8f5e9; }
+    .stat-box.highlight .stat-value { color: var(--green); }
+
+    .price-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .price-row .field { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .price-row label { font-size: .78rem; color: var(--muted); font-weight: 600; }
+    .price-row input {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .price-row input:focus { border-color: var(--green); }
+
+    .total-price-box {
+      background: linear-gradient(135deg, #1b5e20, #2e7d32);
+      color: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .total-price-box .label { font-size: .8rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+    .total-price-box .amount { font-size: 2.2rem; font-weight: 800; line-height: 1.15; }
+    .total-price-box.dim { background: linear-gradient(135deg, #78909c, #90a4ae); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1a1a2e;
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-size: .88rem;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,.3);
+      transition: transform .25s ease;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      display: flex; align-items: flex-end;
+      z-index: 50;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 24px 20px 36px;
+      width: 100%;
+      transform: translateY(100%);
+      transition: transform .25s ease;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .modal p  { font-size: .88rem; color: var(--muted); margin-bottom: 20px; }
+    .modal .actions { display: flex; gap: 10px; }
+
+    /* ── SECTION DIVIDER ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .badge {
+      background: var(--blue);
+      color: #fff;
+      border-radius: 50px;
+      padding: 2px 10px;
+      font-size: .75rem;
+      font-weight: 700;
+    }
+
+    /* ── RECORDS – FILTER ── */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .filter-grid .field { display: flex; flex-direction: column; gap: 4px; }
+    .filter-grid label  { font-size: .75rem; color: var(--muted); font-weight: 600; }
+    .filter-grid input  {
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: .9rem;
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      -webkit-appearance: none;
+    }
+    .filter-grid input:focus { border-color: var(--blue); }
+    .sort-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sort-row label { font-size: .78rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
+    .sort-row select {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: .88rem;
+      color: var(--text);
+      background: var(--card);
+      outline: none;
+    }
+    .sort-row select:focus { border-color: var(--blue); }
+
+    /* ── RECORDS – TOTALS ── */
+    #rec-totals { margin-bottom: 0; }
+    #rec-totals .summary-grid { margin-bottom: 0; }
+
+    /* ── RECORDS – CARDS ── */
+    .rec-card {
+      padding: 14px 16px;
+    }
+    .rec-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .rec-date {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .rec-meta {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .rec-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .rec-pill {
+      background: var(--bg);
+      border-radius: 50px;
+      padding: 4px 12px;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .rec-pill.green {
+      background: #e8f5e9;
+      color: var(--green);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
+    <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="rgba(255,255,255,.7)"/>
+    <circle cx="9" cy="14" r="1.5" fill="white"/>
+    <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <div>
+    <h1>Fish Harvest Logger</h1>
+    <p id="header-sub">New delivery</p>
+  </div>
+</header>
+
+<nav id="tab-bar">
+  <button class="tab active" onclick="switchTab('logger')">Logger</button>
+  <button class="tab" onclick="switchTab('records')">View History</button>
+</nav>
+
+<main>
+
+  <!-- ══════════════ LOGGER VIEW ══════════════ -->
+  <div id="view-logger" class="view active">
+
+    <!-- SETUP -->
+    <div class="card" id="setup-card">
+      <div class="card-title">Setup</div>
+      <div class="meta-item" style="margin-bottom:10px;">
+        <label>Google Apps Script URL</label>
+        <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/…/exec"
+               style="font-size:.85rem;" oninput="saveSetup()" />
+      </div>
+      <p style="font-size:.75rem;color:var(--muted);margin:0;">
+        Paste your Web App URL here. Data will be sent to your Google Sheet when you finalise a delivery.
+      </p>
+    </div>
+
+    <!-- DELIVERY INFO -->
+    <div class="card">
+      <div class="card-title">Delivery Info</div>
+      <div id="delivery-meta">
+        <div class="meta-item">
+          <label>Vessel / Pond (optional)</label>
+          <input type="text" id="vessel" placeholder="e.g. Sea Star or Pond A" />
+        </div>
+        <div class="meta-item">
+          <label>Date</label>
+          <input type="date" id="delivery-date" />
+        </div>
+        <div class="meta-item full">
+          <label>Species</label>
+          <input type="text" id="species" placeholder="e.g. Atlantic Cod" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD CATCH -->
+    <div class="card">
+      <div class="card-title">Add Catch</div>
+      <div class="catch-form">
+        <div class="field">
+          <label>Time</label>
+          <input type="time" id="catch-time" />
+        </div>
+        <div class="field">
+          <label>Weight (kg)</label>
+          <input type="number" id="catch-weight" placeholder="0.0" min="0" step="0.1" inputmode="decimal" />
+        </div>
+        <div class="field full">
+          <label>Note (optional)</label>
+          <input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" />
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="addCatch()">+ Record Catch</button>
+      </div>
+    </div>
+
+    <!-- CATCH LIST -->
+    <div class="card">
+      <div class="section-head">
+        <div class="card-title" style="margin:0">Catches</div>
+        <span class="badge" id="catch-count">0</span>
+      </div>
+      <div id="catch-list">
+        <div class="empty-state">No catches recorded yet.</div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="card">
+      <div class="card-title">Summary</div>
+
+      <div class="summary-grid">
+        <div class="stat-box">
+          <span class="stat-label">Catches</span>
+          <span class="stat-value" id="sum-count">0</span>
+          <span class="stat-unit">hauls</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Total Weight</span>
+          <span class="stat-value" id="sum-weight">0.0</span>
+          <span class="stat-unit">kg</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Avg per Catch</span>
+          <span class="stat-value" id="sum-avg">—</span>
+          <span class="stat-unit">kg</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Duration</span>
+          <span class="stat-value" id="sum-dur">—</span>
+          <span class="stat-unit">first → last</span>
+        </div>
+      </div>
+
+      <div class="price-row">
+        <div class="field">
+          <label>Currency</label>
+          <input type="text" id="currency" value="$" style="max-width:70px;text-align:center;font-size:1.3rem;" maxlength="5" />
+        </div>
+        <div class="field" style="flex:3">
+          <label>Price per kg</label>
+          <input type="number" id="price-per-kg" placeholder="0.00" min="0" step="0.01"
+                 inputmode="decimal" oninput="calcTotal()" />
+        </div>
+      </div>
+
+      <div class="total-price-box dim" id="total-box">
+        <div class="label">Total Price</div>
+        <div class="amount" id="total-price">—</div>
+      </div>
+
+      <button class="btn btn-success" onclick="openFinish()">Finalise Delivery</button>
+      <div style="margin-top:10px;">
+        <button class="btn btn-outline" onclick="openReset()">Reset / New Delivery</button>
+      </div>
+    </div>
+
+  </div><!-- /view-logger -->
+
+  <!-- ══════════════ RECORDS VIEW ══════════════ -->
+  <div id="view-records" class="view">
+
+    <!-- FILTER & SORT -->
+    <div class="card">
+      <div class="card-title">Filter &amp; Sort</div>
+      <div class="filter-grid">
+        <div class="field">
+          <label>From</label>
+          <input type="date" id="f-from" oninput="renderRecords()" />
+        </div>
+        <div class="field">
+          <label>To</label>
+          <input type="date" id="f-to" oninput="renderRecords()" />
+        </div>
+        <div class="field">
+          <label>Vessel</label>
+          <input type="text" id="f-vessel" placeholder="Any" oninput="renderRecords()" />
+        </div>
+        <div class="field">
+          <label>Species</label>
+          <input type="text" id="f-species" placeholder="Any" oninput="renderRecords()" />
+        </div>
+      </div>
+      <div class="sort-row">
+        <label>Sort by</label>
+        <select id="f-sort" onchange="renderRecords()">
+          <option value="date-desc">Date (newest first)</option>
+          <option value="date-asc">Date (oldest first)</option>
+          <option value="weight-desc">Weight (high → low)</option>
+          <option value="weight-asc">Weight (low → high)</option>
+          <option value="price-desc">Price (high → low)</option>
+          <option value="price-asc">Price (low → high)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TOTALS -->
+    <div class="card" id="rec-totals" style="display:none;">
+      <div class="card-title" style="margin-bottom:12px;">Filtered Totals</div>
+      <div class="summary-grid" style="margin-bottom:0;">
+        <div class="stat-box">
+          <span class="stat-label">Deliveries</span>
+          <span class="stat-value" id="rt-count">0</span>
+          <span class="stat-unit">records</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Total Weight</span>
+          <span class="stat-value" id="rt-weight">0.0</span>
+          <span class="stat-unit">kg</span>
+        </div>
+        <div class="stat-box highlight">
+          <span class="stat-label">Total Value</span>
+          <span class="stat-value" id="rt-price">—</span>
+          <span class="stat-unit" id="rt-price-unit"></span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Avg Weight</span>
+          <span class="stat-value" id="rt-avg">—</span>
+          <span class="stat-unit">kg / delivery</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORD LIST -->
+    <div id="rec-list"></div>
+
+  </div><!-- /view-records -->
+
+</main>
+
+<!-- FINALISE MODAL -->
+<div class="modal-overlay" id="finish-modal">
+  <div class="modal">
+    <h2>Finalise Delivery</h2>
+    <p id="finish-summary-text"></p>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('finish-modal')">Back</button>
+      <button class="btn btn-success" onclick="finalise()">Confirm &amp; Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET MODAL -->
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal">
+    <h2>Start New Delivery?</h2>
+    <p>All current catch data will be cleared. This cannot be undone.</p>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('reset-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="resetAll()">Clear &amp; Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CATCH MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <h2>Remove Catch?</h2>
+    <p id="delete-detail"></p>
+    <div class="actions">
+      <button class="btn btn-outline" onclick="closeModal('delete-modal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Remove</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="toast"></div>
+
+<script>
+  // ── STATE ──────────────────────────────────────────────────────────────────
+  let catches = [];
+  let pendingDeleteIdx = null;
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  (function init() {
+    document.getElementById('delivery-date').value = todayISO();
+    document.getElementById('catch-time').value = nowTime();
+    const saved = localStorage.getItem('fish_harvest_state');
+    if (saved) {
+      try {
+        const s = JSON.parse(saved);
+        catches = s.catches || [];
+        document.getElementById('vessel').value        = s.vessel   || '';
+        document.getElementById('species').value       = s.species  || '';
+        document.getElementById('delivery-date').value = s.date     || todayISO();
+        document.getElementById('price-per-kg').value  = s.price    || '';
+        document.getElementById('currency').value      = s.currency || '$';
+        document.getElementById('gas-url').value       = s.gasUrl   || '';
+        render();
+        calcTotal();
+      } catch(e) { /* ignore */ }
+    }
+  })();
+
+  // ── TAB SWITCHING ──────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'logger') || (i === 1 && tab === 'records'));
+    });
+    document.getElementById('view-logger').classList.toggle('active', tab === 'logger');
+    document.getElementById('view-records').classList.toggle('active', tab === 'records');
+    if (tab === 'records') renderRecords();
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────────────────────
+  function todayISO() {
+    return new Date().toISOString().slice(0, 10);
+  }
+  function nowTime() {
+    const n = new Date();
+    return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+  }
+  function fmt(n, dec=1) {
+    return Number(n).toFixed(dec);
+  }
+  function save() {
+    localStorage.setItem('fish_harvest_state', JSON.stringify({
+      catches,
+      vessel:   document.getElementById('vessel').value,
+      species:  document.getElementById('species').value,
+      date:     document.getElementById('delivery-date').value,
+      price:    document.getElementById('price-per-kg').value,
+      currency: document.getElementById('currency').value,
+      gasUrl:   document.getElementById('gas-url').value,
+    }));
+  }
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2200);
+  }
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── RECORDS STORAGE ───────────────────────────────────────────────────────
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem('fish_harvest_records') || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveRecords(recs) {
+    localStorage.setItem('fish_harvest_records', JSON.stringify(recs));
+  }
+  function pushRecord(rec) {
+    const recs = loadRecords();
+    recs.push(rec);
+    saveRecords(recs);
+  }
+
+  // ── SETUP ─────────────────────────────────────────────────────────────────
+  function saveSetup() { save(); }
+
+  // ── ADD CATCH ─────────────────────────────────────────────────────────────
+  function addCatch() {
+    const timeEl   = document.getElementById('catch-time');
+    const weightEl = document.getElementById('catch-weight');
+    const noteEl   = document.getElementById('catch-note');
+
+    const time   = timeEl.value.trim();
+    const weight = parseFloat(weightEl.value);
+    const note   = noteEl.value.trim();
+
+    if (!time)                { toast('Please enter a time.'); timeEl.focus(); return; }
+    if (isNaN(weight) || weight <= 0) { toast('Please enter a valid weight.'); weightEl.focus(); return; }
+
+    catches.push({ time, weight, note });
+    save();
+    render();
+    calcTotal();
+
+    weightEl.value = '';
+    noteEl.value   = '';
+    document.getElementById('catch-time').value = nowTime();
+    weightEl.focus();
+    toast(`Catch #${catches.length} recorded — ${fmt(weight)} kg`);
+  }
+
+  // ── RENDER CATCH LIST + SUMMARY ───────────────────────────────────────────
+  function render() {
+    const list  = document.getElementById('catch-list');
+    const count = catches.length;
+
+    document.getElementById('catch-count').textContent = count;
+    document.getElementById('sum-count').textContent   = count;
+
+    if (count === 0) {
+      list.innerHTML = '<div class="empty-state">No catches recorded yet.</div>';
+      document.getElementById('sum-weight').textContent = '0.0';
+      document.getElementById('sum-avg').textContent    = '—';
+      document.getElementById('sum-dur').textContent    = '—';
+      return;
+    }
+
+    list.innerHTML = catches.map((c, i) => `
+      <div class="catch-item">
+        <div class="catch-num">${i + 1}</div>
+        <div class="catch-info">
+          <div class="catch-weight">${fmt(c.weight)} kg</div>
+          <div class="catch-time">${c.time}${c.note ? ' · ' + escHtml(c.note) : ''}</div>
+        </div>
+        <button class="btn-icon-danger" onclick="askDelete(${i})">✕</button>
+      </div>
+    `).join('');
+
+    const total = catches.reduce((s, c) => s + c.weight, 0);
+    const avg   = total / count;
+
+    document.getElementById('sum-weight').textContent = fmt(total);
+    document.getElementById('sum-avg').textContent    = fmt(avg);
+
+    const times = catches.map(c => c.time).sort();
+    document.getElementById('sum-dur').textContent =
+      times.length > 1 ? `${times[0]} – ${times[times.length-1]}` : times[0];
+  }
+
+  // ── PRICE CALCULATION ─────────────────────────────────────────────────────
+  function calcTotal() {
+    const box   = document.getElementById('total-box');
+    const out   = document.getElementById('total-price');
+    const cur   = document.getElementById('currency').value || '$';
+    const price = parseFloat(document.getElementById('price-per-kg').value);
+    const total = catches.reduce((s, c) => s + c.weight, 0);
+
+    if (!isNaN(price) && price > 0 && total > 0) {
+      const amount = (total * price).toFixed(2);
+      out.textContent = `${cur}${Number(amount).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+      box.classList.remove('dim');
+    } else {
+      out.textContent = '—';
+      box.classList.add('dim');
+    }
+    save();
+  }
+
+  // ── DELETE CATCH ──────────────────────────────────────────────────────────
+  function askDelete(idx) {
+    pendingDeleteIdx = idx;
+    const c = catches[idx];
+    document.getElementById('delete-detail').textContent =
+      `Catch #${idx+1}: ${fmt(c.weight)} kg at ${c.time}${c.note ? ' ('+c.note+')' : ''}`;
+    openModal('delete-modal');
+  }
+  function confirmDelete() {
+    if (pendingDeleteIdx !== null) {
+      catches.splice(pendingDeleteIdx, 1);
+      pendingDeleteIdx = null;
+      save();
+      render();
+      calcTotal();
+      toast('Catch removed.');
+    }
+    closeModal('delete-modal');
+  }
+
+  // ── FINALISE ──────────────────────────────────────────────────────────────
+  function openFinish() {
+    if (catches.length === 0) { toast('No catches to finalise.'); return; }
+    const vessel   = document.getElementById('vessel').value  || '(unnamed)';
+    const species  = document.getElementById('species').value || '(unknown)';
+    const date     = document.getElementById('delivery-date').value;
+    const total    = catches.reduce((s, c) => s + c.weight, 0);
+    const price    = parseFloat(document.getElementById('price-per-kg').value);
+    const cur      = document.getElementById('currency').value || '$';
+    const hasPrice = !isNaN(price) && price > 0;
+
+    let txt = `Vessel: ${vessel}\nSpecies: ${species}\nDate: ${date}\n`
+            + `Catches: ${catches.length}  |  Total: ${fmt(total)} kg`;
+    if (hasPrice) txt += `\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
+
+    document.getElementById('finish-summary-text').textContent = txt;
+    openModal('finish-modal');
+  }
+
+  function finalise() {
+    const vessel   = document.getElementById('vessel').value  || '(unnamed)';
+    const species  = document.getElementById('species').value || '(unknown)';
+    const date     = document.getElementById('delivery-date').value;
+    const cur      = document.getElementById('currency').value || '$';
+    const price    = parseFloat(document.getElementById('price-per-kg').value);
+    const total    = catches.reduce((s, c) => s + c.weight, 0);
+    const hasPrice = !isNaN(price) && price > 0;
+
+    // ── Save to records ──
+    pushRecord({
+      id:          Date.now(),
+      date,
+      vessel,
+      species,
+      catches:     catches.slice(),
+      totalWeight: total,
+      pricePerKg:  hasPrice ? price : null,
+      currency:    cur,
+      totalPrice:  hasPrice ? parseFloat((total * price).toFixed(2)) : null,
+      savedAt:     new Date().toISOString(),
+    });
+
+    // ── Download receipt ──
+    let lines = [
+      '=== FISH HARVEST DELIVERY RECORD ===',
+      `Date:      ${date}`,
+      `Vessel:    ${vessel}`,
+      `Species:   ${species}`,
+      '',
+      '#   Time    Weight (kg)  Note',
+      '--- ------  -----------  ----',
+      ...catches.map((c, i) =>
+        `${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`
+      ),
+      '',
+      `Total catches : ${catches.length}`,
+      `Total weight  : ${fmt(total,2)} kg`,
+    ];
+    if (hasPrice) {
+      lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);
+      lines.push(`TOTAL PRICE   : ${cur}${(total*price).toFixed(2)}`);
+    }
+    lines.push('');
+    lines.push(`Generated: ${new Date().toLocaleString()}`);
+
+    const blob = new Blob([lines.join('\n')], {type: 'text/plain'});
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = `harvest_${date}_${vessel.replace(/\s+/g,'_')}.txt`;
+    a.click();
+
+    closeModal('finish-modal');
+    toast('Delivery saved & receipt downloaded!');
+
+    // ── Send to Google Sheet ──
+    const gasUrl = document.getElementById('gas-url').value.trim();
+    if (gasUrl) {
+      const payload = { vessel, species, date, catches, totalWeight: total,
+                        pricePerKg: hasPrice ? price : null, currency: cur,
+                        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null };
+      fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) })
+        .then(() => toast('Data sent to Google Sheet!'))
+        .catch(() => toast('Sheet sync failed — check your URL.'));
+    }
+  }
+
+  // ── RESET ─────────────────────────────────────────────────────────────────
+  function openReset() { openModal('reset-modal'); }
+  function resetAll() {
+    catches = [];
+    document.getElementById('vessel').value        = '';
+    document.getElementById('species').value       = '';
+    document.getElementById('price-per-kg').value  = '';
+    document.getElementById('delivery-date').value = todayISO();
+    document.getElementById('catch-time').value    = nowTime();
+    document.getElementById('catch-weight').value  = '';
+    document.getElementById('catch-note').value    = '';
+    localStorage.removeItem('fish_harvest_state');
+    render();
+    calcTotal();
+    closeModal('reset-modal');
+    toast('Reset. Ready for new delivery.');
+  }
+
+  // ── RECORDS VIEW ───────────────────────────────────────────────────────────
+  function renderRecords() {
+    let recs = loadRecords();
+
+    // ── Filter ──
+    const from    = document.getElementById('f-from').value;
+    const to      = document.getElementById('f-to').value;
+    const vessel  = document.getElementById('f-vessel').value.trim().toLowerCase();
+    const species = document.getElementById('f-species').value.trim().toLowerCase();
+
+    if (from)    recs = recs.filter(r => r.date >= from);
+    if (to)      recs = recs.filter(r => r.date <= to);
+    if (vessel)  recs = recs.filter(r => r.vessel.toLowerCase().includes(vessel));
+    if (species) recs = recs.filter(r => r.species.toLowerCase().includes(species));
+
+    // ── Sort ──
+    const sort = document.getElementById('f-sort').value;
+    recs.sort((a, b) => {
+      switch (sort) {
+        case 'date-asc':     return a.date.localeCompare(b.date);
+        case 'date-desc':    return b.date.localeCompare(a.date);
+        case 'weight-asc':   return a.totalWeight - b.totalWeight;
+        case 'weight-desc':  return b.totalWeight - a.totalWeight;
+        case 'price-asc':    return (a.totalPrice ?? -Infinity) - (b.totalPrice ?? -Infinity);
+        case 'price-desc':   return (b.totalPrice ?? -Infinity) - (a.totalPrice ?? -Infinity);
+        default:             return 0;
+      }
+    });
+
+    // ── Totals ──
+    const totalsEl = document.getElementById('rec-totals');
+    if (recs.length > 0) {
+      totalsEl.style.display = '';
+      const totalW = recs.reduce((s, r) => s + r.totalWeight, 0);
+      const priced = recs.filter(r => r.totalPrice !== null);
+      document.getElementById('rt-count').textContent  = recs.length;
+      document.getElementById('rt-weight').textContent = fmt(totalW);
+      document.getElementById('rt-avg').textContent    = fmt(totalW / recs.length);
+      if (priced.length > 0) {
+        // group by currency for display; if mixed, show sum of first currency only with note
+        const cur = priced[0].currency;
+        const sameCur = priced.filter(r => r.currency === cur);
+        const totalP  = sameCur.reduce((s, r) => s + r.totalPrice, 0);
+        document.getElementById('rt-price').textContent      = `${cur}${totalP.toLocaleString(undefined,{minimumFractionDigits:2})}`;
+        document.getElementById('rt-price-unit').textContent = sameCur.length < priced.length ? '(same currency only)' : '';
+      } else {
+        document.getElementById('rt-price').textContent      = '—';
+        document.getElementById('rt-price-unit').textContent = '';
+      }
+    } else {
+      totalsEl.style.display = 'none';
+    }
+
+    // ── List ──
+    const listEl = document.getElementById('rec-list');
+    if (recs.length === 0) {
+      listEl.innerHTML = '<div class="empty-state" style="padding:32px 0;">No records found.</div>';
+      return;
+    }
+
+    listEl.innerHTML = recs.map(r => {
+      const priceTag = r.totalPrice !== null
+        ? `<span class="rec-pill green">${r.currency}${r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</span>`
+        : '';
+      return `
+        <div class="card rec-card">
+          <div class="rec-date">${r.date}</div>
+          <div class="rec-meta" style="margin-bottom:10px;">${escHtml(r.vessel)} · ${escHtml(r.species)}</div>
+          <div class="rec-pills">
+            <span class="rec-pill">${r.catches.length} catches</span>
+            <span class="rec-pill">${fmt(r.totalWeight)} kg</span>
+            ${r.pricePerKg !== null ? `<span class="rec-pill">${r.currency}${fmt(r.pricePerKg,2)}/kg</span>` : ''}
+            ${priceTag}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── MODAL HELPERS ──────────────────────────────────────────────────────────
+  function openModal(id)  { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target === el) el.classList.remove('open');
+    });
+  });
+
+  document.getElementById('catch-weight').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addCatch();
+  });
+
+  document.getElementById('currency').addEventListener('input', calcTotal);
+</script>
+</body>
+</html>

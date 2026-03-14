@@ -86,6 +86,7 @@
       margin-bottom: 10px;
       min-height: 18px;
     }
+    .loading-msg { text-align: center; font-size: .88rem; color: var(--muted); padding: 12px 0; }
 
     /* ── HEADER ── */
     header {
@@ -251,11 +252,6 @@
       border: 1.5px solid var(--blue);
       width: 100%;
     }
-    .btn-sm {
-      padding: 7px 12px;
-      font-size: .82rem;
-      border-radius: 7px;
-    }
     .btn-icon-danger {
       background: #fff0f0;
       color: var(--red);
@@ -394,7 +390,7 @@
     }
     .modal-overlay.open .modal { transform: translateY(0); }
     .modal h2 { font-size: 1.1rem; margin-bottom: 6px; }
-    .modal p  { font-size: .88rem; color: var(--muted); margin-bottom: 20px; }
+    .modal p  { font-size: .88rem; color: var(--muted); margin-bottom: 20px; white-space: pre-wrap; }
     .modal .actions { display: flex; gap: 10px; }
 
     /* ── SECTION DIVIDER ── */
@@ -514,6 +510,9 @@
     }
     .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
     .checkbox-row label { font-size: .9rem; color: var(--text); cursor: pointer; }
+
+    .sync-badge { font-size: .7rem; padding: 2px 8px; border-radius: 50px; font-weight: 700; display: inline-block; }
+    .sync-badge.cloud { background: #e8f5e9; color: #1b5e20; }
   </style>
 </head>
 <body>
@@ -537,7 +536,7 @@
     </div>
 
     <!-- LOGIN FORM -->
-    <div id="login-form">
+    <div id="login-form" style="display:none;">
       <div class="login-field">
         <label>Username</label>
         <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username"
@@ -571,8 +570,11 @@
                onkeydown="if(event.key==='Enter')doSetup()" />
       </div>
       <div class="login-error" id="setup-error"></div>
-      <button class="btn btn-primary" onclick="doSetup()">Create Admin Account</button>
+      <button class="btn btn-primary" id="setup-btn" onclick="doSetup()">Create Admin Account</button>
     </div>
+
+    <!-- LOADING -->
+    <div id="auth-loading" class="loading-msg">Loading account data...</div>
   </div>
 </div>
 
@@ -837,7 +839,10 @@
 
     <!-- USER LIST -->
     <div class="card">
-      <div class="card-title">All Users</div>
+      <div class="section-head">
+        <div class="card-title" style="margin:0">All Users</div>
+        <span class="sync-badge cloud">☁ Cloud sync</span>
+      </div>
       <div id="user-list">
         <div class="empty-state">No users found.</div>
       </div>
@@ -904,29 +909,52 @@
   let pendingDeleteUser = null;
   let currentUser      = null;
 
-  // ── USER STORAGE ──────────────────────────────────────────────────────────
-  function loadUsers() {
-    try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); }
-    catch(e) { return []; }
+  // ── CLOUD STORAGE (shared across all devices) ─────────────────────────────
+  // Users stored as shared=true so all devices see the same accounts.
+  // Delivery state and records stored as shared=false (personal per user).
+  const USERS_KEY = 'fish_users_v2';
+
+  async function cloudGet(key, shared = false) {
+    try {
+      const r = await window.storage.get(key, shared);
+      return r ? JSON.parse(r.value) : null;
+    } catch(e) { return null; }
   }
-  function saveUsers(users) {
-    localStorage.setItem('fish_users', JSON.stringify(users));
+  async function cloudSet(key, val, shared = false) {
+    try { await window.storage.set(key, JSON.stringify(val), shared); } catch(e) {}
+  }
+  async function cloudDelete(key, shared = false) {
+    try { await window.storage.delete(key, shared); } catch(e) {}
   }
 
-  // ── PER-USER STORAGE KEYS ─────────────────────────────────────────────────
+  async function loadUsers() {
+    const users = await cloudGet(USERS_KEY, true);
+    return users || [];
+  }
+  async function saveUsers(users) {
+    await cloudSet(USERS_KEY, users, true);
+  }
+
   function stateKey()   { return `fish_state_${currentUser.username}`; }
   function recordsKey() { return `fish_records_${currentUser.username}`; }
 
   // ── AUTH INIT ─────────────────────────────────────────────────────────────
-  (function initAuth() {
-    const users = loadUsers();
+  (async function initAuth() {
+    // Show loading spinner, hide forms
+    document.getElementById('auth-loading').style.display = '';
+    document.getElementById('login-form').style.display   = 'none';
+    document.getElementById('setup-form').style.display   = 'none';
+
+    const users = await loadUsers();
+
+    document.getElementById('auth-loading').style.display = 'none';
+
     if (users.length === 0) {
-      // First run: show admin setup form
       document.getElementById('login-subtitle').textContent = 'First-time setup';
-      document.getElementById('login-form').style.display  = 'none';
-      document.getElementById('setup-form').style.display  = '';
+      document.getElementById('setup-form').style.display   = '';
       return;
     }
+
     // Restore session if still valid
     try {
       const sess = JSON.parse(sessionStorage.getItem('fish_session') || 'null');
@@ -935,38 +963,46 @@
         if (found) { currentUser = found; showApp(); return; }
       }
     } catch(e) {}
-    // Show login
-    document.getElementById('login-screen').classList.remove('hidden');
+
+    document.getElementById('login-form').style.display = '';
   })();
 
   // ── FIRST-RUN SETUP ───────────────────────────────────────────────────────
-  function doSetup() {
+  async function doSetup() {
     const username  = document.getElementById('setup-username').value.trim();
     const password  = document.getElementById('setup-password').value;
     const password2 = document.getElementById('setup-password2').value;
     const errEl     = document.getElementById('setup-error');
+    const btn       = document.getElementById('setup-btn');
 
-    if (!username)          { showFormError(errEl, 'Username is required.'); return; }
-    if (password.length < 4){ showFormError(errEl, 'Password must be at least 4 characters.'); return; }
+    if (!username)             { showFormError(errEl, 'Username is required.'); return; }
+    if (password.length < 4)   { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
     if (password !== password2){ showFormError(errEl, 'Passwords do not match.'); return; }
 
+    btn.textContent = 'Creating...'; btn.disabled = true;
     const admin = { username, password, isAdmin: true, createdAt: new Date().toISOString() };
-    saveUsers([admin]);
+    await saveUsers([admin]);
     currentUser = admin;
     sessionStorage.setItem('fish_session', JSON.stringify(admin));
     showApp();
   }
 
   // ── LOGIN ─────────────────────────────────────────────────────────────────
-  function doLogin() {
+  async function doLogin() {
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
     const errEl    = document.getElementById('login-error');
 
     if (!username || !password) { showFormError(errEl, 'Please enter username and password.'); return; }
 
-    const users = loadUsers();
+    const loginBtn = document.querySelector('#login-form .btn');
+    loginBtn.textContent = 'Signing in...'; loginBtn.disabled = true;
+
+    const users = await loadUsers();
     const found = users.find(u => u.username === username && u.password === password);
+
+    loginBtn.textContent = 'Sign In'; loginBtn.disabled = false;
+
     if (!found) { showFormError(errEl, 'Invalid username or password.'); return; }
 
     currentUser = found;
@@ -982,6 +1018,8 @@
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
+    document.getElementById('login-form').style.display = '';
+    document.getElementById('setup-form').style.display = 'none';
     document.getElementById('login-screen').classList.remove('hidden');
     switchTab('logger');
   }
@@ -995,11 +1033,10 @@
   }
 
   // ── LOAD USER DATA ────────────────────────────────────────────────────────
-  function initUserData() {
+  async function initUserData() {
     catches = [];
     document.getElementById('delivery-date').value = todayISO();
     document.getElementById('catch-time').value    = nowTime();
-    // Clear fields
     ['vessel','species','price-per-kg','catch-weight','catch-note',
      'buyer-name','buyer-email','buyer-phone'].forEach(id => {
       document.getElementById(id).value = '';
@@ -1008,21 +1045,20 @@
     document.getElementById('gas-url').value   = '';
     document.getElementById('email-app').value = 'mailto';
 
-    const saved = localStorage.getItem(stateKey());
+    const saved = await cloudGet(stateKey());
     if (saved) {
       try {
-        const s = JSON.parse(saved);
-        catches = s.catches || [];
-        document.getElementById('vessel').value        = s.vessel      || '';
-        document.getElementById('species').value       = s.species     || '';
-        document.getElementById('delivery-date').value = s.date        || todayISO();
-        document.getElementById('price-per-kg').value  = s.price       || '';
-        document.getElementById('currency').value      = s.currency    || '$';
-        document.getElementById('gas-url').value       = s.gasUrl      || '';
-        document.getElementById('email-app').value     = s.emailApp    || 'mailto';
-        document.getElementById('buyer-name').value    = s.buyerName   || '';
-        document.getElementById('buyer-email').value   = s.buyerEmail  || '';
-        document.getElementById('buyer-phone').value   = s.buyerPhone  || '';
+        catches = saved.catches || [];
+        document.getElementById('vessel').value        = saved.vessel      || '';
+        document.getElementById('species').value       = saved.species     || '';
+        document.getElementById('delivery-date').value = saved.date        || todayISO();
+        document.getElementById('price-per-kg').value  = saved.price       || '';
+        document.getElementById('currency').value      = saved.currency    || '$';
+        document.getElementById('gas-url').value       = saved.gasUrl      || '';
+        document.getElementById('email-app').value     = saved.emailApp    || 'mailto';
+        document.getElementById('buyer-name').value    = saved.buyerName   || '';
+        document.getElementById('buyer-email').value   = saved.buyerEmail  || '';
+        document.getElementById('buyer-phone').value   = saved.buyerPhone  || '';
       } catch(e) {}
     }
     render();
@@ -1063,9 +1099,9 @@
   }
 
   // ── SAVE STATE ────────────────────────────────────────────────────────────
-  function save() {
+  async function save() {
     if (!currentUser) return;
-    localStorage.setItem(stateKey(), JSON.stringify({
+    await cloudSet(stateKey(), {
       catches,
       vessel:     document.getElementById('vessel').value,
       species:    document.getElementById('species').value,
@@ -1077,17 +1113,20 @@
       buyerName:  document.getElementById('buyer-name').value,
       buyerEmail: document.getElementById('buyer-email').value,
       buyerPhone: document.getElementById('buyer-phone').value,
-    }));
+    });
   }
   function saveSetup() { save(); }
 
   // ── RECORDS STORAGE ───────────────────────────────────────────────────────
-  function loadRecords() {
-    try { return JSON.parse(localStorage.getItem(recordsKey()) || '[]'); }
-    catch(e) { return []; }
+  async function loadRecords() {
+    return (await cloudGet(recordsKey())) || [];
   }
-  function saveRecords(recs) { localStorage.setItem(recordsKey(), JSON.stringify(recs)); }
-  function pushRecord(rec)   { const r = loadRecords(); r.push(rec); saveRecords(r); }
+  async function saveRecords(recs) { await cloudSet(recordsKey(), recs); }
+  async function pushRecord(rec) {
+    const r = await loadRecords();
+    r.push(rec);
+    await saveRecords(r);
+  }
 
   // ── ADD CATCH ─────────────────────────────────────────────────────────────
   function addCatch() {
@@ -1204,19 +1243,20 @@
     openModal('finish-modal');
   }
 
-  function finalise() {
+  async function finalise() {
     const vessel     = document.getElementById('vessel').value     || '(unnamed)';
     const species    = document.getElementById('species').value    || '(unknown)';
     const date       = document.getElementById('delivery-date').value;
     const cur        = document.getElementById('currency').value || '$';
     const price      = parseFloat(document.getElementById('price-per-kg').value);
     const total      = catches.reduce((s, c) => s + c.weight, 0);
+    const catchCount = catches.length;   // snapshot before any async ops
     const hasPrice   = !isNaN(price) && price > 0;
     const buyerName  = document.getElementById('buyer-name').value.trim();
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();
 
-    pushRecord({
+    await pushRecord({
       id:          Date.now(),
       date, vessel, species,
       catches:     catches.slice(),
@@ -1228,7 +1268,9 @@
       savedAt:     new Date().toISOString(),
     });
 
-    // Build receipt
+    // ── Build receipt text ──────────────────────────────────────────────────
+    // FIX: use local 'catchCount' variable (not catches.length) to ensure the
+    // count is always a valid number in the receipt, even after async resets.
     let lines = [
       '=== FISH HARVEST DELIVERY RECORD ===',
       `Date:      ${date}`,
@@ -1238,11 +1280,16 @@
     if (buyerName)  lines.push(`Buyer:     ${buyerName}`);
     if (buyerEmail) lines.push(`Email:     ${buyerEmail}`);
     if (buyerPhone) lines.push(`Phone:     ${buyerPhone}`);
-    lines.push('', '#   Time    Weight (kg)  Note', '--- ------  -----------  ----',
+    lines.push(
+      '',
+      '#   Time    Weight (kg)  Note',
+      '--- ------  -----------  ----',
       ...catches.map((c, i) =>
         `${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`
       ),
-      '', `Total catches : ${catches.length}`, `Total weight  : ${fmt(total,2)} kg`
+      '',
+      `Total catches : ${catchCount}`,
+      `Total weight  : ${fmt(total,2)} kg`
     );
     if (hasPrice) {
       lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);
@@ -1285,10 +1332,15 @@
     // Google Sheet
     const gasUrl = document.getElementById('gas-url').value.trim();
     if (gasUrl) {
-      const payload = { vessel, species, date, catches, totalWeight: total,
-                        pricePerKg: hasPrice ? price : null, currency: cur,
-                        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null,
-                        buyerName, buyerEmail, buyerPhone };
+      const payload = {
+        vessel, species, date,
+        catches,
+        totalWeight: total,
+        pricePerKg:  hasPrice ? price : null,
+        currency:    cur,
+        totalPrice:  hasPrice ? parseFloat((total*price).toFixed(2)) : null,
+        buyerName, buyerEmail, buyerPhone
+      };
       fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) })
         .then(() => toast('Data sent to Google Sheet!'))
         .catch(() => toast('Sheet sync failed — check your URL.'));
@@ -1297,7 +1349,7 @@
 
   // ── RESET ─────────────────────────────────────────────────────────────────
   function openReset() { openModal('reset-modal'); }
-  function resetAll() {
+  async function resetAll() {
     catches = [];
     ['vessel','species','price-per-kg','delivery-date','catch-time',
      'catch-weight','catch-note','buyer-name','buyer-email','buyer-phone']
@@ -1305,15 +1357,15 @@
         const el = document.getElementById(id);
         el.value = id === 'delivery-date' ? todayISO() : id === 'catch-time' ? nowTime() : '';
       });
-    localStorage.removeItem(stateKey());
+    await cloudDelete(stateKey());
     render(); calcTotal();
     closeModal('reset-modal');
     toast('Reset. Ready for new delivery.');
   }
 
   // ── RECORDS VIEW ──────────────────────────────────────────────────────────
-  function renderRecords() {
-    let recs = loadRecords();
+  async function renderRecords() {
+    let recs = await loadRecords();
 
     const from    = document.getElementById('f-from').value;
     const to      = document.getElementById('f-to').value;
@@ -1367,17 +1419,18 @@
     }
 
     listEl.innerHTML = recs.map(r => {
-      const priceTag  = r.totalPrice !== null
+      const catchCount = Array.isArray(r.catches) ? r.catches.length : 0;
+      const priceTag   = r.totalPrice !== null
         ? `<span class="rec-pill green">${r.currency}${r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</span>`
         : '';
-      const buyerMeta = [r.buyerName, r.buyerEmail, r.buyerPhone].filter(Boolean).join(' · ');
+      const buyerMeta  = [r.buyerName, r.buyerEmail, r.buyerPhone].filter(Boolean).join(' · ');
       return `
         <div class="card rec-card">
           <div class="rec-date">${r.date}</div>
           <div class="rec-meta" style="margin-bottom:${buyerMeta ? 4 : 10}px;">${escHtml(r.vessel)} · ${escHtml(r.species)}</div>
           ${buyerMeta ? `<div class="rec-meta" style="margin-bottom:10px;">${escHtml(buyerMeta)}</div>` : ''}
           <div class="rec-pills">
-            <span class="rec-pill">${r.catches.length} catches</span>
+            <span class="rec-pill">${catchCount} catches</span>
             <span class="rec-pill">${fmt(r.totalWeight)} kg</span>
             ${r.pricePerKg !== null ? `<span class="rec-pill">${r.currency}${fmt(r.pricePerKg,2)}/kg</span>` : ''}
             ${priceTag}
@@ -1387,7 +1440,7 @@
   }
 
   // ── ADMIN: ADD USER ───────────────────────────────────────────────────────
-  function adminAddUser() {
+  async function adminAddUser() {
     const username = document.getElementById('new-username').value.trim();
     const password = document.getElementById('new-password').value;
     const isAdmin  = document.getElementById('new-is-admin').checked;
@@ -1396,13 +1449,13 @@
     if (!username)            { showFormError(errEl, 'Username is required.'); return; }
     if (password.length < 4)  { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
 
-    const users = loadUsers();
+    const users = await loadUsers();
     if (users.find(u => u.username === username)) {
       showFormError(errEl, `Username "${username}" already exists.`); return;
     }
 
     users.push({ username, password, isAdmin, createdAt: new Date().toISOString() });
-    saveUsers(users);
+    await saveUsers(users);
     document.getElementById('new-username').value = '';
     document.getElementById('new-password').value = '';
     document.getElementById('new-is-admin').checked = false;
@@ -1417,7 +1470,7 @@
       `This will permanently remove "${username}" and all their data. This cannot be undone.`;
     openModal('delete-user-modal');
   }
-  function confirmDeleteUser() {
+  async function confirmDeleteUser() {
     const username = pendingDeleteUser;
     pendingDeleteUser = null;
     closeModal('delete-user-modal');
@@ -1425,38 +1478,39 @@
 
     if (username === currentUser.username) { toast("You can't delete yourself."); return; }
 
-    const users    = loadUsers();
+    const users     = await loadUsers();
     const remaining = users.filter(u => u.username !== username);
     if (remaining.filter(u => u.isAdmin).length === 0) {
       toast("Can't remove the last admin."); return;
     }
 
-    // Remove user data
-    localStorage.removeItem(`fish_state_${username}`);
-    localStorage.removeItem(`fish_records_${username}`);
-    saveUsers(remaining);
+    await cloudDelete(`fish_state_${username}`);
+    await cloudDelete(`fish_records_${username}`);
+    await saveUsers(remaining);
     toast(`User "${username}" removed.`);
     renderAdminUsers();
   }
 
   // ── ADMIN: RENDER USER LIST ───────────────────────────────────────────────
-  function renderAdminUsers() {
-    const users  = loadUsers();
+  async function renderAdminUsers() {
+    const users  = await loadUsers();
     const listEl = document.getElementById('user-list');
 
-    listEl.innerHTML = users.map(u => `
-      <div class="user-item">
-        <div>
-          <div style="font-weight:700;font-size:.95rem;">${escHtml(u.username)}</div>
-          <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">
-            <span class="role-badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Admin' : 'User'}</span>
-            &nbsp;· Added ${new Date(u.createdAt).toLocaleDateString()}
+    listEl.innerHTML = users.length === 0
+      ? '<div class="empty-state">No users.</div>'
+      : users.map(u => `
+        <div class="user-item">
+          <div>
+            <div style="font-weight:700;font-size:.95rem;">${escHtml(u.username)}</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">
+              <span class="role-badge ${u.isAdmin ? 'admin' : 'user'}">${u.isAdmin ? 'Admin' : 'User'}</span>
+              &nbsp;· Added ${new Date(u.createdAt).toLocaleDateString()}
+            </div>
           </div>
-        </div>
-        ${u.username !== currentUser.username
-          ? `<button class="btn-icon-danger" onclick="askDeleteUser('${escHtml(u.username)}')">✕</button>`
-          : `<span style="font-size:.75rem;color:var(--muted);font-style:italic;">you</span>`}
-      </div>`).join('') || '<div class="empty-state">No users.</div>';
+          ${u.username !== currentUser.username
+            ? `<button class="btn-icon-danger" onclick="askDeleteUser('${escHtml(u.username)}')">✕</button>`
+            : `<span style="font-size:.75rem;color:var(--muted);font-style:italic;">you</span>`}
+        </div>`).join('');
   }
 
   // ── MODAL HELPERS ─────────────────────────────────────────────────────────

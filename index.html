@@ -52,12 +52,7 @@
       width: 100%;
       max-width: 380px;
     }
-    .login-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
+    .login-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
     .login-logo-icon {
       background: var(--blue);
       border-radius: 12px;
@@ -78,15 +73,10 @@
       outline: none;
       width: 100%;
       transition: border-color .15s;
+      background: var(--card);
     }
     .login-field input:focus { border-color: var(--blue); }
-    .login-error {
-      font-size: .82rem;
-      color: var(--red);
-      margin-bottom: 10px;
-      min-height: 18px;
-    }
-    .loading-msg { text-align: center; font-size: .88rem; color: var(--muted); padding: 12px 0; }
+    .login-error { font-size: .82rem; color: var(--red); margin-bottom: 10px; min-height: 18px; }
 
     /* ── HEADER ── */
     header {
@@ -97,9 +87,7 @@
       align-items: center;
       gap: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,.2);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      position: sticky; top: 0; z-index: 10;
     }
     header svg { flex-shrink: 0; }
     header h1 { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
@@ -125,399 +113,197 @@
       background: var(--card);
       display: flex;
       border-bottom: 2px solid var(--border);
-      position: sticky;
-      top: 57px;
-      z-index: 9;
+      position: sticky; top: 57px; z-index: 9;
       box-shadow: 0 2px 6px rgba(0,0,0,.06);
     }
     .tab {
-      flex: 1;
-      padding: 13px;
-      background: none;
-      border: none;
-      font-size: .88rem;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      margin-bottom: -2px;
+      flex: 1; padding: 13px; background: none; border: none;
+      font-size: .88rem; font-weight: 600; color: var(--muted); cursor: pointer;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
       transition: color .15s, border-color .15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .tab.active {
-      color: var(--blue);
-      border-bottom-color: var(--blue);
-    }
+    .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
     #tab-admin { display: none; }
 
-    /* ── VIEWS ── */
     .view { display: none; }
     .view.active { display: contents; }
 
-    /* ── MAIN ── */
     main {
-      flex: 1;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 540px;
-      width: 100%;
-      margin: 0 auto;
+      flex: 1; padding: 16px; display: flex; flex-direction: column;
+      gap: 16px; max-width: 540px; width: 100%; margin: 0 auto;
     }
 
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
+    .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; }
     .card-title {
-      font-size: .8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .07em;
-      color: var(--muted);
-      margin-bottom: 14px;
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--muted); margin-bottom: 14px;
     }
 
-    /* ── DELIVERY META ── */
-    .meta-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .meta-item { display: flex; flex-direction: column; gap: 3px; }
     .meta-item label { font-size: .75rem; color: var(--muted); font-weight: 600; }
     .meta-item input, .meta-item select {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 10px;
-      font-size: .95rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color .15s;
-      width: 100%;
-      background: var(--card);
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 10px;
+      font-size: .95rem; color: var(--text); outline: none;
+      transition: border-color .15s; width: 100%; background: var(--card);
     }
     .meta-item input:focus, .meta-item select:focus { border-color: var(--blue); }
     .meta-item.full { grid-column: 1 / -1; }
 
-    /* ── ADD CATCH FORM ── */
-    .catch-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .catch-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .catch-form .field { display: flex; flex-direction: column; gap: 4px; }
     .catch-form label { font-size: .78rem; color: var(--muted); font-weight: 600; }
     .catch-form input {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 11px 12px;
-      font-size: 1rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color .15s;
-      width: 100%;
-      -webkit-appearance: none;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 12px;
+      font-size: 1rem; color: var(--text); outline: none;
+      transition: border-color .15s; width: 100%; -webkit-appearance: none; background: var(--card);
     }
     .catch-form input:focus { border-color: var(--blue); }
     .catch-form .field.full { grid-column: 1 / -1; }
 
-    /* ── BUTTONS ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      border: none;
-      border-radius: 10px;
-      padding: 13px 18px;
-      font-size: .95rem;
-      font-weight: 600;
-      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 6px; border: none; border-radius: 10px; padding: 13px 18px;
+      font-size: .95rem; font-weight: 600; cursor: pointer;
       transition: filter .15s, transform .1s;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .btn:active { transform: scale(.97); filter: brightness(.92); }
-    .btn-primary  { background: var(--blue);   color: #fff; width: 100%; }
-    .btn-success  { background: var(--green);  color: #fff; width: 100%; }
-    .btn-danger   { background: var(--red);    color: #fff; width: 100%; }
-    .btn-outline  {
-      background: transparent;
-      color: var(--blue);
-      border: 1.5px solid var(--blue);
-      width: 100%;
-    }
+    .btn-primary  { background: var(--blue);  color: #fff; width: 100%; }
+    .btn-success  { background: var(--green); color: #fff; width: 100%; }
+    .btn-danger   { background: var(--red);   color: #fff; width: 100%; }
+    .btn-outline  { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); width: 100%; }
     .btn-icon-danger {
-      background: #fff0f0;
-      color: var(--red);
-      border: none;
-      border-radius: 7px;
-      padding: 7px 10px;
-      cursor: pointer;
-      font-size: .85rem;
-      transition: background .15s;
-      -webkit-tap-highlight-color: transparent;
-      flex-shrink: 0;
+      background: #fff0f0; color: var(--red); border: none; border-radius: 7px;
+      padding: 7px 10px; cursor: pointer; font-size: .85rem;
+      transition: background .15s; -webkit-tap-highlight-color: transparent; flex-shrink: 0;
     }
     .btn-icon-danger:active { background: #ffd6d6; }
 
-    /* ── CATCH LIST ── */
     #catch-list { display: flex; flex-direction: column; gap: 10px; }
     .catch-item {
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
       background: #fafdff;
     }
     .catch-item .catch-num {
-      background: var(--blue);
-      color: #fff;
-      border-radius: 50%;
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .8rem; font-weight: 700;
-      flex-shrink: 0;
+      background: var(--blue); color: #fff; border-radius: 50%;
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; font-size: .8rem; font-weight: 700; flex-shrink: 0;
     }
     .catch-item .catch-info { flex: 1; }
     .catch-item .catch-weight { font-size: 1.05rem; font-weight: 700; color: var(--text); }
     .catch-item .catch-time   { font-size: .78rem; color: var(--muted); margin-top: 1px; }
-    .empty-state {
-      text-align: center;
-      color: var(--muted);
-      font-size: .9rem;
-      padding: 24px 0;
-    }
+    .empty-state { text-align: center; color: var(--muted); font-size: .9rem; padding: 24px 0; }
 
-    /* ── SUMMARY ── */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .stat-box {
-      background: var(--bg);
-      border-radius: 10px;
-      padding: 14px;
-      display: flex; flex-direction: column; gap: 3px;
-    }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .stat-box { background: var(--bg); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 3px; }
     .stat-box .stat-label { font-size: .72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
     .stat-box .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--text); line-height: 1.1; }
     .stat-box .stat-unit  { font-size: .75rem; color: var(--muted); }
     .stat-box.highlight { background: #e8f5e9; }
     .stat-box.highlight .stat-value { color: var(--green); }
 
-    .price-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    .price-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 14px; }
     .price-row .field { flex: 1; display: flex; flex-direction: column; gap: 4px; }
     .price-row label { font-size: .78rem; color: var(--muted); font-weight: 600; }
     .price-row input {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      outline: none;
-      width: 100%;
-      -webkit-appearance: none;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 12px;
+      font-size: 1.1rem; font-weight: 700; color: var(--text); outline: none;
+      width: 100%; -webkit-appearance: none; background: var(--card);
     }
     .price-row input:focus { border-color: var(--green); }
 
     .total-price-box {
       background: linear-gradient(135deg, #1b5e20, #2e7d32);
-      color: #fff;
-      border-radius: 12px;
-      padding: 18px;
-      text-align: center;
-      margin-bottom: 16px;
+      color: #fff; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 16px;
     }
     .total-price-box .label  { font-size: .8rem; opacity: .85; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
     .total-price-box .amount { font-size: 2.2rem; font-weight: 800; line-height: 1.15; }
     .total-price-box.dim { background: linear-gradient(135deg, #78909c, #90a4ae); }
 
-    /* ── TOAST ── */
     #toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
+      position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(80px);
-      background: #1a1a2e;
-      color: #fff;
-      padding: 12px 22px;
-      border-radius: 50px;
-      font-size: .88rem;
-      font-weight: 600;
-      box-shadow: 0 4px 16px rgba(0,0,0,.3);
-      transition: transform .25s ease;
-      z-index: 100;
-      white-space: nowrap;
+      background: #1a1a2e; color: #fff; padding: 12px 22px;
+      border-radius: 50px; font-size: .88rem; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,.3); transition: transform .25s ease;
+      z-index: 100; white-space: nowrap;
     }
     #toast.show { transform: translateX(-50%) translateY(0); }
 
-    /* ── MODAL ── */
     .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.55);
-      display: flex; align-items: flex-end;
-      z-index: 50;
-      opacity: 0; pointer-events: none;
-      transition: opacity .2s;
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      display: flex; align-items: flex-end; z-index: 50;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
     }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal {
-      background: var(--card);
-      border-radius: var(--radius) var(--radius) 0 0;
-      padding: 24px 20px 36px;
-      width: 100%;
-      transform: translateY(100%);
-      transition: transform .25s ease;
-      max-width: 540px;
-      margin: 0 auto;
+      background: var(--card); border-radius: var(--radius) var(--radius) 0 0;
+      padding: 24px 20px 36px; width: 100%;
+      transform: translateY(100%); transition: transform .25s ease;
+      max-width: 540px; margin: 0 auto;
     }
     .modal-overlay.open .modal { transform: translateY(0); }
-    .modal h2 { font-size: 1.1rem; margin-bottom: 6px; }
+    .modal h2 { font-size: 1.1rem; margin-bottom: 6px; color: var(--text); }
     .modal p  { font-size: .88rem; color: var(--muted); margin-bottom: 20px; white-space: pre-wrap; }
     .modal .actions { display: flex; gap: 10px; }
 
-    /* ── SECTION DIVIDER ── */
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .badge {
-      background: var(--blue);
-      color: #fff;
-      border-radius: 50px;
-      padding: 2px 10px;
-      font-size: .75rem;
-      font-weight: 700;
-    }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .badge { background: var(--blue); color: #fff; border-radius: 50px; padding: 2px 10px; font-size: .75rem; font-weight: 700; }
 
-    /* ── RECORDS – FILTER ── */
-    .filter-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
+    .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
     .filter-grid .field { display: flex; flex-direction: column; gap: 4px; }
     .filter-grid label  { font-size: .75rem; color: var(--muted); font-weight: 600; }
     .filter-grid input  {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 10px;
-      font-size: .9rem;
-      color: var(--text);
-      outline: none;
-      width: 100%;
-      -webkit-appearance: none;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 10px;
+      font-size: .9rem; color: var(--text); outline: none; width: 100%;
+      -webkit-appearance: none; background: var(--card);
     }
     .filter-grid input:focus { border-color: var(--blue); }
-    .sort-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .sort-row { display: flex; align-items: center; gap: 8px; }
     .sort-row label { font-size: .78rem; color: var(--muted); font-weight: 600; white-space: nowrap; }
     .sort-row select {
-      flex: 1;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 10px;
-      font-size: .88rem;
-      color: var(--text);
-      background: var(--card);
-      outline: none;
+      flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 9px 10px; font-size: .88rem; color: var(--text);
+      background: var(--card); outline: none;
     }
     .sort-row select:focus { border-color: var(--blue); }
 
-    /* ── RECORDS – TOTALS ── */
     #rec-totals { margin-bottom: 0; }
     #rec-totals .summary-grid { margin-bottom: 0; }
-
-    /* ── RECORDS – CARDS ── */
     .rec-card { padding: 14px 16px; }
     .rec-date { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.2; }
     .rec-meta { font-size: .78rem; color: var(--muted); margin-top: 2px; }
     .rec-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-    .rec-pill {
-      background: var(--bg);
-      border-radius: 50px;
-      padding: 4px 12px;
-      font-size: .8rem;
-      font-weight: 600;
-      color: var(--text);
-    }
+    .rec-pill { background: var(--bg); border-radius: 50px; padding: 4px 12px; font-size: .8rem; font-weight: 600; color: var(--text); }
     .rec-pill.green { background: #e8f5e9; color: var(--green); }
 
-    /* ── ADMIN – USER LIST ── */
     .user-item {
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: #fafdff;
-      margin-bottom: 8px;
+      border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: #fafdff; margin-bottom: 8px;
     }
     .user-item:last-child { margin-bottom: 0; }
-    .role-badge {
-      display: inline-block;
-      border-radius: 50px;
-      padding: 2px 8px;
-      font-size: .7rem;
-      font-weight: 700;
-    }
+    .role-badge { display: inline-block; border-radius: 50px; padding: 2px 8px; font-size: .7rem; font-weight: 700; }
     .role-badge.admin { background: #fff3cd; color: #856404; }
     .role-badge.user  { background: #e8f4fd; color: #0c63e4; }
 
-    /* ── ADMIN – ADD USER FORM ── */
     .admin-form { display: flex; flex-direction: column; gap: 10px; }
     .admin-form input {
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 11px 12px;
-      font-size: .95rem;
-      color: var(--text);
-      outline: none;
-      width: 100%;
-      transition: border-color .15s;
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 12px;
+      font-size: .95rem; color: var(--text); outline: none; width: 100%;
+      transition: border-color .15s; background: var(--card);
     }
     .admin-form input:focus { border-color: var(--blue); }
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 0;
-    }
+    .checkbox-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
     .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
     .checkbox-row label { font-size: .9rem; color: var(--text); cursor: pointer; }
-
-    .sync-badge { font-size: .7rem; padding: 2px 8px; border-radius: 50px; font-weight: 700; display: inline-block; }
-    .sync-badge.cloud { background: #e8f5e9; color: #1b5e20; }
   </style>
 </head>
 <body>
 
-<!-- ══════════════ LOGIN SCREEN ══════════════ -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
@@ -534,9 +320,7 @@
         <p id="login-subtitle">Sign in to continue</p>
       </div>
     </div>
-
-    <!-- LOGIN FORM -->
-    <div id="login-form" style="display:none;">
+    <div id="login-form">
       <div class="login-field">
         <label>Username</label>
         <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username"
@@ -550,35 +334,23 @@
       <div class="login-error" id="login-error"></div>
       <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
     </div>
-
-    <!-- FIRST-RUN SETUP FORM -->
     <div id="setup-form" style="display:none;">
       <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
         Welcome! No users exist yet. Create the admin account to get started.
       </p>
-      <div class="login-field">
-        <label>Admin Username</label>
-        <input type="text" id="setup-username" placeholder="Choose a username" />
-      </div>
-      <div class="login-field">
-        <label>Password</label>
-        <input type="password" id="setup-password" placeholder="At least 4 characters" />
-      </div>
+      <div class="login-field"><label>Admin Username</label><input type="text" id="setup-username" placeholder="Choose a username" /></div>
+      <div class="login-field"><label>Password</label><input type="password" id="setup-password" placeholder="At least 4 characters" /></div>
       <div class="login-field">
         <label>Confirm Password</label>
         <input type="password" id="setup-password2" placeholder="Repeat password"
                onkeydown="if(event.key==='Enter')doSetup()" />
       </div>
       <div class="login-error" id="setup-error"></div>
-      <button class="btn btn-primary" id="setup-btn" onclick="doSetup()">Create Admin Account</button>
+      <button class="btn btn-primary" onclick="doSetup()">Create Admin Account</button>
     </div>
-
-    <!-- LOADING -->
-    <div id="auth-loading" class="loading-msg">Loading account data...</div>
   </div>
 </div>
 
-<!-- ══════════════ HEADER ══════════════ -->
 <header>
   <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
     <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
@@ -600,17 +372,12 @@
 </nav>
 
 <main>
-
-  <!-- ══════════════ LOGGER VIEW ══════════════ -->
   <div id="view-logger" class="view active">
-
-    <!-- SETUP -->
-    <div class="card" id="setup-card">
+    <div class="card">
       <div class="card-title">Setup</div>
       <div class="meta-item" style="margin-bottom:10px;">
         <label>Google Apps Script URL</label>
-        <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/…/exec"
-               style="font-size:.85rem;" oninput="saveSetup()" />
+        <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:.85rem;" oninput="saveSetup()" />
       </div>
       <div class="meta-item" style="margin-bottom:10px;">
         <label>Email App for Buyer Receipt</label>
@@ -623,152 +390,74 @@
           <option value="zoho">Zoho Mail (web)</option>
         </select>
       </div>
-      <p style="font-size:.75rem;color:var(--muted);margin:0;">
-        Paste your Web App URL here. Data will be sent to your Google Sheet when you finalise a delivery.
-      </p>
+      <p style="font-size:.75rem;color:var(--muted);margin:0;">Paste your Web App URL here. Data will be sent to your Google Sheet when you finalise a delivery.</p>
     </div>
 
-    <!-- DELIVERY INFO -->
     <div class="card">
       <div class="card-title">Delivery Info</div>
       <div class="meta-grid">
-        <div class="meta-item">
-          <label>Vessel / Pond (optional)</label>
-          <input type="text" id="vessel" placeholder="e.g. Sea Star or Pond A" />
-        </div>
-        <div class="meta-item">
-          <label>Date</label>
-          <input type="date" id="delivery-date" />
-        </div>
-        <div class="meta-item full">
-          <label>Species</label>
-          <input type="text" id="species" placeholder="e.g. Atlantic Cod" />
-        </div>
+        <div class="meta-item"><label>Vessel / Pond (optional)</label><input type="text" id="vessel" placeholder="e.g. Sea Star or Pond A" /></div>
+        <div class="meta-item"><label>Date</label><input type="date" id="delivery-date" /></div>
+        <div class="meta-item full"><label>Species</label><input type="text" id="species" placeholder="e.g. Atlantic Cod" /></div>
       </div>
     </div>
 
-    <!-- BUYER INFO -->
     <div class="card">
       <div class="card-title">Buyer Info</div>
       <div class="meta-grid">
-        <div class="meta-item full">
-          <label>Buyer Name</label>
-          <input type="text" id="buyer-name" placeholder="e.g. John Smith" />
-        </div>
-        <div class="meta-item full">
-          <label>Buyer Email</label>
-          <input type="email" id="buyer-email" placeholder="e.g. buyer@example.com" />
-        </div>
-        <div class="meta-item full">
-          <label>Buyer Phone</label>
-          <input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" />
-        </div>
+        <div class="meta-item full"><label>Buyer Name</label><input type="text" id="buyer-name" placeholder="e.g. John Smith" /></div>
+        <div class="meta-item full"><label>Buyer Email</label><input type="email" id="buyer-email" placeholder="e.g. buyer@example.com" /></div>
+        <div class="meta-item full"><label>Buyer Phone</label><input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" /></div>
       </div>
     </div>
 
-    <!-- ADD CATCH -->
     <div class="card">
       <div class="card-title">Add Catch</div>
       <div class="catch-form">
-        <div class="field">
-          <label>Time</label>
-          <input type="time" id="catch-time" />
-        </div>
-        <div class="field">
-          <label>Weight (kg)</label>
-          <input type="number" id="catch-weight" placeholder="0.0" min="0" step="0.1" inputmode="decimal" />
-        </div>
-        <div class="field full">
-          <label>Note (optional)</label>
-          <input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" />
-        </div>
+        <div class="field"><label>Time</label><input type="time" id="catch-time" /></div>
+        <div class="field"><label>Weight (kg)</label><input type="number" id="catch-weight" placeholder="0.0" min="0" step="0.1" inputmode="decimal" /></div>
+        <div class="field full"><label>Note (optional)</label><input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" /></div>
       </div>
-      <div style="margin-top:12px;">
-        <button class="btn btn-primary" onclick="addCatch()">+ Record Catch</button>
-      </div>
+      <div style="margin-top:12px;"><button class="btn btn-primary" onclick="addCatch()">+ Record Catch</button></div>
     </div>
 
-    <!-- CATCH LIST -->
     <div class="card">
       <div class="section-head">
         <div class="card-title" style="margin:0">Catches</div>
         <span class="badge" id="catch-count">0</span>
       </div>
-      <div id="catch-list">
-        <div class="empty-state">No catches recorded yet.</div>
-      </div>
+      <div id="catch-list"><div class="empty-state">No catches recorded yet.</div></div>
     </div>
 
-    <!-- SUMMARY -->
     <div class="card">
       <div class="card-title">Summary</div>
       <div class="summary-grid">
-        <div class="stat-box">
-          <span class="stat-label">Catches</span>
-          <span class="stat-value" id="sum-count">0</span>
-          <span class="stat-unit">hauls</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Total Weight</span>
-          <span class="stat-value" id="sum-weight">0.0</span>
-          <span class="stat-unit">kg</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Avg per Catch</span>
-          <span class="stat-value" id="sum-avg">—</span>
-          <span class="stat-unit">kg</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Duration</span>
-          <span class="stat-value" id="sum-dur">—</span>
-          <span class="stat-unit">first → last</span>
-        </div>
+        <div class="stat-box"><span class="stat-label">Catches</span><span class="stat-value" id="sum-count">0</span><span class="stat-unit">hauls</span></div>
+        <div class="stat-box"><span class="stat-label">Total Weight</span><span class="stat-value" id="sum-weight">0.0</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box"><span class="stat-label">Avg per Catch</span><span class="stat-value" id="sum-avg">—</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box"><span class="stat-label">Duration</span><span class="stat-value" id="sum-dur">—</span><span class="stat-unit">first → last</span></div>
       </div>
       <div class="price-row">
-        <div class="field">
-          <label>Currency</label>
-          <input type="text" id="currency" value="$" style="max-width:70px;text-align:center;font-size:1.3rem;" maxlength="5" />
-        </div>
-        <div class="field" style="flex:3">
-          <label>Price per kg</label>
-          <input type="number" id="price-per-kg" placeholder="0.00" min="0" step="0.01"
-                 inputmode="decimal" oninput="calcTotal()" />
-        </div>
+        <div class="field"><label>Currency</label><input type="text" id="currency" value="$" style="max-width:70px;text-align:center;font-size:1.3rem;" maxlength="5" /></div>
+        <div class="field" style="flex:3"><label>Price per kg</label><input type="number" id="price-per-kg" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="calcTotal()" /></div>
       </div>
       <div class="total-price-box dim" id="total-box">
         <div class="label">Total Price</div>
         <div class="amount" id="total-price">—</div>
       </div>
       <button class="btn btn-success" onclick="openFinish()">Finalise Delivery</button>
-      <div style="margin-top:10px;">
-        <button class="btn btn-outline" onclick="openReset()">Reset / New Delivery</button>
-      </div>
+      <div style="margin-top:10px;"><button class="btn btn-outline" onclick="openReset()">Reset / New Delivery</button></div>
     </div>
+  </div>
 
-  </div><!-- /view-logger -->
-
-  <!-- ══════════════ RECORDS VIEW ══════════════ -->
   <div id="view-records" class="view">
-
     <div class="card">
       <div class="card-title">Filter &amp; Sort</div>
       <div class="filter-grid">
-        <div class="field">
-          <label>From</label>
-          <input type="date" id="f-from" oninput="renderRecords()" />
-        </div>
-        <div class="field">
-          <label>To</label>
-          <input type="date" id="f-to" oninput="renderRecords()" />
-        </div>
-        <div class="field">
-          <label>Vessel</label>
-          <input type="text" id="f-vessel" placeholder="Any" oninput="renderRecords()" />
-        </div>
-        <div class="field">
-          <label>Species</label>
-          <input type="text" id="f-species" placeholder="Any" oninput="renderRecords()" />
-        </div>
+        <div class="field"><label>From</label><input type="date" id="f-from" oninput="renderRecords()" /></div>
+        <div class="field"><label>To</label><input type="date" id="f-to" oninput="renderRecords()" /></div>
+        <div class="field"><label>Vessel</label><input type="text" id="f-vessel" placeholder="Any" oninput="renderRecords()" /></div>
+        <div class="field"><label>Species</label><input type="text" id="f-species" placeholder="Any" oninput="renderRecords()" /></div>
       </div>
       <div class="sort-row">
         <label>Sort by</label>
@@ -782,52 +471,24 @@
         </select>
       </div>
     </div>
-
     <div class="card" id="rec-totals" style="display:none;">
       <div class="card-title" style="margin-bottom:12px;">Filtered Totals</div>
       <div class="summary-grid" style="margin-bottom:0;">
-        <div class="stat-box">
-          <span class="stat-label">Deliveries</span>
-          <span class="stat-value" id="rt-count">0</span>
-          <span class="stat-unit">records</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Total Weight</span>
-          <span class="stat-value" id="rt-weight">0.0</span>
-          <span class="stat-unit">kg</span>
-        </div>
-        <div class="stat-box highlight">
-          <span class="stat-label">Total Value</span>
-          <span class="stat-value" id="rt-price">—</span>
-          <span class="stat-unit" id="rt-price-unit"></span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-label">Avg Weight</span>
-          <span class="stat-value" id="rt-avg">—</span>
-          <span class="stat-unit">kg / delivery</span>
-        </div>
+        <div class="stat-box"><span class="stat-label">Deliveries</span><span class="stat-value" id="rt-count">0</span><span class="stat-unit">records</span></div>
+        <div class="stat-box"><span class="stat-label">Total Weight</span><span class="stat-value" id="rt-weight">0.0</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box highlight"><span class="stat-label">Total Value</span><span class="stat-value" id="rt-price">—</span><span class="stat-unit" id="rt-price-unit"></span></div>
+        <div class="stat-box"><span class="stat-label">Avg Weight</span><span class="stat-value" id="rt-avg">—</span><span class="stat-unit">kg / delivery</span></div>
       </div>
     </div>
-
     <div id="rec-list"></div>
+  </div>
 
-  </div><!-- /view-records -->
-
-  <!-- ══════════════ ADMIN VIEW ══════════════ -->
   <div id="view-admin" class="view">
-
-    <!-- ADD USER -->
     <div class="card">
       <div class="card-title">Add User</div>
       <div class="admin-form">
-        <div class="meta-item">
-          <label>Username</label>
-          <input type="text" id="new-username" placeholder="e.g. john" autocomplete="off" />
-        </div>
-        <div class="meta-item">
-          <label>Password</label>
-          <input type="password" id="new-password" placeholder="Choose a password" autocomplete="new-password" />
-        </div>
+        <div class="meta-item"><label>Username</label><input type="text" id="new-username" placeholder="e.g. john" autocomplete="off" /></div>
+        <div class="meta-item"><label>Password</label><input type="password" id="new-password" placeholder="Choose a password" autocomplete="new-password" /></div>
         <div class="checkbox-row">
           <input type="checkbox" id="new-is-admin" />
           <label for="new-is-admin">Grant admin privileges</label>
@@ -836,63 +497,39 @@
         <button class="btn btn-primary" onclick="adminAddUser()">Add User</button>
       </div>
     </div>
-
-    <!-- USER LIST -->
     <div class="card">
-      <div class="section-head">
-        <div class="card-title" style="margin:0">All Users</div>
-        <span class="sync-badge cloud">☁ Cloud sync</span>
-      </div>
-      <div id="user-list">
-        <div class="empty-state">No users found.</div>
-      </div>
+      <div class="card-title">All Users</div>
+      <div id="user-list"><div class="empty-state">No users found.</div></div>
     </div>
-
-  </div><!-- /view-admin -->
-
+  </div>
 </main>
 
-<!-- FINALISE MODAL -->
 <div class="modal-overlay" id="finish-modal">
-  <div class="modal">
-    <h2>Finalise Delivery</h2>
-    <p id="finish-summary-text"></p>
+  <div class="modal"><h2>Finalise Delivery</h2><p id="finish-summary-text"></p>
     <div class="actions">
       <button class="btn btn-outline" onclick="closeModal('finish-modal')">Back</button>
       <button class="btn btn-success" onclick="finalise()">Confirm &amp; Save</button>
     </div>
   </div>
 </div>
-
-<!-- RESET MODAL -->
 <div class="modal-overlay" id="reset-modal">
-  <div class="modal">
-    <h2>Start New Delivery?</h2>
-    <p>All current catch data will be cleared. This cannot be undone.</p>
+  <div class="modal"><h2>Start New Delivery?</h2><p>All current catch data will be cleared. This cannot be undone.</p>
     <div class="actions">
       <button class="btn btn-outline" onclick="closeModal('reset-modal')">Cancel</button>
       <button class="btn btn-danger" onclick="resetAll()">Clear &amp; Reset</button>
     </div>
   </div>
 </div>
-
-<!-- DELETE CATCH MODAL -->
 <div class="modal-overlay" id="delete-modal">
-  <div class="modal">
-    <h2>Remove Catch?</h2>
-    <p id="delete-detail"></p>
+  <div class="modal"><h2>Remove Catch?</h2><p id="delete-detail"></p>
     <div class="actions">
       <button class="btn btn-outline" onclick="closeModal('delete-modal')">Cancel</button>
       <button class="btn btn-danger" onclick="confirmDelete()">Remove</button>
     </div>
   </div>
 </div>
-
-<!-- DELETE USER MODAL -->
 <div class="modal-overlay" id="delete-user-modal">
-  <div class="modal">
-    <h2>Remove User?</h2>
-    <p id="delete-user-detail"></p>
+  <div class="modal"><h2>Remove User?</h2><p id="delete-user-detail"></p>
     <div class="actions">
       <button class="btn btn-outline" onclick="closeModal('delete-user-modal')">Cancel</button>
       <button class="btn btn-danger" onclick="confirmDeleteUser()">Remove User</button>
@@ -903,128 +540,89 @@
 <div id="toast"></div>
 
 <script>
-  // ── STATE ─────────────────────────────────────────────────────────────────
-  let catches          = [];
-  let pendingDeleteIdx = null;
+  let catches           = [];
+  let pendingDeleteIdx  = null;
   let pendingDeleteUser = null;
-  let currentUser      = null;
+  let currentUser       = null;
 
-  // ── CLOUD STORAGE (shared across all devices) ─────────────────────────────
-  // Users stored as shared=true so all devices see the same accounts.
-  // Delivery state and records stored as shared=false (personal per user).
-  const USERS_KEY = 'fish_users_v2';
+  // ── STORAGE ───────────────────────────────────────────────────────────────
+  // Uses localStorage throughout. Session also persisted in localStorage so
+  // login survives closing and reopening the browser tab.
 
-  async function cloudGet(key, shared = false) {
-    try {
-      const r = await window.storage.get(key, shared);
-      return r ? JSON.parse(r.value) : null;
-    } catch(e) { return null; }
+  function loadUsers() {
+    try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); }
+    catch(e) { return []; }
   }
-  async function cloudSet(key, val, shared = false) {
-    try { await window.storage.set(key, JSON.stringify(val), shared); } catch(e) {}
-  }
-  async function cloudDelete(key, shared = false) {
-    try { await window.storage.delete(key, shared); } catch(e) {}
-  }
-
-  async function loadUsers() {
-    const users = await cloudGet(USERS_KEY, true);
-    return users || [];
-  }
-  async function saveUsers(users) {
-    await cloudSet(USERS_KEY, users, true);
-  }
+  function saveUsers(u) { localStorage.setItem('fish_users', JSON.stringify(u)); }
 
   function stateKey()   { return `fish_state_${currentUser.username}`; }
   function recordsKey() { return `fish_records_${currentUser.username}`; }
 
+  function loadRecords() {
+    try { return JSON.parse(localStorage.getItem(recordsKey()) || '[]'); }
+    catch(e) { return []; }
+  }
+  function saveRecords(r) { localStorage.setItem(recordsKey(), JSON.stringify(r)); }
+  function pushRecord(rec) { const r = loadRecords(); r.push(rec); saveRecords(r); }
+
   // ── AUTH INIT ─────────────────────────────────────────────────────────────
-  (async function initAuth() {
-    // Show loading spinner, hide forms
-    document.getElementById('auth-loading').style.display = '';
-    document.getElementById('login-form').style.display   = 'none';
-    document.getElementById('setup-form').style.display   = 'none';
-
-    const users = await loadUsers();
-
-    document.getElementById('auth-loading').style.display = 'none';
-
+  (function initAuth() {
+    const users = loadUsers();
     if (users.length === 0) {
       document.getElementById('login-subtitle').textContent = 'First-time setup';
-      document.getElementById('setup-form').style.display   = '';
+      document.getElementById('login-form').style.display  = 'none';
+      document.getElementById('setup-form').style.display  = '';
       return;
     }
-
-    // Restore session if still valid
+    // Restore session from localStorage (survives tab close)
     try {
-      const sess = JSON.parse(sessionStorage.getItem('fish_session') || 'null');
+      const sess = JSON.parse(localStorage.getItem('fish_session') || 'null');
       if (sess) {
         const found = users.find(u => u.username === sess.username && u.password === sess.password);
         if (found) { currentUser = found; showApp(); return; }
       }
     } catch(e) {}
-
-    document.getElementById('login-form').style.display = '';
+    document.getElementById('login-screen').classList.remove('hidden');
   })();
 
-  // ── FIRST-RUN SETUP ───────────────────────────────────────────────────────
-  async function doSetup() {
+  function doSetup() {
     const username  = document.getElementById('setup-username').value.trim();
     const password  = document.getElementById('setup-password').value;
     const password2 = document.getElementById('setup-password2').value;
     const errEl     = document.getElementById('setup-error');
-    const btn       = document.getElementById('setup-btn');
-
     if (!username)             { showFormError(errEl, 'Username is required.'); return; }
     if (password.length < 4)   { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
     if (password !== password2){ showFormError(errEl, 'Passwords do not match.'); return; }
-
-    btn.textContent = 'Creating...'; btn.disabled = true;
     const admin = { username, password, isAdmin: true, createdAt: new Date().toISOString() };
-    await saveUsers([admin]);
+    saveUsers([admin]);
     currentUser = admin;
-    sessionStorage.setItem('fish_session', JSON.stringify(admin));
+    localStorage.setItem('fish_session', JSON.stringify(admin));
     showApp();
   }
 
-  // ── LOGIN ─────────────────────────────────────────────────────────────────
-  async function doLogin() {
+  function doLogin() {
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
     const errEl    = document.getElementById('login-error');
-
     if (!username || !password) { showFormError(errEl, 'Please enter username and password.'); return; }
-
-    const loginBtn = document.querySelector('#login-form .btn');
-    loginBtn.textContent = 'Signing in...'; loginBtn.disabled = true;
-
-    const users = await loadUsers();
+    const users = loadUsers();
     const found = users.find(u => u.username === username && u.password === password);
-
-    loginBtn.textContent = 'Sign In'; loginBtn.disabled = false;
-
     if (!found) { showFormError(errEl, 'Invalid username or password.'); return; }
-
     currentUser = found;
-    sessionStorage.setItem('fish_session', JSON.stringify(found));
+    localStorage.setItem('fish_session', JSON.stringify(found));
     showApp();
   }
 
-  // ── LOGOUT ────────────────────────────────────────────────────────────────
   function logout() {
-    sessionStorage.removeItem('fish_session');
-    currentUser = null;
-    catches     = [];
+    localStorage.removeItem('fish_session');
+    currentUser = null; catches = [];
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
-    document.getElementById('login-form').style.display = '';
-    document.getElementById('setup-form').style.display = 'none';
     document.getElementById('login-screen').classList.remove('hidden');
     switchTab('logger');
   }
 
-  // ── SHOW APP ──────────────────────────────────────────────────────────────
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent = currentUser.username;
@@ -1032,8 +630,7 @@
     initUserData();
   }
 
-  // ── LOAD USER DATA ────────────────────────────────────────────────────────
-  async function initUserData() {
+  function initUserData() {
     catches = [];
     document.getElementById('delivery-date').value = todayISO();
     document.getElementById('catch-time').value    = nowTime();
@@ -1044,34 +641,31 @@
     document.getElementById('currency').value  = '$';
     document.getElementById('gas-url').value   = '';
     document.getElementById('email-app').value = 'mailto';
-
-    const saved = await cloudGet(stateKey());
+    const saved = localStorage.getItem(stateKey());
     if (saved) {
       try {
-        catches = saved.catches || [];
-        document.getElementById('vessel').value        = saved.vessel      || '';
-        document.getElementById('species').value       = saved.species     || '';
-        document.getElementById('delivery-date').value = saved.date        || todayISO();
-        document.getElementById('price-per-kg').value  = saved.price       || '';
-        document.getElementById('currency').value      = saved.currency    || '$';
-        document.getElementById('gas-url').value       = saved.gasUrl      || '';
-        document.getElementById('email-app').value     = saved.emailApp    || 'mailto';
-        document.getElementById('buyer-name').value    = saved.buyerName   || '';
-        document.getElementById('buyer-email').value   = saved.buyerEmail  || '';
-        document.getElementById('buyer-phone').value   = saved.buyerPhone  || '';
+        const s = JSON.parse(saved);
+        catches = s.catches || [];
+        document.getElementById('vessel').value        = s.vessel    || '';
+        document.getElementById('species').value       = s.species   || '';
+        document.getElementById('delivery-date').value = s.date      || todayISO();
+        document.getElementById('price-per-kg').value  = s.price     || '';
+        document.getElementById('currency').value      = s.currency  || '$';
+        document.getElementById('gas-url').value       = s.gasUrl    || '';
+        document.getElementById('email-app').value     = s.emailApp  || 'mailto';
+        document.getElementById('buyer-name').value    = s.buyerName  || '';
+        document.getElementById('buyer-email').value   = s.buyerEmail || '';
+        document.getElementById('buyer-phone').value   = s.buyerPhone || '';
       } catch(e) {}
     }
-    render();
-    calcTotal();
+    render(); calcTotal();
   }
 
-  // ── FORM ERROR HELPER ─────────────────────────────────────────────────────
   function showFormError(el, msg) {
     el.textContent = msg;
     setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3500);
   }
 
-  // ── TAB SWITCHING ─────────────────────────────────────────────────────────
   function switchTab(tab) {
     ['logger','records','admin'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
@@ -1081,7 +675,6 @@
     if (tab === 'admin')   renderAdminUsers();
   }
 
-  // ── HELPERS ───────────────────────────────────────────────────────────────
   function todayISO() { return new Date().toISOString().slice(0, 10); }
   function nowTime() {
     const n = new Date();
@@ -1093,15 +686,13 @@
   }
   function toast(msg) {
     const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.classList.add('show');
+    el.textContent = msg; el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2200);
   }
 
-  // ── SAVE STATE ────────────────────────────────────────────────────────────
-  async function save() {
+  function save() {
     if (!currentUser) return;
-    await cloudSet(stateKey(), {
+    localStorage.setItem(stateKey(), JSON.stringify({
       catches,
       vessel:     document.getElementById('vessel').value,
       species:    document.getElementById('species').value,
@@ -1113,22 +704,10 @@
       buyerName:  document.getElementById('buyer-name').value,
       buyerEmail: document.getElementById('buyer-email').value,
       buyerPhone: document.getElementById('buyer-phone').value,
-    });
+    }));
   }
   function saveSetup() { save(); }
 
-  // ── RECORDS STORAGE ───────────────────────────────────────────────────────
-  async function loadRecords() {
-    return (await cloudGet(recordsKey())) || [];
-  }
-  async function saveRecords(recs) { await cloudSet(recordsKey(), recs); }
-  async function pushRecord(rec) {
-    const r = await loadRecords();
-    r.push(rec);
-    await saveRecords(r);
-  }
-
-  // ── ADD CATCH ─────────────────────────────────────────────────────────────
   function addCatch() {
     const timeEl   = document.getElementById('catch-time');
     const weightEl = document.getElementById('catch-weight');
@@ -1136,26 +715,21 @@
     const time     = timeEl.value.trim();
     const weight   = parseFloat(weightEl.value);
     const note     = noteEl.value.trim();
-
     if (!time)                        { toast('Please enter a time.');         timeEl.focus();   return; }
     if (isNaN(weight) || weight <= 0) { toast('Please enter a valid weight.'); weightEl.focus(); return; }
-
     catches.push({ time, weight, note });
     save(); render(); calcTotal();
-    weightEl.value = '';
-    noteEl.value   = '';
+    weightEl.value = ''; noteEl.value = '';
     document.getElementById('catch-time').value = nowTime();
     weightEl.focus();
     toast(`Catch #${catches.length} recorded — ${fmt(weight)} kg`);
   }
 
-  // ── RENDER CATCH LIST + SUMMARY ───────────────────────────────────────────
   function render() {
     const list  = document.getElementById('catch-list');
     const count = catches.length;
     document.getElementById('catch-count').textContent = count;
     document.getElementById('sum-count').textContent   = count;
-
     if (count === 0) {
       list.innerHTML = '<div class="empty-state">No catches recorded yet.</div>';
       document.getElementById('sum-weight').textContent = '0.0';
@@ -1163,7 +737,6 @@
       document.getElementById('sum-dur').textContent    = '—';
       return;
     }
-
     list.innerHTML = catches.map((c, i) => `
       <div class="catch-item">
         <div class="catch-num">${i + 1}</div>
@@ -1173,7 +746,6 @@
         </div>
         <button class="btn-icon-danger" onclick="askDelete(${i})">✕</button>
       </div>`).join('');
-
     const total = catches.reduce((s, c) => s + c.weight, 0);
     document.getElementById('sum-weight').textContent = fmt(total);
     document.getElementById('sum-avg').textContent    = fmt(total / count);
@@ -1182,25 +754,21 @@
       times.length > 1 ? `${times[0]} – ${times[times.length-1]}` : times[0];
   }
 
-  // ── PRICE CALCULATION ─────────────────────────────────────────────────────
   function calcTotal() {
     const box   = document.getElementById('total-box');
     const out   = document.getElementById('total-price');
     const cur   = document.getElementById('currency').value || '$';
     const price = parseFloat(document.getElementById('price-per-kg').value);
     const total = catches.reduce((s, c) => s + c.weight, 0);
-
     if (!isNaN(price) && price > 0 && total > 0) {
       out.textContent = `${cur}${(total * price).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
       box.classList.remove('dim');
     } else {
-      out.textContent = '—';
-      box.classList.add('dim');
+      out.textContent = '—'; box.classList.add('dim');
     }
     save();
   }
 
-  // ── DELETE CATCH ──────────────────────────────────────────────────────────
   function askDelete(idx) {
     pendingDeleteIdx = idx;
     const c = catches[idx];
@@ -1218,7 +786,6 @@
     closeModal('delete-modal');
   }
 
-  // ── FINALISE ──────────────────────────────────────────────────────────────
   function openFinish() {
     if (catches.length === 0) { toast('No catches to finalise.'); return; }
     const vessel     = document.getElementById('vessel').value     || '(unnamed)';
@@ -1231,65 +798,51 @@
     const buyerName  = document.getElementById('buyer-name').value.trim();
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();
-
     let txt = `Vessel: ${vessel}\nSpecies: ${species}\nDate: ${date}\n`
             + `Catches: ${catches.length}  |  Total: ${fmt(total)} kg`;
     if (hasPrice)   txt += `\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
     if (buyerName)  txt += `\nBuyer: ${buyerName}`;
     if (buyerEmail) txt += `  ·  ${buyerEmail}`;
     if (buyerPhone) txt += `  ·  ${buyerPhone}`;
-
     document.getElementById('finish-summary-text').textContent = txt;
     openModal('finish-modal');
   }
 
-  async function finalise() {
+  function finalise() {
     const vessel     = document.getElementById('vessel').value     || '(unnamed)';
     const species    = document.getElementById('species').value    || '(unknown)';
     const date       = document.getElementById('delivery-date').value;
     const cur        = document.getElementById('currency').value || '$';
     const price      = parseFloat(document.getElementById('price-per-kg').value);
     const total      = catches.reduce((s, c) => s + c.weight, 0);
-    const catchCount = catches.length;   // snapshot before any async ops
+    const catchCount = catches.length;   // snapshot to avoid "undefined" bug
     const hasPrice   = !isNaN(price) && price > 0;
     const buyerName  = document.getElementById('buyer-name').value.trim();
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();
 
-    await pushRecord({
-      id:          Date.now(),
-      date, vessel, species,
-      catches:     catches.slice(),
-      totalWeight: total,
-      pricePerKg:  hasPrice ? price : null,
-      currency:    cur,
-      totalPrice:  hasPrice ? parseFloat((total * price).toFixed(2)) : null,
+    pushRecord({
+      id: Date.now(), date, vessel, species,
+      catches: catches.slice(), totalWeight: total,
+      pricePerKg: hasPrice ? price : null, currency: cur,
+      totalPrice: hasPrice ? parseFloat((total * price).toFixed(2)) : null,
       buyerName, buyerEmail, buyerPhone,
-      savedAt:     new Date().toISOString(),
+      savedAt: new Date().toISOString(),
     });
 
-    // ── Build receipt text ──────────────────────────────────────────────────
-    // FIX: use local 'catchCount' variable (not catches.length) to ensure the
-    // count is always a valid number in the receipt, even after async resets.
     let lines = [
       '=== FISH HARVEST DELIVERY RECORD ===',
-      `Date:      ${date}`,
-      `Vessel:    ${vessel}`,
-      `Species:   ${species}`,
+      `Date:      ${date}`, `Vessel:    ${vessel}`, `Species:   ${species}`,
     ];
     if (buyerName)  lines.push(`Buyer:     ${buyerName}`);
     if (buyerEmail) lines.push(`Email:     ${buyerEmail}`);
     if (buyerPhone) lines.push(`Phone:     ${buyerPhone}`);
     lines.push(
-      '',
-      '#   Time    Weight (kg)  Note',
-      '--- ------  -----------  ----',
+      '', '#   Time    Weight (kg)  Note', '--- ------  -----------  ----',
       ...catches.map((c, i) =>
         `${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`
       ),
-      '',
-      `Total catches : ${catchCount}`,
-      `Total weight  : ${fmt(total,2)} kg`
+      '', `Total catches : ${catchCount}`, `Total weight  : ${fmt(total,2)} kg`
     );
     if (hasPrice) {
       lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);
@@ -1298,17 +851,15 @@
     lines.push('', `Generated: ${new Date().toLocaleString()}`);
     const receiptText = lines.join('\n');
 
-    // Download receipt
     const blob = new Blob([receiptText], {type: 'text/plain'});
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
     a.download = `harvest_${date}_${vessel.replace(/\s+/g,'_')}.txt`;
     a.click();
 
     closeModal('finish-modal');
     toast('Delivery saved & receipt downloaded!');
 
-    // Email buyer
     if (buyerEmail) {
       const emailApp = document.getElementById('email-app').value;
       const subject  = encodeURIComponent(`Fish Delivery Receipt – ${date}`);
@@ -1322,61 +873,50 @@
         proton:  `https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${subject}&body=${body}`,
         zoho:    `https://mail.zoho.com/zm/#compose;to=${to};subject=${subject};body=${body}`,
       };
-      const link  = document.createElement('a');
-      link.href   = urls[emailApp] || urls.mailto;
+      const link = document.createElement('a');
+      link.href = urls[emailApp] || urls.mailto;
       link.target = emailApp === 'mailto' ? '_self' : '_blank';
-      link.rel    = 'noopener noreferrer';
+      link.rel = 'noopener noreferrer';
       link.click();
     }
 
-    // Google Sheet
     const gasUrl = document.getElementById('gas-url').value.trim();
     if (gasUrl) {
-      const payload = {
-        vessel, species, date,
-        catches,
-        totalWeight: total,
-        pricePerKg:  hasPrice ? price : null,
-        currency:    cur,
-        totalPrice:  hasPrice ? parseFloat((total*price).toFixed(2)) : null,
+      fetch(gasUrl, { method: 'POST', body: JSON.stringify({
+        vessel, species, date, catches, totalWeight: total,
+        pricePerKg: hasPrice ? price : null, currency: cur,
+        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null,
         buyerName, buyerEmail, buyerPhone
-      };
-      fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) })
+      })})
         .then(() => toast('Data sent to Google Sheet!'))
         .catch(() => toast('Sheet sync failed — check your URL.'));
     }
   }
 
-  // ── RESET ─────────────────────────────────────────────────────────────────
   function openReset() { openModal('reset-modal'); }
-  async function resetAll() {
+  function resetAll() {
     catches = [];
     ['vessel','species','price-per-kg','delivery-date','catch-time',
-     'catch-weight','catch-note','buyer-name','buyer-email','buyer-phone']
-      .forEach(id => {
-        const el = document.getElementById(id);
-        el.value = id === 'delivery-date' ? todayISO() : id === 'catch-time' ? nowTime() : '';
-      });
-    await cloudDelete(stateKey());
+     'catch-weight','catch-note','buyer-name','buyer-email','buyer-phone'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = id === 'delivery-date' ? todayISO() : id === 'catch-time' ? nowTime() : '';
+    });
+    localStorage.removeItem(stateKey());
     render(); calcTotal();
     closeModal('reset-modal');
     toast('Reset. Ready for new delivery.');
   }
 
-  // ── RECORDS VIEW ──────────────────────────────────────────────────────────
-  async function renderRecords() {
-    let recs = await loadRecords();
-
+  function renderRecords() {
+    let recs = loadRecords();
     const from    = document.getElementById('f-from').value;
     const to      = document.getElementById('f-to').value;
     const vessel  = document.getElementById('f-vessel').value.trim().toLowerCase();
     const species = document.getElementById('f-species').value.trim().toLowerCase();
-
     if (from)    recs = recs.filter(r => r.date >= from);
     if (to)      recs = recs.filter(r => r.date <= to);
     if (vessel)  recs = recs.filter(r => r.vessel.toLowerCase().includes(vessel));
     if (species) recs = recs.filter(r => r.species.toLowerCase().includes(species));
-
     const sort = document.getElementById('f-sort').value;
     recs.sort((a, b) => {
       switch (sort) {
@@ -1386,10 +926,9 @@
         case 'weight-desc': return b.totalWeight - a.totalWeight;
         case 'price-asc':   return (a.totalPrice ?? -Infinity) - (b.totalPrice ?? -Infinity);
         case 'price-desc':  return (b.totalPrice ?? -Infinity) - (a.totalPrice ?? -Infinity);
-        default:            return 0;
+        default: return 0;
       }
     });
-
     const totalsEl = document.getElementById('rec-totals');
     if (recs.length > 0) {
       totalsEl.style.display = '';
@@ -1408,16 +947,12 @@
         document.getElementById('rt-price').textContent      = '—';
         document.getElementById('rt-price-unit').textContent = '';
       }
-    } else {
-      totalsEl.style.display = 'none';
-    }
-
+    } else { totalsEl.style.display = 'none'; }
     const listEl = document.getElementById('rec-list');
     if (recs.length === 0) {
       listEl.innerHTML = '<div class="empty-state" style="padding:32px 0;">No records found.</div>';
       return;
     }
-
     listEl.innerHTML = recs.map(r => {
       const catchCount = Array.isArray(r.catches) ? r.catches.length : 0;
       const priceTag   = r.totalPrice !== null
@@ -1439,23 +974,19 @@
     }).join('');
   }
 
-  // ── ADMIN: ADD USER ───────────────────────────────────────────────────────
-  async function adminAddUser() {
+  function adminAddUser() {
     const username = document.getElementById('new-username').value.trim();
     const password = document.getElementById('new-password').value;
     const isAdmin  = document.getElementById('new-is-admin').checked;
     const errEl    = document.getElementById('add-user-error');
-
-    if (!username)            { showFormError(errEl, 'Username is required.'); return; }
-    if (password.length < 4)  { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
-
-    const users = await loadUsers();
+    if (!username)           { showFormError(errEl, 'Username is required.'); return; }
+    if (password.length < 4) { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
+    const users = loadUsers();
     if (users.find(u => u.username === username)) {
       showFormError(errEl, `Username "${username}" already exists.`); return;
     }
-
     users.push({ username, password, isAdmin, createdAt: new Date().toISOString() });
-    await saveUsers(users);
+    saveUsers(users);
     document.getElementById('new-username').value = '';
     document.getElementById('new-password').value = '';
     document.getElementById('new-is-admin').checked = false;
@@ -1463,39 +994,31 @@
     renderAdminUsers();
   }
 
-  // ── ADMIN: DELETE USER ────────────────────────────────────────────────────
   function askDeleteUser(username) {
     pendingDeleteUser = username;
     document.getElementById('delete-user-detail').textContent =
       `This will permanently remove "${username}" and all their data. This cannot be undone.`;
     openModal('delete-user-modal');
   }
-  async function confirmDeleteUser() {
+  function confirmDeleteUser() {
     const username = pendingDeleteUser;
     pendingDeleteUser = null;
     closeModal('delete-user-modal');
     if (!username) return;
-
     if (username === currentUser.username) { toast("You can't delete yourself."); return; }
-
-    const users     = await loadUsers();
+    const users     = loadUsers();
     const remaining = users.filter(u => u.username !== username);
-    if (remaining.filter(u => u.isAdmin).length === 0) {
-      toast("Can't remove the last admin."); return;
-    }
-
-    await cloudDelete(`fish_state_${username}`);
-    await cloudDelete(`fish_records_${username}`);
-    await saveUsers(remaining);
+    if (remaining.filter(u => u.isAdmin).length === 0) { toast("Can't remove the last admin."); return; }
+    localStorage.removeItem(`fish_state_${username}`);
+    localStorage.removeItem(`fish_records_${username}`);
+    saveUsers(remaining);
     toast(`User "${username}" removed.`);
     renderAdminUsers();
   }
 
-  // ── ADMIN: RENDER USER LIST ───────────────────────────────────────────────
-  async function renderAdminUsers() {
-    const users  = await loadUsers();
+  function renderAdminUsers() {
+    const users  = loadUsers();
     const listEl = document.getElementById('user-list');
-
     listEl.innerHTML = users.length === 0
       ? '<div class="empty-state">No users.</div>'
       : users.map(u => `
@@ -1513,14 +1036,11 @@
         </div>`).join('');
   }
 
-  // ── MODAL HELPERS ─────────────────────────────────────────────────────────
   function openModal(id)  { document.getElementById(id).classList.add('open'); }
   function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
   document.querySelectorAll('.modal-overlay').forEach(el => {
     el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
   });
-
   document.getElementById('catch-weight').addEventListener('keydown', e => {
     if (e.key === 'Enter') addCatch();
   });

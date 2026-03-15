@@ -547,24 +547,79 @@
   let currentUser       = null;
 
   // ── STORAGE ───────────────────────────────────────────────────────────────
-  // Uses localStorage throughout. Session also persisted in localStorage so
-  // login survives closing and reopening the browser tab.
+  // GAS URL stored in localStorage (device config).
+  // Users and records stored in Google Sheets via GAS for cross-device sync.
+  // Falls back to localStorage if no GAS URL configured.
 
-  function loadUsers() {
+  function getGasUrl() {
+    return (document.getElementById('gas-url') && document.getElementById('gas-url').value.trim())
+      || localStorage.getItem('fish_gas_url') || '';
+  }
+
+  async function loadUsers() {
+    const url = getGasUrl();
+    if (url) {
+      try {
+        const r = await fetch(`${url}?action=getUsers`);
+        const d = await r.json();
+        if (d.users) {
+          localStorage.setItem('fish_users', JSON.stringify(d.users)); // cache locally
+          return d.users;
+        }
+      } catch(e) {}
+    }
     try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); }
     catch(e) { return []; }
   }
-  function saveUsers(u) { localStorage.setItem('fish_users', JSON.stringify(u)); }
 
-  function stateKey()   { return `fish_state_${currentUser.username}`; }
-  function recordsKey() { return `fish_records_${currentUser.username}`; }
+  async function saveUsers(users) {
+    localStorage.setItem('fish_users', JSON.stringify(users));
+    const url = getGasUrl();
+    if (!url) return;
+    try {
+      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'saveUsers', users }) });
+    } catch(e) {}
+  }
 
-  function loadRecords() {
-    try { return JSON.parse(localStorage.getItem(recordsKey()) || '[]'); }
+  function stateKey() { return `fish_state_${currentUser.username}`; }
+
+  async function loadRecords() {
+    const url = getGasUrl();
+    if (url) {
+      try {
+        const r = await fetch(`${url}?action=getRecords&user=${encodeURIComponent(currentUser.username)}`);
+        const d = await r.json();
+        if (d.records) {
+          localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(d.records));
+          return d.records;
+        }
+      } catch(e) {}
+    }
+    try { return JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]'); }
     catch(e) { return []; }
   }
-  function saveRecords(r) { localStorage.setItem(recordsKey(), JSON.stringify(r)); }
-  function pushRecord(rec) { const r = loadRecords(); r.push(rec); saveRecords(r); }
+
+  async function saveRecords(recs) {
+    localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(recs));
+    const url = getGasUrl();
+    if (!url) return;
+    try {
+      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'saveRecords', user: currentUser.username, records: recs }) });
+    } catch(e) {}
+  }
+
+  async function pushRecord(rec) {
+    try {
+      const cached = JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]');
+      cached.push(rec);
+      localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(cached));
+    } catch(e) {}
+    const url = getGasUrl();
+    if (!url) return;
+    try {
+      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'pushRecord', user: currentUser.username, record: rec }) });
+    } catch(e) {}
+  }
 
   // ── RESET APP DATA ────────────────────────────────────────────────────────
   function resetAppData() {
@@ -574,8 +629,11 @@
   }
 
   // ── AUTH INIT ─────────────────────────────────────────────────────────────
-  (function initAuth() {
-    const users = loadUsers();
+  (async function initAuth() {
+    // Show a loading state while we fetch users
+    document.getElementById('login-subtitle').textContent = 'Loading…';
+    const users = await loadUsers();
+    document.getElementById('login-subtitle').textContent = 'Sign in to continue';
     if (users.length === 0) {
       document.getElementById('login-subtitle').textContent = 'First-time setup';
       document.getElementById('login-form').style.display  = 'none';
@@ -594,7 +652,7 @@
     document.getElementById('login-screen').classList.remove('hidden');
   })();
 
-  function doSetup() {
+  async function doSetup() {
     const username  = document.getElementById('setup-username').value.trim();
     const password  = document.getElementById('setup-password').value;
     const password2 = document.getElementById('setup-password2').value;
@@ -602,19 +660,24 @@
     if (!username)             { showFormError(errEl, 'Username is required.'); return; }
     if (password.length < 4)   { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
     if (password !== password2){ showFormError(errEl, 'Passwords do not match.'); return; }
+    const btn = document.querySelector('#setup-form .btn-primary');
+    btn.textContent = 'Creating…'; btn.disabled = true;
     const admin = { username, password, isAdmin: true, createdAt: new Date().toISOString() };
-    saveUsers([admin]);
+    await saveUsers([admin]);
     currentUser = admin;
     localStorage.setItem('fish_session', JSON.stringify(admin));
     showApp();
   }
 
-  function doLogin() {
+  async function doLogin() {
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
     const errEl    = document.getElementById('login-error');
     if (!username || !password) { showFormError(errEl, 'Please enter username and password.'); return; }
-    const users = loadUsers();
+    const btn = document.querySelector('#login-form .btn-primary');
+    btn.textContent = 'Signing in…'; btn.disabled = true;
+    const users = await loadUsers();
+    btn.textContent = 'Sign In'; btn.disabled = false;
     const found = users.find(u => u.username === username && u.password === password);
     if (!found) { showFormError(errEl, 'Invalid username or password.'); document.getElementById('reset-hint').style.display=''; return; }
     currentUser = found;
@@ -653,7 +716,7 @@
       document.getElementById(id).value = '';
     });
     document.getElementById('currency').value  = '$';
-    document.getElementById('gas-url').value   = '';
+    document.getElementById('gas-url').value   = localStorage.getItem('fish_gas_url') || '';
     document.getElementById('email-app').value = 'mailto';
     const saved = localStorage.getItem(stateKey());
     if (saved) {
@@ -665,7 +728,7 @@
         document.getElementById('delivery-date').value = s.date      || todayISO();
         document.getElementById('price-per-kg').value  = s.price     || '';
         document.getElementById('currency').value      = s.currency  || '$';
-        document.getElementById('gas-url').value       = s.gasUrl    || '';
+        document.getElementById('gas-url').value       = s.gasUrl || localStorage.getItem('fish_gas_url') || '';
         document.getElementById('email-app').value     = s.emailApp  || 'mailto';
         document.getElementById('buyer-name').value    = s.buyerName  || '';
         document.getElementById('buyer-email').value   = s.buyerEmail || '';
@@ -720,7 +783,11 @@
       buyerPhone: document.getElementById('buyer-phone').value,
     }));
   }
-  function saveSetup() { save(); }
+  function saveSetup() {
+    const url = document.getElementById('gas-url').value.trim();
+    if (url) localStorage.setItem('fish_gas_url', url);
+    save();
+  }
 
   function addCatch() {
     const timeEl   = document.getElementById('catch-time');
@@ -822,7 +889,7 @@
     openModal('finish-modal');
   }
 
-  function finalise() {
+  async function finalise() {
     const vessel     = document.getElementById('vessel').value     || '(unnamed)';
     const species    = document.getElementById('species').value    || '(unknown)';
     const date       = document.getElementById('delivery-date').value;
@@ -835,7 +902,7 @@
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();
 
-    pushRecord({
+    await pushRecord({
       id: Date.now(), date, vessel, species,
       catches: catches.slice(), totalWeight: total,
       pricePerKg: hasPrice ? price : null, currency: cur,
@@ -921,8 +988,8 @@
     toast('Reset. Ready for new delivery.');
   }
 
-  function renderRecords() {
-    let recs = loadRecords();
+  async function renderRecords() {
+    let recs = await loadRecords();
     const from    = document.getElementById('f-from').value;
     const to      = document.getElementById('f-to').value;
     const vessel  = document.getElementById('f-vessel').value.trim().toLowerCase();
@@ -988,19 +1055,19 @@
     }).join('');
   }
 
-  function adminAddUser() {
+  async function adminAddUser() {
     const username = document.getElementById('new-username').value.trim();
     const password = document.getElementById('new-password').value;
     const isAdmin  = document.getElementById('new-is-admin').checked;
     const errEl    = document.getElementById('add-user-error');
     if (!username)           { showFormError(errEl, 'Username is required.'); return; }
     if (password.length < 4) { showFormError(errEl, 'Password must be at least 4 characters.'); return; }
-    const users = loadUsers();
+    const users = await loadUsers();
     if (users.find(u => u.username === username)) {
       showFormError(errEl, `Username "${username}" already exists.`); return;
     }
     users.push({ username, password, isAdmin, createdAt: new Date().toISOString() });
-    saveUsers(users);
+    await saveUsers(users);
     document.getElementById('new-username').value = '';
     document.getElementById('new-password').value = '';
     document.getElementById('new-is-admin').checked = false;
@@ -1014,24 +1081,24 @@
       `This will permanently remove "${username}" and all their data. This cannot be undone.`;
     openModal('delete-user-modal');
   }
-  function confirmDeleteUser() {
+  async function confirmDeleteUser() {
     const username = pendingDeleteUser;
     pendingDeleteUser = null;
     closeModal('delete-user-modal');
     if (!username) return;
     if (username === currentUser.username) { toast("You can't delete yourself."); return; }
-    const users     = loadUsers();
+    const users     = await loadUsers();
     const remaining = users.filter(u => u.username !== username);
     if (remaining.filter(u => u.isAdmin).length === 0) { toast("Can't remove the last admin."); return; }
     localStorage.removeItem(`fish_state_${username}`);
     localStorage.removeItem(`fish_records_${username}`);
-    saveUsers(remaining);
+    await saveUsers(remaining);
     toast(`User "${username}" removed.`);
     renderAdminUsers();
   }
 
-  function renderAdminUsers() {
-    const users  = loadUsers();
+  async function renderAdminUsers() {
+    const users  = await loadUsers();
     const listEl = document.getElementById('user-list');
     listEl.innerHTML = users.length === 0
       ? '<div class="empty-state">No users.</div>'

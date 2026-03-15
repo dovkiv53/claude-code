@@ -389,6 +389,22 @@
       lblFrom:'From', lblTo:'To', lblSortBy:'Sort by',
       noCatches:'No catches recorded yet.', noRecords:'No records found.', noUsers:'No users found.',
       you:'you', roleAdmin:'Admin', roleUser:'User', addedOn:'Added',
+      rcptTitle:'=== FISH HARVEST DELIVERY RECORD ===',
+      rcptDateLabel:(d)=>`Date:       ${d}`,
+      rcptVesselLabel:(v)=>`Vessel:     ${v}`,
+      rcptSpeciesLabel:(s)=>`Species:    ${s}`,
+      rcptBuyerLabel:(b)=>`Buyer:      ${b}`,
+      rcptEmailLabel:(e)=>`Email:      ${e}`,
+      rcptPhoneLabel:(p)=>`Phone:      ${p}`,
+      rcptColHeader:'#   Time    Weight (kg)  Note',
+      rcptColDivider:'--- ------  -----------  ----',
+      rcptTotalCatches:'Total catches',
+      rcptTotalWeight:'Total weight',
+      rcptPricePerKg:'Price / kg',
+      rcptTotalPrice:'TOTAL PRICE',
+      rcptGenerated:'Generated',
+      rcptDate:'Date',rcptVessel:'Vessel',rcptSpecies:'Species',rcptBuyer:'Buyer',
+      rcptSubject:(date)=>`Fish Delivery Receipt - ${date}`,
       toastCatchRecorded:(n,w)=>`Catch #${n} recorded \u2014 ${w} kg`,
       toastCatchRemoved:'Catch removed.', toastNoFinaliseCatch:'No catches to finalise.',
       toastSaved:'Delivery saved & receipt downloaded!',
@@ -451,6 +467,22 @@
       lblFrom:'Desde', lblTo:'Hasta', lblSortBy:'Ordenar por',
       noCatches:'No hay capturas registradas.', noRecords:'No se encontraron registros.', noUsers:'No se encontraron usuarios.',
       you:'t\u00fa', roleAdmin:'Administrador', roleUser:'Usuario', addedOn:'Agregado',
+      rcptTitle:'=== REGISTRO DE COSECHA DE PECES ===',
+      rcptDateLabel:(d)=>`Fecha:      ${d}`,
+      rcptVesselLabel:(v)=>`Embarcacion: ${v}`,
+      rcptSpeciesLabel:(s)=>`Especie:    ${s}`,
+      rcptBuyerLabel:(b)=>`Comprador:  ${b}`,
+      rcptEmailLabel:(e)=>`Correo:     ${e}`,
+      rcptPhoneLabel:(p)=>`Telefono:   ${p}`,
+      rcptColHeader:'#   Hora    Peso (kg)    Nota',
+      rcptColDivider:'--- ------  -----------  ----',
+      rcptTotalCatches:'Total capturas',
+      rcptTotalWeight:'Peso total',
+      rcptPricePerKg:'Precio / kg',
+      rcptTotalPrice:'PRECIO TOTAL',
+      rcptGenerated:'Generado',
+      rcptDate:'Fecha',rcptVessel:'Embarcacion',rcptSpecies:'Especie',rcptBuyer:'Comprador',
+      rcptSubject:(date)=>`Recibo de Entrega de Peces - ${date}`,
       toastCatchRecorded:(n,w)=>`Captura #${n} registrada \u2014 ${w} kg`,
       toastCatchRemoved:'Captura eliminada.', toastNoFinaliseCatch:'No hay capturas para finalizar.',
       toastSaved:'\u00a1Entrega guardada y recibo descargado!',
@@ -830,9 +862,9 @@
     const buyerName=document.getElementById('buyer-name').value.trim();
     const buyerEmail=document.getElementById('buyer-email').value.trim();
     const buyerPhone=document.getElementById('buyer-phone').value.trim();
-    let txt=`Vessel: ${vessel}\nSpecies: ${species}\nDate: ${date}\nCatches: ${catches.length}  |  Total: ${fmt(total)} kg`;
-    if(hasPrice)txt+=`\nPrice/kg: ${cur}${fmt(price,2)}  |  Total: ${cur}${(total*price).toFixed(2)}`;
-    if(buyerName)txt+=`\nBuyer: ${buyerName}`;if(buyerEmail)txt+=`  ·  ${buyerEmail}`;if(buyerPhone)txt+=`  ·  ${buyerPhone}`;
+    let txt=`${tr('rcptVessel')}: ${vessel}\n${tr('rcptSpecies')}: ${species}\n${tr('rcptDate')}: ${date}\n${tr('slCatches')}: ${catches.length}  |  ${tr('rcptTotalWeight')}: ${fmt(total)} kg`;
+    if(hasPrice)txt+=`\n${tr('rcptPricePerKg')}: ${cur}${fmt(price,2)}  |  ${tr('rcptTotalPrice')}: ${cur}${(total*price).toFixed(2)}`;
+    if(buyerName)txt+=`\n${tr('rcptBuyer')}: ${buyerName}`;if(buyerEmail)txt+=`  ·  ${buyerEmail}`;if(buyerPhone)txt+=`  ·  ${buyerPhone}`;
     document.getElementById('finish-summary-text').textContent=txt;
     openModal('finish-modal');
   }
@@ -850,12 +882,12 @@
     const buyerEmail=document.getElementById('buyer-email').value.trim();
     const buyerPhone=document.getElementById('buyer-phone').value.trim();
     const rec={id:Date.now(),date,vessel,species,catches:catches.slice(),totalWeight:total,pricePerKg:hasPrice?price:null,currency:cur,totalPrice:hasPrice?parseFloat((total*price).toFixed(2)):null,buyerName,buyerEmail,buyerPhone,savedAt:new Date().toISOString()};
-    let lines=['=== FISH HARVEST DELIVERY RECORD ===',`Date:      ${date}`,`Vessel:    ${vessel}`,`Species:   ${species}`];
-    if(buyerName)lines.push(`Buyer:     ${buyerName}`);if(buyerEmail)lines.push(`Email:     ${buyerEmail}`);if(buyerPhone)lines.push(`Phone:     ${buyerPhone}`);
-    lines.push('','#   Time    Weight (kg)  Note','--- ------  -----------  ----',...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`));
-    lines.push('',`Total catches : ${catchCount}`,`Total weight  : ${fmt(total,2)} kg`);
-    if(hasPrice){lines.push(`Price / kg    : ${cur}${fmt(price,2)}`);lines.push(`TOTAL PRICE   : ${cur}${(total*price).toFixed(2)}`);}
-    lines.push('',`Generated: ${new Date().toLocaleString()}`);
+    let lines=[tr('rcptTitle'),tr('rcptDateLabel',date),tr('rcptVesselLabel',vessel),tr('rcptSpeciesLabel',species)];
+    if(buyerName)lines.push(tr('rcptBuyerLabel',buyerName));if(buyerEmail)lines.push(tr('rcptEmailLabel',buyerEmail));if(buyerPhone)lines.push(tr('rcptPhoneLabel',buyerPhone));
+    lines.push('',tr('rcptColHeader'),tr('rcptColDivider'),...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`));
+    lines.push('',`${tr('rcptTotalCatches').padEnd(14)}: ${catchCount}`,`${tr('rcptTotalWeight').padEnd(14)}: ${fmt(total,2)} kg`);
+    if(hasPrice){lines.push(`${tr('rcptPricePerKg').padEnd(14)}: ${cur}${fmt(price,2)}`);lines.push(`${tr('rcptTotalPrice').padEnd(14)}: ${cur}${(total*price).toFixed(2)}`);}
+    lines.push('',`${tr('rcptGenerated')}: ${new Date().toLocaleString()}`);
     const receiptText=lines.join('\n');
     const blob=new Blob([receiptText],{type:'text/plain'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`harvest_${date}_${vessel.replace(/\s+/g,'_')}.txt`;a.click();
@@ -864,7 +896,7 @@
     await pushRecord(rec);
     if(buyerEmail){
       const emailApp=document.getElementById('email-app').value;
-      const subject=encodeURIComponent(`Fish Delivery Receipt \u2013 ${date}`);
+      const subject=encodeURIComponent(tr('rcptSubject',date));
       const body=encodeURIComponent(receiptText);const to=encodeURIComponent(buyerEmail);
       const urls={mailto:`mailto:${to}?subject=${subject}&body=${body}`,gmail:`https://mail.google.com/mail/?view=cm&to=${to}&su=${subject}&body=${body}`,outlook:`https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}&body=${body}`,yahoo:`https://compose.mail.yahoo.com/?to=${to}&subject=${subject}&body=${body}`,proton:`https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${subject}&body=${body}`,zoho:`https://mail.zoho.com/zm/#compose;to=${to};subject=${subject};body=${body}`};
       const link=document.createElement('a');link.href=urls[emailApp]||urls.mailto;link.target=emailApp==='mailto'?'_self':'_blank';link.rel='noopener noreferrer';link.click();

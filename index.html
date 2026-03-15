@@ -817,6 +817,7 @@
     const total      = catches.reduce((s, c) => s + c.weight, 0);
     const catchCount = catches.length;   // snapshot to avoid "undefined" bug
     const hasPrice   = !isNaN(price) && price > 0;
+    const catchCount = catches.length;
     const buyerName  = document.getElementById('buyer-name').value.trim();
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();

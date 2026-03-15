@@ -557,44 +557,60 @@
     return (typeof FISH_GAS_URL !== 'undefined' && FISH_GAS_URL) || '';
   }
 
-  async function loadUsers() {
+  // ── GAS communication — all via GET to avoid CORS preflight ─────────────
+  async function gasCall(params) {
     const url = getGasUrl();
-    if (url) {
-      try {
-        const r = await fetch(`${url}?action=getUsers`);
-        const d = await r.json();
-        if (d.users) {
-          localStorage.setItem('fish_users', JSON.stringify(d.users)); // cache locally
-          return d.users;
-        }
-      } catch(e) {}
+    if (!url) return null;
+    try {
+      const qs = new URLSearchParams(
+        Object.fromEntries(Object.entries(params).map(([k,v]) => [k, typeof v === 'object' ? JSON.stringify(v) : v]))
+      );
+      const r = await fetch(`${url}?${qs}`);
+      return await r.json();
+    } catch(e) { return null; }
+  }
+
+  async function loadUsers() {
+    const d = await gasCall({ action: 'getUsers' });
+    if (d && Array.isArray(d.users)) {
+      if (d.users.length > 0) {
+        localStorage.setItem('fish_users', JSON.stringify(d.users));
+        return d.users;
+      }
+      // Sheet is empty — migrate local users up if any exist
+      const local = JSON.parse(localStorage.getItem('fish_users') || '[]');
+      if (local.length > 0) {
+        await gasCall({ action: 'saveUsers', users: local });
+        return local;
+      }
+      return [];
     }
+    // GAS unreachable — use local cache
     try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); }
     catch(e) { return []; }
   }
 
   async function saveUsers(users) {
     localStorage.setItem('fish_users', JSON.stringify(users));
-    const url = getGasUrl();
-    if (!url) return;
-    try {
-      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'saveUsers', users }) });
-    } catch(e) {}
+    await gasCall({ action: 'saveUsers', users });
   }
 
   function stateKey() { return `fish_state_${currentUser.username}`; }
 
   async function loadRecords() {
-    const url = getGasUrl();
-    if (url) {
-      try {
-        const r = await fetch(`${url}?action=getRecords&user=${encodeURIComponent(currentUser.username)}`);
-        const d = await r.json();
-        if (d.records) {
-          localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(d.records));
-          return d.records;
-        }
-      } catch(e) {}
+    const d = await gasCall({ action: 'getRecords', user: currentUser.username });
+    if (d && Array.isArray(d.records)) {
+      if (d.records.length > 0) {
+        localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(d.records));
+        return d.records;
+      }
+      // Sheet empty — migrate local records up if any
+      const local = JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]');
+      if (local.length > 0) {
+        await gasCall({ action: 'saveRecords', user: currentUser.username, records: local });
+        return local;
+      }
+      return [];
     }
     try { return JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]'); }
     catch(e) { return []; }
@@ -602,24 +618,17 @@
 
   async function saveRecords(recs) {
     localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(recs));
-    const url = getGasUrl();
-    if (!url) return;
-    try {
-      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'saveRecords', user: currentUser.username, records: recs }) });
-    } catch(e) {}
+    await gasCall({ action: 'saveRecords', user: currentUser.username, records: recs });
   }
 
   async function pushRecord(rec) {
+    // Write to local cache immediately for speed
     try {
       const cached = JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]');
       cached.push(rec);
       localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(cached));
     } catch(e) {}
-    const url = getGasUrl();
-    if (!url) return;
-    try {
-      await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'pushRecord', user: currentUser.username, record: rec }) });
-    } catch(e) {}
+    await gasCall({ action: 'pushRecord', user: currentUser.username, record: rec });
   }
 
   // ── RESET APP DATA ────────────────────────────────────────────────────────
@@ -961,17 +970,7 @@
       link.click();
     }
 
-    const gasUrl = getGasUrl();
-    if (gasUrl) {
-      fetch(gasUrl, { method: 'POST', body: JSON.stringify({
-        vessel, species, date, catches, totalWeight: total,
-        pricePerKg: hasPrice ? price : null, currency: cur,
-        totalPrice: hasPrice ? parseFloat((total*price).toFixed(2)) : null,
-        buyerName, buyerEmail, buyerPhone
-      })})
-        .then(() => toast('Data sent to Google Sheet!'))
-        .catch(() => toast('Sheet sync failed — check your URL.'));
-    }
+    // Record already synced to sheet via pushRecord() above
   }
 
   function openReset() { openModal('reset-modal'); }

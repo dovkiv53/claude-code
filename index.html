@@ -572,6 +572,7 @@
       document.getElementById('login-subtitle').textContent = 'First-time setup';
       document.getElementById('login-form').style.display  = 'none';
       document.getElementById('setup-form').style.display  = '';
+      document.getElementById('login-screen').classList.remove('hidden');
       return;
     }
     // Restore session from localStorage (survives tab close)
@@ -619,6 +620,9 @@
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
+    document.getElementById('login-subtitle').textContent = 'Sign in to continue';
+    document.getElementById('login-form').style.display  = '';
+    document.getElementById('setup-form').style.display  = 'none';
     document.getElementById('login-screen').classList.remove('hidden');
     switchTab('logger');
   }
@@ -626,7 +630,9 @@
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent = currentUser.username;
-    document.getElementById('tab-admin').style.display = currentUser.isAdmin ? 'block' : 'none';
+    // Treat as admin if flagged OR if they are the only user in the system
+    const isAdmin = currentUser.isAdmin || loadUsers().length === 1;
+    document.getElementById('tab-admin').style.display = isAdmin ? 'block' : 'none';
     initUserData();
   }
 
@@ -817,7 +823,6 @@
     const total      = catches.reduce((s, c) => s + c.weight, 0);
     const catchCount = catches.length;   // snapshot to avoid "undefined" bug
     const hasPrice   = !isNaN(price) && price > 0;
-    const catchCount = catches.length;
     const buyerName  = document.getElementById('buyer-name').value.trim();
     const buyerEmail = document.getElementById('buyer-email').value.trim();
     const buyerPhone = document.getElementById('buyer-phone').value.trim();

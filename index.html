@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0d6efd" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Fish Harvest Logger</title>
+  <script src="config.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -320,7 +321,8 @@
         <p id="login-subtitle">Sign in to continue</p>
       </div>
     </div>
-    <div id="login-form">
+    <!-- Login -->
+    <div id="login-form" style="display:none;">
       <div class="login-field">
         <label>Username</label>
         <input type="text" id="login-username" placeholder="Enter your username" autocomplete="username"
@@ -333,11 +335,15 @@
       </div>
       <div class="login-error" id="login-error"></div>
       <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
-      <p id="reset-hint" style="display:none;text-align:center;margin-top:14px;font-size:.8rem;color:var(--muted);">Can't log in? <a href="#" onclick="resetAppData()" style="color:var(--blue);">Reset app data</a> to start over.</p>
+      <p id="reset-hint" style="display:none;text-align:center;margin-top:12px;font-size:.8rem;color:var(--muted);">
+        Can't log in? <a href="#" onclick="resetAppData()" style="color:var(--red);">Reset app data</a>
+      </p>
     </div>
+
+    <!-- First-run setup -->
     <div id="setup-form" style="display:none;">
       <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
-        Welcome! No users exist yet. Create the admin account to get started.
+        No users found. Create the admin account to get started.
       </p>
       <div class="login-field"><label>Admin Username</label><input type="text" id="setup-username" placeholder="Choose a username" /></div>
       <div class="login-field"><label>Password</label><input type="password" id="setup-password" placeholder="At least 4 characters" /></div>
@@ -376,11 +382,7 @@
   <div id="view-logger" class="view active">
     <div class="card">
       <div class="card-title">Setup</div>
-      <div class="meta-item" style="margin-bottom:10px;">
-        <label>Google Apps Script URL</label>
-        <input type="url" id="gas-url" placeholder="https://script.google.com/macros/s/…/exec" style="font-size:.85rem;" oninput="saveSetup()" />
-      </div>
-      <div class="meta-item" style="margin-bottom:10px;">
+      <div class="meta-item">
         <label>Email App for Buyer Receipt</label>
         <select id="email-app" onchange="saveSetup()">
           <option value="mailto">Default mail app (mailto:)</option>
@@ -391,7 +393,6 @@
           <option value="zoho">Zoho Mail (web)</option>
         </select>
       </div>
-      <p style="font-size:.75rem;color:var(--muted);margin:0;">Paste your Web App URL here. Data will be sent to your Google Sheet when you finalise a delivery.</p>
     </div>
 
     <div class="card">
@@ -552,8 +553,8 @@
   // Falls back to localStorage if no GAS URL configured.
 
   function getGasUrl() {
-    return (document.getElementById('gas-url') && document.getElementById('gas-url').value.trim())
-      || localStorage.getItem('fish_gas_url') || '';
+    // config.js defines FISH_GAS_URL — the single source of truth.
+    return (typeof FISH_GAS_URL !== 'undefined' && FISH_GAS_URL) || '';
   }
 
   async function loadUsers() {
@@ -630,18 +631,13 @@
 
   // ── AUTH INIT ─────────────────────────────────────────────────────────────
   (async function initAuth() {
-    // Show a loading state while we fetch users
     document.getElementById('login-subtitle').textContent = 'Loading…';
+    document.getElementById('login-screen').classList.remove('hidden');
+
     const users = await loadUsers();
     document.getElementById('login-subtitle').textContent = 'Sign in to continue';
-    if (users.length === 0) {
-      document.getElementById('login-subtitle').textContent = 'First-time setup';
-      document.getElementById('login-form').style.display  = 'none';
-      document.getElementById('setup-form').style.display  = '';
-      document.getElementById('login-screen').classList.remove('hidden');
-      return;
-    }
-    // Restore session from localStorage (survives tab close)
+
+    // Restore saved session
     try {
       const sess = JSON.parse(localStorage.getItem('fish_session') || 'null');
       if (sess) {
@@ -649,7 +645,15 @@
         if (found) { currentUser = found; showApp(); return; }
       }
     } catch(e) {}
-    document.getElementById('login-screen').classList.remove('hidden');
+
+    if (users.length === 0) {
+      document.getElementById('login-subtitle').textContent = 'First-time setup';
+      document.getElementById('setup-form').style.display  = '';
+      document.getElementById('login-form').style.display  = 'none';
+    } else {
+      document.getElementById('login-form').style.display  = '';
+      document.getElementById('setup-form').style.display  = 'none';
+    }
   })();
 
   async function doSetup() {
@@ -716,7 +720,7 @@
       document.getElementById(id).value = '';
     });
     document.getElementById('currency').value  = '$';
-    document.getElementById('gas-url').value   = localStorage.getItem('fish_gas_url') || '';
+
     document.getElementById('email-app').value = 'mailto';
     const saved = localStorage.getItem(stateKey());
     if (saved) {
@@ -728,7 +732,7 @@
         document.getElementById('delivery-date').value = s.date      || todayISO();
         document.getElementById('price-per-kg').value  = s.price     || '';
         document.getElementById('currency').value      = s.currency  || '$';
-        document.getElementById('gas-url').value       = s.gasUrl || localStorage.getItem('fish_gas_url') || '';
+
         document.getElementById('email-app').value     = s.emailApp  || 'mailto';
         document.getElementById('buyer-name').value    = s.buyerName  || '';
         document.getElementById('buyer-email').value   = s.buyerEmail || '';
@@ -776,18 +780,14 @@
       date:       document.getElementById('delivery-date').value,
       price:      document.getElementById('price-per-kg').value,
       currency:   document.getElementById('currency').value,
-      gasUrl:     document.getElementById('gas-url').value,
+      gasUrl:     getGasUrl(),
       emailApp:   document.getElementById('email-app').value,
       buyerName:  document.getElementById('buyer-name').value,
       buyerEmail: document.getElementById('buyer-email').value,
       buyerPhone: document.getElementById('buyer-phone').value,
     }));
   }
-  function saveSetup() {
-    const url = document.getElementById('gas-url').value.trim();
-    if (url) localStorage.setItem('fish_gas_url', url);
-    save();
-  }
+  function saveSetup() { save(); }
 
   function addCatch() {
     const timeEl   = document.getElementById('catch-time');
@@ -961,7 +961,7 @@
       link.click();
     }
 
-    const gasUrl = document.getElementById('gas-url').value.trim();
+    const gasUrl = getGasUrl();
     if (gasUrl) {
       fetch(gasUrl, { method: 'POST', body: JSON.stringify({
         vessel, species, date, catches, totalWeight: total,

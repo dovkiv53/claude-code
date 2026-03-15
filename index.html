@@ -304,7 +304,7 @@
 </head>
 <body>
 
-<div id="login-screen">
+<div id="login-screen" class="hidden">
   <div class="login-card">
     <div class="login-logo">
       <div class="login-logo-icon">
@@ -333,6 +333,7 @@
       </div>
       <div class="login-error" id="login-error"></div>
       <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+      <p id="reset-hint" style="display:none;text-align:center;margin-top:14px;font-size:.8rem;color:var(--muted);">Can't log in? <a href="#" onclick="resetAppData()" style="color:var(--blue);">Reset app data</a> to start over.</p>
     </div>
     <div id="setup-form" style="display:none;">
       <p style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">
@@ -565,6 +566,13 @@
   function saveRecords(r) { localStorage.setItem(recordsKey(), JSON.stringify(r)); }
   function pushRecord(rec) { const r = loadRecords(); r.push(rec); saveRecords(r); }
 
+  // ── RESET APP DATA ────────────────────────────────────────────────────────
+  function resetAppData() {
+    if (!confirm('This will delete all users and data on this device. Are you sure?')) return;
+    localStorage.clear();
+    location.reload();
+  }
+
   // ── AUTH INIT ─────────────────────────────────────────────────────────────
   (function initAuth() {
     const users = loadUsers();
@@ -608,7 +616,7 @@
     if (!username || !password) { showFormError(errEl, 'Please enter username and password.'); return; }
     const users = loadUsers();
     const found = users.find(u => u.username === username && u.password === password);
-    if (!found) { showFormError(errEl, 'Invalid username or password.'); return; }
+    if (!found) { showFormError(errEl, 'Invalid username or password.'); document.getElementById('reset-hint').style.display=''; return; }
     currentUser = found;
     localStorage.setItem('fish_session', JSON.stringify(found));
     showApp();

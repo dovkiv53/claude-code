@@ -304,7 +304,7 @@
 </head>
 <body>
 
-<div id="login-screen" class="hidden">
+<div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
       <div class="login-logo-icon">
@@ -572,7 +572,6 @@
       document.getElementById('login-subtitle').textContent = 'First-time setup';
       document.getElementById('login-form').style.display  = 'none';
       document.getElementById('setup-form').style.display  = '';
-      document.getElementById('login-screen').classList.remove('hidden');
       return;
     }
     // Restore session from localStorage (survives tab close)
@@ -620,9 +619,6 @@
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
     document.getElementById('login-error').textContent = '';
-    document.getElementById('login-subtitle').textContent = 'Sign in to continue';
-    document.getElementById('login-form').style.display  = '';
-    document.getElementById('setup-form').style.display  = 'none';
     document.getElementById('login-screen').classList.remove('hidden');
     switchTab('logger');
   }
@@ -630,7 +626,7 @@
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent = currentUser.username;
-    document.getElementById('tab-admin').style.display = currentUser.isAdmin ? '' : 'none';
+    document.getElementById('tab-admin').style.display = currentUser.isAdmin ? 'block' : 'none';
     initUserData();
   }
 

@@ -38,7 +38,8 @@
       align-items: center;
       justify-content: center;
       z-index: 200;
-      padding: 24px;
+      padding: 20px;
+      overflow-y: auto;
     }
     #login-screen.hidden { display: none; }
     .login-card {
@@ -50,9 +51,8 @@
       max-width: 420px;
     }
     @media (max-width: 480px) {
-      #login-screen { padding: 12px; justify-content: flex-start; padding-top: 40px; }
-      .login-card { padding: 24px 16px; border-radius: 16px; }
-      .login-logo { margin-bottom: 18px; }
+      #login-screen { padding: 12px 10px; }
+      .login-card { padding: 22px 16px; }
     }
     .login-logo {
       display: flex;
@@ -836,39 +836,35 @@
 
     // Email buyer
     if (buyerEmail) {
-      const emailApp = document.getElementById('email-app').value;
-      const subject  = encodeURIComponent('Fish Delivery Receipt – ' + date);
-      const body     = encodeURIComponent(receiptText);
-      const to       = encodeURIComponent(buyerEmail);
+      const emailSubject = 'Fish Delivery Receipt – ' + date;
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      // On mobile, use app URI schemes so Gmail/Outlook open directly without a browser login page
-      const gmailUrl = isMobile
-        ? 'googlegmail:///co?to=' + to + '&subject=' + subject + '&body=' + body
-        : 'https://mail.google.com/mail/?view=cm&to=' + to + '&su=' + subject + '&body=' + body;
-      const outlookUrl = isMobile
-        ? 'ms-outlook://compose?to=' + to + '&subject=' + subject + '&body=' + body
-        : 'https://outlook.live.com/mail/0/deeplink/compose?to=' + to + '&subject=' + subject + '&body=' + body;
-
-      const urls = {
-        mailto:  'mailto:' + to + '?subject=' + subject + '&body=' + body,
-        gmail:   gmailUrl,
-        outlook: outlookUrl,
-        yahoo:   'https://compose.mail.yahoo.com/?to=' + to + '&subject=' + subject + '&body=' + body,
-        proton:  'https://mail.proton.me/u/0/inbox#compose?to=' + to + '&subject=' + subject + '&body=' + body,
-        zoho:    'https://mail.zoho.com/zm/#compose;to=' + to + ';subject=' + subject + ';body=' + body,
-      };
-
-      const link = document.createElement('a');
-      link.href  = urls[emailApp] || urls.mailto;
-      // On mobile with an app scheme, use _self so the OS can intercept the URL
-      link.target = (isMobile && emailApp !== 'mailto') ? '_self' : (emailApp === 'mailto' ? '_self' : '_blank');
-      link.rel    = 'noopener noreferrer';
-      link.click();
-
-      // Fallback: if Gmail app is not installed, page stays focused after 1.5s — fall back to mailto:
-      if (isMobile && emailApp === 'gmail') {
-        setTimeout(function() { if (document.hasFocus()) window.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body; }, 1500);
+      // On mobile: use Web Share API which opens the native share sheet (Gmail, WhatsApp, etc.)
+      // This avoids the mailto: URI length limit that silently drops the body on mobile.
+      if (isMobile && navigator.share) {
+        navigator.share({
+          title: emailSubject,
+          text:  'To: ' + buyerEmail + '\n\n' + receiptText,
+        }).catch(function() {});
+      } else {
+        // Desktop: open chosen email app via URL
+        const emailApp = document.getElementById('email-app').value;
+        const subject  = encodeURIComponent(emailSubject);
+        const body     = encodeURIComponent(receiptText);
+        const to       = encodeURIComponent(buyerEmail);
+        const urls = {
+          mailto:  'mailto:' + to + '?subject=' + subject + '&body=' + body,
+          gmail:   'https://mail.google.com/mail/?view=cm&to=' + to + '&su=' + subject + '&body=' + body,
+          outlook: 'https://outlook.live.com/mail/0/deeplink/compose?to=' + to + '&subject=' + subject + '&body=' + body,
+          yahoo:   'https://compose.mail.yahoo.com/?to=' + to + '&subject=' + subject + '&body=' + body,
+          proton:  'https://mail.proton.me/u/0/inbox#compose?to=' + to + '&subject=' + subject + '&body=' + body,
+          zoho:    'https://mail.zoho.com/zm/#compose;to=' + to + ';subject=' + subject + ';body=' + body,
+        };
+        const link = document.createElement('a');
+        link.href   = urls[emailApp] || urls.mailto;
+        link.target = emailApp === 'mailto' ? '_self' : '_blank';
+        link.rel    = 'noopener noreferrer';
+        link.click();
       }
     }
 

@@ -15,16 +15,17 @@
       --border:#dee2e6;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column; }
-    #login-screen { position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;padding:24px; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;padding:20px;overflow-y:auto; }
     #login-screen.hidden { display:none; }
-    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%;max-width:380px; }
+    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:28px 20px;width:100%;max-width:420px; }
+    @media(max-width:430px){#login-screen{padding:12px;}.login-card{padding:22px 14px;}}
     .login-logo { display:flex;align-items:center;gap:12px;margin-bottom:24px; }
     .login-logo-icon { background:var(--blue);border-radius:12px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
     .login-logo h1 { font-size:1.1rem;font-weight:800;color:var(--text);line-height:1.2; }
     .login-logo p  { font-size:.78rem;color:var(--muted);margin-top:2px; }
     .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:12px; }
     .login-field label { font-size:.75rem;color:var(--muted);font-weight:600; }
-    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;font-size:.95rem;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card); }
+    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;font-size:16px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
     .login-error { font-size:.82rem;color:var(--red);margin-bottom:10px;min-height:18px; }
     header { background:var(--blue);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
@@ -615,7 +616,6 @@
     const d = await gasCall({ action:'getUsers' });
     if (d && Array.isArray(d.users)) {
       if (d.users.length > 0) { localStorage.setItem('fish_users', JSON.stringify(d.users)); return d.users; }
-      // Sheet empty — migrate local users up
       const local = JSON.parse(localStorage.getItem('fish_users') || '[]');
       if (local.length > 0) { await gasCall({ action:'saveUsers', users:local }); return local; }
       return [];
@@ -731,7 +731,6 @@
     document.getElementById('header-sub').textContent=currentUser.username;
     const isAdmin = currentUser.isAdmin || loadUsers().then(u=>u.length===1);
     document.getElementById('tab-admin').style.display = (currentUser.isAdmin || true) ? 'block' : 'none';
-    // Re-check after users load
     loadUsers().then(users => {
       const admin = currentUser.isAdmin || users.length === 1;
       document.getElementById('tab-admin').style.display = admin ? 'block' : 'none';
@@ -899,7 +898,14 @@
       const subject=encodeURIComponent(tr('rcptSubject',date));
       const body=encodeURIComponent(receiptText);const to=encodeURIComponent(buyerEmail);
       const urls={mailto:`mailto:${to}?subject=${subject}&body=${body}`,gmail:`https://mail.google.com/mail/?view=cm&to=${to}&su=${subject}&body=${body}`,outlook:`https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}&body=${body}`,yahoo:`https://compose.mail.yahoo.com/?to=${to}&subject=${subject}&body=${body}`,proton:`https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${subject}&body=${body}`,zoho:`https://mail.zoho.com/zm/#compose;to=${to};subject=${subject};body=${body}`};
-      const link=document.createElement('a');link.href=urls[emailApp]||urls.mailto;link.target=emailApp==='mailto'?'_self':'_blank';link.rel='noopener noreferrer';link.click();
+      const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if(isMobile&&navigator.share){
+        navigator.share({title:tr('rcptSubject',date),text:receiptText}).catch(()=>{
+          const link=document.createElement('a');link.href=urls.mailto;link.target='_self';link.rel='noopener noreferrer';link.click();
+        });
+      } else {
+        const link=document.createElement('a');link.href=urls[emailApp]||urls.mailto;link.target=emailApp==='mailto'?'_self':'_blank';link.rel='noopener noreferrer';link.click();
+      }
     }
   }
 

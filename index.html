@@ -6,35 +6,39 @@
   <meta name="theme-color" content="#0d6efd" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Fish Harvest Logger</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <script src="config.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 18px; }
+    @media (max-width: 380px) { html { font-size: 17px; } }
     :root {
       --blue:#0d6efd;--green:#198754;--red:#dc3545;
       --bg:#f0f4f8;--card:#ffffff;--text:#1a1a2e;--muted:#6c757d;
       --border:#dee2e6;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden; }
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px; }
-    #login-screen .login-card-wrap { width:100%;max-width:420px; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
+    #login-screen .login-card-wrap { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px; }
     #login-screen.hidden { display:none; }
-    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:28px 22px;width:100%;max-width:420px; }
-    .login-logo { display:flex;align-items:center;gap:10px;margin-bottom:16px; }
-    .login-logo-icon { background:var(--blue);border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-    .login-logo h1 { font-size:1.25rem;font-weight:800;color:var(--text);line-height:1.2; }
-    .login-logo p  { font-size:.9rem;color:var(--muted);margin-top:2px; }
+    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%;max-width:420px; }
+    .login-logo { display:flex;align-items:center;gap:14px;margin-bottom:24px; }
+    .login-logo-icon { background:var(--blue);border-radius:12px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .login-logo h1 { font-size:26px;font-weight:800;color:var(--text);line-height:1.2; }
+    .login-logo p  { font-size:18px;color:var(--muted);margin-top:2px; }
     .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:10px; }
-    .login-field label { font-size:.9rem;color:var(--muted);font-weight:600; }
-    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
+    .login-field label { font-size:18px;color:var(--muted);font-weight:600; }
+    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:14px 14px;font-size:20px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
-    .login-error { font-size:.9rem;color:var(--red);margin-bottom:10px;min-height:18px; }
-    header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
+    .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
+    header { background:var(--blue);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2); }
     header svg { flex-shrink:0; }
     header h1 { font-size:17px;font-weight:700;line-height:1.2; }
-    header p  { display:none; }
+    header p  { font-size:12px;opacity:.85; }
     .header-info { flex:1; }
-    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
+    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:5px 9px;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
     #tab-bar { background:var(--card);display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06); }
     .tab { flex:1;padding:11px;background:none;border:none;font-size:16px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
@@ -57,7 +61,7 @@
     .catch-form input { border:1.5px solid var(--border);border-radius:8px;padding:13px 14px;font-size:20px;color:var(--text);outline:none;transition:border-color .15s;width:100%;-webkit-appearance:none;background:var(--card); }
     .catch-form input:focus { border-color:var(--blue); }
     .catch-form .field.full { grid-column:1; }
-    .btn { display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;padding:15px 18px;font-size:1rem;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+    .btn { display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;padding:16px 18px;font-size:20px;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
     .btn:active { transform:scale(.97);filter:brightness(.92); }
     .btn-primary  { background:var(--blue);  color:#fff;width:100%; }
     .btn-success  { background:var(--green); color:#fff;width:100%; }
@@ -85,7 +89,7 @@
     .price-row input { border:1.5px solid var(--border);border-radius:8px;padding:14px;font-size:22px;font-weight:700;color:var(--text);outline:none;width:100%;-webkit-appearance:none;background:var(--card); }
     .price-row input:focus { border-color:var(--green); }
     .total-price-box { background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border-radius:12px;padding:18px;text-align:center;margin-bottom:16px; }
-    .total-price-box .label  { font-size:.8rem;opacity:.85;font-weight:600;text-transform:uppercase;letter-spacing:.07em; }
+    .total-price-box .label  { font-size:14px;opacity:.85;font-weight:600;text-transform:uppercase;letter-spacing:.07em; }
     .total-price-box .amount { font-size:42px;font-weight:800;line-height:1.15; }
     .total-price-box.dim { background:linear-gradient(135deg,#78909c,#90a4ae); }
     #toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:#fff;padding:12px 22px;border-radius:50px;font-size:15px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:transform .25s ease;z-index:100;max-width:90vw;text-align:center; }
@@ -118,7 +122,7 @@
     .rec-pill.green { background:#e8f5e9;color:var(--green); }
     .user-item { border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fafdff;margin-bottom:8px; }
     .user-item:last-child { margin-bottom:0; }
-    .role-badge { display:inline-block;border-radius:50px;padding:3px 10px;font-size:.82rem;font-weight:700; }
+    .role-badge { display:inline-block;border-radius:50px;padding:3px 10px;font-size:13px;font-weight:700; }
     .role-badge.admin { background:#fff3cd;color:#856404; }
     .role-badge.user  { background:#e8f4fd;color:#0c63e4; }
     .admin-form { display:flex;flex-direction:column;gap:10px; }
@@ -181,7 +185,7 @@
     <p id="header-sub">—</p>
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
-  <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
+  <button class="btn-logout" id="btn-logout" onclick="logout()">Sign out</button>
 </header>
 
 <nav id="tab-bar">
@@ -526,7 +530,7 @@
   function applyLang() {
     document.getElementById('btn-lang').textContent = lang === 'en' ? 'ES' : 'EN';
     setTxt('app-title','appTitle'); setTxt('login-title','appTitle');
-    // btn-logout is icon only setTxt('tab-logger','tabLogger');
+    setTxt('btn-logout','signOut'); setTxt('tab-logger','tabLogger');
     setTxt('tab-records','tabHistory'); setTxt('tab-admin','tabAdmin');
     setTxt('ct-setup','ctSetup'); setTxt('ct-delivery','ctDelivery');
     setTxt('ct-buyer','ctBuyer'); setTxt('ct-addcatch','ctAddCatch');

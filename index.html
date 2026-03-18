@@ -20,8 +20,8 @@
       --border:#dee2e6;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden; }
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
-    #login-screen .login-card-wrap { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto; }
+    #login-screen .login-card-wrap { width:100%;max-width:420px; }
     #login-screen.hidden { display:none; }
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%;max-width:420px; }
     .login-logo { display:flex;align-items:center;gap:14px;margin-bottom:24px; }
@@ -33,10 +33,10 @@
     .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:14px 14px;font-size:20px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
-    header { background:var(--blue);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2); }
+    header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
     header svg { flex-shrink:0; }
     header h1 { font-size:17px;font-weight:700;line-height:1.2; }
-    header p  { font-size:12px;opacity:.85; }
+    header p  { font-size:12px;opacity:.85;display:none; }
     .header-info { flex:1; }
     .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:5px 9px;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
@@ -185,7 +185,7 @@
     <p id="header-sub">—</p>
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
-  <button class="btn-logout" id="btn-logout" onclick="logout()">Sign out</button>
+  <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
 </header>
 
 <nav id="tab-bar">
@@ -530,7 +530,7 @@
   function applyLang() {
     document.getElementById('btn-lang').textContent = lang === 'en' ? 'ES' : 'EN';
     setTxt('app-title','appTitle'); setTxt('login-title','appTitle');
-    setTxt('btn-logout','signOut'); setTxt('tab-logger','tabLogger');
+    // btn-logout is icon only, no text update setTxt('tab-logger','tabLogger');
     setTxt('tab-records','tabHistory'); setTxt('tab-admin','tabAdmin');
     setTxt('ct-setup','ctSetup'); setTxt('ct-delivery','ctDelivery');
     setTxt('ct-buyer','ctBuyer'); setTxt('ct-addcatch','ctAddCatch');
@@ -1007,3 +1007,4 @@
 </script>
 </body>
 </html>
+

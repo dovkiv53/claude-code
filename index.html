@@ -179,18 +179,12 @@
 </div>
 
 <header>
-  <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-    <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
-    <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="rgba(255,255,255,.7)"/>
-    <circle cx="9" cy="14" r="1.5" fill="white"/>
-    <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  </svg>
   <div class="header-info">
     <h1 id="app-title">Fish Logger</h1>
     <p id="header-sub">—</p>
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
-  <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
+  <button class="btn-logout" id="btn-logout" onclick="logout()">Sign out</button>
 </header>
 
 <nav id="tab-bar">
@@ -518,7 +512,7 @@
   function applyLang() {
     document.getElementById('btn-lang').textContent = lang === 'en' ? 'ES' : 'EN';
     setTxt('app-title','appTitle'); setTxt('login-title','appTitle');
-    // btn-logout is ⏻ icon only — skip text
+    setTxt('btn-logout','signOut');
     setTxt('tab-logger','tabLogger'); setTxt('tab-records','tabHistory'); setTxt('tab-admin','tabAdmin');
     setTxt('ct-setup','ctSetup'); setTxt('ct-delivery','ctDelivery'); setTxt('ct-buyer','ctBuyer');
     setTxt('ct-addcatch','ctAddCatch'); setTxt('ct-catches','ctCatches'); setTxt('ct-summary','ctSummary');

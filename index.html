@@ -19,8 +19,8 @@
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;width:100%;max-width:100%; }
 
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
-    #login-screen .login-card-wrap { padding:24px;box-sizing:border-box; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box; }
+    #login-screen .login-card-wrap { width:100%;max-width:420px; }
     #login-screen.hidden { display:none; }
 
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
@@ -605,28 +605,14 @@
   }
   function stateKey() { return `fish_state_${currentUser.username}`; }
 
-  // Center login card vertically
-  function centerLogin() {
-    const screen = document.getElementById('login-screen');
-    const wrap = screen.querySelector('.login-card-wrap');
-    const card = screen.querySelector('.login-card');
-    if (screen.classList.contains('hidden')) return;
-    const available = window.innerHeight;
-    const cardH = card.offsetHeight;
-    const top = Math.max(24, (available - cardH) / 2);
-    wrap.style.paddingTop = top + 'px';
-    wrap.style.paddingBottom = '24px';
-  }
-  window.addEventListener('resize', centerLogin);
+
 
   (async function initAuth() {
     applyLang();
     document.getElementById('login-subtitle').textContent = tr('loading');
     document.getElementById('login-screen').classList.remove('hidden');
-    setTimeout(centerLogin, 50);
     const users = await loadUsers();
     document.getElementById('login-subtitle').textContent = tr('signIn');
-    setTimeout(centerLogin, 50);
     try {
       const sess = JSON.parse(localStorage.getItem('fish_session') || 'null');
       if (sess) {

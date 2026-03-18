@@ -22,8 +22,7 @@
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden; }
 
     #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
-    #login-screen .login-card-wrap { min-height:100%;display:table;width:100%; }
-    #login-screen .login-card-inner { display:table-cell;vertical-align:middle;padding:24px; }
+    #login-screen .login-card-wrap { padding:24px;box-sizing:border-box; }
     #login-screen.hidden { display:none; }
 
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
@@ -37,9 +36,8 @@
     .login-field input:focus { border-color:var(--blue); }
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
-    /* HEADER — compact, username subtitle hidden, sign-out is icon only */
-    header { background:var(--blue);color:#fff;padding:8px 0;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
-    header .header-inner { max-width:540px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:8px;width:100%; }
+    /* HEADER — compact, constrained to content width */
+    header { background:var(--blue);color:#fff;padding:8px 16px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;max-width:540px;margin:0 auto;width:100%; }
     header svg { flex-shrink:0; }
     header h1 { font-size:17px;font-weight:700;line-height:1.2; }
     header p  { display:none; }
@@ -47,8 +45,7 @@
     .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
 
-    #tab-bar { background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06); }
-    #tab-bar .tab-inner { max-width:540px;margin:0 auto;display:flex;width:100%; }
+    #tab-bar { background:var(--card);display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06);max-width:540px;margin:0 auto;width:100%; }
     .tab { flex:1;padding:11px;background:none;border:none;font-size:16px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
@@ -145,7 +142,6 @@
 
 <div id="login-screen" class="hidden">
   <div class="login-card-wrap">
-  <div class="login-card-inner">
   <div class="login-card" style="max-width:420px;margin:0 auto;">
     <div class="login-logo">
       <div class="login-logo-icon">
@@ -180,11 +176,9 @@
     </div>
   </div>
   </div>
-  </div>
 </div>
 
 <header>
-  <div class="header-inner">
   <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
     <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
     <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="rgba(255,255,255,.7)"/>
@@ -197,15 +191,12 @@
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
   <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
-  </div>
 </header>
 
 <nav id="tab-bar">
-  <div class="tab-inner">
   <button class="tab active" id="tab-logger"  onclick="switchTab('logger')">Logger</button>
   <button class="tab"        id="tab-records" onclick="switchTab('records')">History</button>
   <button class="tab"        id="tab-admin"   onclick="switchTab('admin')">Admin</button>
-  </div>
 </nav>
 
 <main>
@@ -631,12 +622,26 @@
   }
   function stateKey() { return `fish_state_${currentUser.username}`; }
 
+  // Center login card vertically
+  function centerLogin() {
+    const screen = document.getElementById('login-screen');
+    const card = screen.querySelector('.login-card-wrap');
+    if (!screen.classList.contains('hidden')) {
+      const gap = Math.max(0, (screen.clientHeight - card.scrollHeight) / 2);
+      screen.scrollTop = 0;
+      card.style.paddingTop = gap + 'px';
+    }
+  }
+  window.addEventListener('resize', centerLogin);
+  setTimeout(centerLogin, 100);
+
   (async function initAuth() {
     applyLang();
     document.getElementById('login-subtitle').textContent = tr('loading');
     document.getElementById('login-screen').classList.remove('hidden');
     const users = await loadUsers();
     document.getElementById('login-subtitle').textContent = tr('signIn');
+    centerLogin();
     try {
       const sess = JSON.parse(localStorage.getItem('fish_session') || 'null');
       if (sess) {

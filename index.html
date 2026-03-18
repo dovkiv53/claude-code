@@ -20,26 +20,32 @@
       --border:#dee2e6;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden; }
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
-    #login-screen .login-card-wrap { min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px; }
+
+    /* LOGIN — fixed overlay, flex centering, no wrapper tricks needed */
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto; }
+    #login-screen .login-card-wrap { width:100%;max-width:420px; }
     #login-screen.hidden { display:none; }
-    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%;max-width:420px; }
+
+    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
     .login-logo { display:flex;align-items:center;gap:14px;margin-bottom:24px; }
     .login-logo-icon { background:var(--blue);border-radius:12px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
     .login-logo h1 { font-size:26px;font-weight:800;color:var(--text);line-height:1.2; }
     .login-logo p  { font-size:18px;color:var(--muted);margin-top:2px; }
     .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:10px; }
     .login-field label { font-size:18px;color:var(--muted);font-weight:600; }
-    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:14px 14px;font-size:20px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
+    .login-field input { border:1.5px solid var(--border);border-radius:8px;padding:14px;font-size:20px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
-    header { background:var(--blue);color:#fff;padding:10px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2); }
+
+    /* HEADER — compact, username subtitle hidden, sign-out is icon only */
+    header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
     header svg { flex-shrink:0; }
     header h1 { font-size:17px;font-weight:700;line-height:1.2; }
-    header p  { font-size:12px;opacity:.85; }
+    header p  { display:none; }
     .header-info { flex:1; }
-    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:5px 9px;font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
+    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
+
     #tab-bar { background:var(--card);display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06); }
     .tab { flex:1;padding:11px;background:none;border:none;font-size:16px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
@@ -185,7 +191,7 @@
     <p id="header-sub">—</p>
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
-  <button class="btn-logout" id="btn-logout" onclick="logout()">Sign out</button>
+  <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
 </header>
 
 <nav id="tab-bar">
@@ -351,7 +357,6 @@
 <script>
   let catches = [], pendingDeleteIdx = null, pendingDeleteUser = null, currentUser = null;
 
-  // ── LANGUAGE ───────────────────────────────────────────────────────────────
   let lang = localStorage.getItem('fish_lang') || 'en';
   const TR = {
     en: {
@@ -406,26 +411,19 @@
       rcptPhoneLabel:(p)=>`Phone:      ${p}`,
       rcptColHeader:'#   Time    Weight (kg)  Note',
       rcptColDivider:'--- ------  -----------  ----',
-      rcptTotalCatches:'Total catches',
-      rcptTotalWeight:'Total weight',
-      rcptPricePerKg:'Price / kg',
-      rcptTotalPrice:'TOTAL PRICE',
-      rcptGenerated:'Generated',
+      rcptTotalCatches:'Total catches', rcptTotalWeight:'Total weight',
+      rcptPricePerKg:'Price / kg', rcptTotalPrice:'TOTAL PRICE', rcptGenerated:'Generated',
       rcptDate:'Date',rcptVessel:'Vessel',rcptSpecies:'Species',rcptBuyer:'Buyer',
       rcptSubject:(date)=>`Fish Delivery Receipt - ${date}`,
       toastCatchRecorded:(n,w)=>`Catch #${n} recorded \u2014 ${w} kg`,
       toastCatchRemoved:'Catch removed.', toastNoFinaliseCatch:'No catches to finalise.',
       toastSaved:'Delivery saved & receipt downloaded!',
-      toastSheetOk:'Saved to Google Sheet \u2713',
-      toastSheetFail:'Sheet sync failed \u2014 check config.js',
+      toastSheetOk:'Saved to Google Sheet \u2713', toastSheetFail:'Sheet sync failed \u2014 check config.js',
       toastReset:'Reset. Ready for new delivery.',
       toastUserAdded:(u)=>`User "${u}" added.`, toastUserRemoved:(u)=>`User "${u}" removed.`,
-      errCantDeleteSelf:"You can't delete yourself.",
-      errCantRemoveLast:"Can't remove the last admin.",
-      errUsernameReq:'Username is required.',
-      errPassMin:'Password must be at least 4 characters.',
-      errPassMatch:'Passwords do not match.',
-      errPassCredentials:'Please enter username and password.',
+      errCantDeleteSelf:"You can't delete yourself.", errCantRemoveLast:"Can't remove the last admin.",
+      errUsernameReq:'Username is required.', errPassMin:'Password must be at least 4 characters.',
+      errPassMatch:'Passwords do not match.', errPassCredentials:'Please enter username and password.',
       errInvalidCreds:'Invalid username or password.',
       errUserExists:(u)=>`Username "${u}" already exists.`,
       resetConfirm:'This will delete all users and data on this device. Are you sure?',
@@ -484,26 +482,19 @@
       rcptPhoneLabel:(p)=>`Telefono:   ${p}`,
       rcptColHeader:'#   Hora    Peso (kg)    Nota',
       rcptColDivider:'--- ------  -----------  ----',
-      rcptTotalCatches:'Total capturas',
-      rcptTotalWeight:'Peso total',
-      rcptPricePerKg:'Precio / kg',
-      rcptTotalPrice:'PRECIO TOTAL',
-      rcptGenerated:'Generado',
+      rcptTotalCatches:'Total capturas', rcptTotalWeight:'Peso total',
+      rcptPricePerKg:'Precio / kg', rcptTotalPrice:'PRECIO TOTAL', rcptGenerated:'Generado',
       rcptDate:'Fecha',rcptVessel:'Embarcacion',rcptSpecies:'Especie',rcptBuyer:'Comprador',
       rcptSubject:(date)=>`Recibo de Entrega de Peces - ${date}`,
       toastCatchRecorded:(n,w)=>`Captura #${n} registrada \u2014 ${w} kg`,
       toastCatchRemoved:'Captura eliminada.', toastNoFinaliseCatch:'No hay capturas para finalizar.',
       toastSaved:'\u00a1Entrega guardada y recibo descargado!',
-      toastSheetOk:'Guardado en Google Sheets \u2713',
-      toastSheetFail:'Error al sincronizar \u2014 verifica config.js',
+      toastSheetOk:'Guardado en Google Sheets \u2713', toastSheetFail:'Error al sincronizar \u2014 verifica config.js',
       toastReset:'Reiniciado. Listo para nueva entrega.',
       toastUserAdded:(u)=>`Usuario "${u}" agregado.`, toastUserRemoved:(u)=>`Usuario "${u}" eliminado.`,
-      errCantDeleteSelf:'No puedes eliminarte a ti mismo.',
-      errCantRemoveLast:'No se puede eliminar el \u00faltimo administrador.',
-      errUsernameReq:'El nombre de usuario es obligatorio.',
-      errPassMin:'La contrase\u00f1a debe tener al menos 4 caracteres.',
-      errPassMatch:'Las contrase\u00f1as no coinciden.',
-      errPassCredentials:'Por favor ingresa usuario y contrase\u00f1a.',
+      errCantDeleteSelf:'No puedes eliminarte a ti mismo.', errCantRemoveLast:'No se puede eliminar el \u00faltimo administrador.',
+      errUsernameReq:'El nombre de usuario es obligatorio.', errPassMin:'La contrase\u00f1a debe tener al menos 4 caracteres.',
+      errPassMatch:'Las contrase\u00f1as no coinciden.', errPassCredentials:'Por favor ingresa usuario y contrase\u00f1a.',
       errInvalidCreds:'Usuario o contrase\u00f1a incorrectos.',
       errUserExists:(u)=>`El usuario "${u}" ya existe.`,
       resetConfirm:'\u00bfEsto eliminar\u00e1 todos los usuarios y datos en este dispositivo. Est\u00e1s seguro?',
@@ -516,39 +507,32 @@
     const v = TR[lang][key] ?? TR.en[key] ?? key;
     return typeof v === 'function' ? v(...args) : v;
   }
-
   function toggleLang() {
     lang = lang === 'en' ? 'es' : 'en';
     localStorage.setItem('fish_lang', lang);
     document.getElementById('btn-lang').textContent = lang === 'en' ? 'ES' : 'EN';
     applyLang();
   }
-
   function setTxt(id, key, ...a) { const el=document.getElementById(id); if(el) el.textContent=tr(key,...a); }
   function setPh(id, key)         { const el=document.getElementById(id); if(el) el.placeholder=tr(key); }
 
   function applyLang() {
     document.getElementById('btn-lang').textContent = lang === 'en' ? 'ES' : 'EN';
     setTxt('app-title','appTitle'); setTxt('login-title','appTitle');
-    setTxt('btn-logout','signOut'); setTxt('tab-logger','tabLogger');
-    setTxt('tab-records','tabHistory'); setTxt('tab-admin','tabAdmin');
-    setTxt('ct-setup','ctSetup'); setTxt('ct-delivery','ctDelivery');
-    setTxt('ct-buyer','ctBuyer'); setTxt('ct-addcatch','ctAddCatch');
-    setTxt('ct-catches','ctCatches'); setTxt('ct-summary','ctSummary');
+    // btn-logout is ⏻ icon only — skip text
+    setTxt('tab-logger','tabLogger'); setTxt('tab-records','tabHistory'); setTxt('tab-admin','tabAdmin');
+    setTxt('ct-setup','ctSetup'); setTxt('ct-delivery','ctDelivery'); setTxt('ct-buyer','ctBuyer');
+    setTxt('ct-addcatch','ctAddCatch'); setTxt('ct-catches','ctCatches'); setTxt('ct-summary','ctSummary');
     setTxt('ct-filter','ctFilter'); setTxt('ct-totals','ctTotals');
     setTxt('ct-add-user','ctAddUser'); setTxt('ct-all-users','ctAllUsers');
     setTxt('lbl-email-app','lblEmailApp'); setTxt('opt-mailto','lblDefaultMail');
-    setTxt('lbl-vessel','lblVessel'); setTxt('lbl-date','lblDate');
-    setTxt('lbl-species','lblSpecies'); setTxt('lbl-buyer-name','lblBuyerName');
-    setTxt('lbl-buyer-email','lblBuyerEmail'); setTxt('lbl-buyer-phone','lblBuyerPhone');
-    setTxt('lbl-time','lblTime'); setTxt('lbl-weight','lblWeight');
-    setTxt('lbl-note','lblNote'); setTxt('lbl-currency','lblCurrency');
-    setTxt('lbl-price-per-kg','lblPricePerKg'); setTxt('lbl-total-price','lblTotalPrice');
+    setTxt('lbl-vessel','lblVessel'); setTxt('lbl-date','lblDate'); setTxt('lbl-species','lblSpecies');
+    setTxt('lbl-buyer-name','lblBuyerName'); setTxt('lbl-buyer-email','lblBuyerEmail'); setTxt('lbl-buyer-phone','lblBuyerPhone');
+    setTxt('lbl-time','lblTime'); setTxt('lbl-weight','lblWeight'); setTxt('lbl-note','lblNote');
+    setTxt('lbl-currency','lblCurrency'); setTxt('lbl-price-per-kg','lblPricePerKg'); setTxt('lbl-total-price','lblTotalPrice');
     setTxt('lbl-username','lblUsername'); setTxt('lbl-password','lblPassword');
-    setTxt('lbl-admin-username','lblAdminUsername');
-    setTxt('lbl-setup-password','lblPassword');
-    setTxt('lbl-confirm-password','lblConfirmPassword');
-    setTxt('lbl-grant-admin','lblGrantAdmin');
+    setTxt('lbl-admin-username','lblAdminUsername'); setTxt('lbl-setup-password','lblPassword');
+    setTxt('lbl-confirm-password','lblConfirmPassword'); setTxt('lbl-grant-admin','lblGrantAdmin');
     setTxt('lbl-new-username','lblNewUsername'); setTxt('lbl-new-password','lblNewPassword');
     setTxt('btn-record-catch','btnRecordCatch'); setTxt('btn-finalise','btnFinalise');
     setTxt('btn-reset','btnReset'); setTxt('btn-add-user','btnAddUser');
@@ -556,21 +540,18 @@
     setTxt('btn-cancel-reset','btnCancel'); setTxt('btn-clear-reset','btnClearReset');
     setTxt('btn-cancel-del','btnCancel'); setTxt('btn-remove','btnRemove');
     setTxt('btn-cancel-del-user','btnCancel'); setTxt('btn-remove-user','btnRemoveUser');
-    setTxt('sl-catches','slCatches'); setTxt('su-hauls','suHauls');
-    setTxt('sl-weight','slWeight'); setTxt('sl-avg','slAvg');
-    setTxt('sl-dur','slDur'); setTxt('su-firstlast','suFirstLast');
+    setTxt('sl-catches','slCatches'); setTxt('su-hauls','suHauls'); setTxt('sl-weight','slWeight');
+    setTxt('sl-avg','slAvg'); setTxt('sl-dur','slDur'); setTxt('su-firstlast','suFirstLast');
     setTxt('sl-deliveries','slDeliveries'); setTxt('su-records','suRecords');
     setTxt('sl-total-value','slTotalValue'); setTxt('sl-rt-weight','slWeight');
     setTxt('sl-avg-weight','slAvgWeight'); setTxt('su-kg-delivery','suKgDelivery');
     setTxt('mt-finalise','mtFinalise'); setTxt('mt-new-delivery','mtNewDelivery');
     setTxt('reset-modal-body','resetModalBody');
     setTxt('mt-remove-catch','mtRemoveCatch'); setTxt('mt-remove-user','mtRemoveUser');
-    setTxt('rh-text','cantLogin'); setTxt('rh-link','resetData');
-    setTxt('setup-intro','setupIntro');
+    setTxt('rh-text','cantLogin'); setTxt('rh-link','resetData'); setTxt('setup-intro','setupIntro');
     setPh('vessel','phVessel'); setPh('species','phSpecies');
-    setPh('buyer-name','phBuyerName'); setPh('buyer-email','phBuyerEmail');
-    setPh('buyer-phone','phBuyerPhone'); setPh('catch-note','phNote');
-    setPh('f-vessel','phAny'); setPh('f-species','phAny');
+    setPh('buyer-name','phBuyerName'); setPh('buyer-email','phBuyerEmail'); setPh('buyer-phone','phBuyerPhone');
+    setPh('catch-note','phNote'); setPh('f-vessel','phAny'); setPh('f-species','phAny');
     setPh('setup-username','phChooseUsername'); setPh('setup-password','phAtLeast4');
     setPh('setup-password2','phRepeatPassword');
     setPh('login-username','phEnterUsername'); setPh('login-password','phEnterPassword');
@@ -593,32 +574,19 @@
         if (sub.textContent === TR[lng].loading) { sub.textContent = tr('loading'); break; }
       }
     }
-    const noC = document.querySelector('#catch-list .empty-state');
-    if (noC) noC.textContent = tr('noCatches');
-    const noR = document.querySelector('#rec-list .empty-state');
-    if (noR) noR.textContent = tr('noRecords');
-    const noU = document.querySelector('#user-list .empty-state');
-    if (noU) noU.textContent = tr('noUsers');
+    const noC = document.querySelector('#catch-list .empty-state'); if (noC) noC.textContent = tr('noCatches');
+    const noR = document.querySelector('#rec-list .empty-state');   if (noR) noR.textContent = tr('noRecords');
+    const noU = document.querySelector('#user-list .empty-state');  if (noU) noU.textContent = tr('noUsers');
   }
 
-  // ── GAS SYNC ───────────────────────────────────────────────────────────────
-  function getGasUrl() {
-    return (typeof FISH_GAS_URL !== 'undefined' && FISH_GAS_URL) || '';
-  }
-
+  function getGasUrl() { return (typeof FISH_GAS_URL !== 'undefined' && FISH_GAS_URL) || ''; }
   async function gasCall(params) {
-    const url = getGasUrl();
-    if (!url) return null;
+    const url = getGasUrl(); if (!url) return null;
     try {
-      const qs = new URLSearchParams(
-        Object.fromEntries(Object.entries(params).map(([k,v])=>[k, typeof v==='object'?JSON.stringify(v):String(v)]))
-      );
-      const r = await fetch(`${url}?${qs}`);
-      const text = await r.text();
-      return JSON.parse(text);
+      const qs = new URLSearchParams(Object.fromEntries(Object.entries(params).map(([k,v])=>[k, typeof v==='object'?JSON.stringify(v):String(v)])));
+      const r = await fetch(`${url}?${qs}`); const text = await r.text(); return JSON.parse(text);
     } catch(e) { console.error('GAS error:', params.action, e.message); return null; }
   }
-
   async function loadUsers() {
     const d = await gasCall({ action:'getUsers' });
     if (d && Array.isArray(d.users)) {
@@ -629,13 +597,10 @@
     }
     try { return JSON.parse(localStorage.getItem('fish_users') || '[]'); } catch(e) { return []; }
   }
-
   async function saveUsers(users) {
     localStorage.setItem('fish_users', JSON.stringify(users));
-    const d = await gasCall({ action:'saveUsers', users });
-    if (d && d.ok) console.log('Users synced to sheet');
+    const d = await gasCall({ action:'saveUsers', users }); if (d && d.ok) console.log('Users synced to sheet');
   }
-
   async function loadRecords() {
     const d = await gasCall({ action:'getRecords', user:currentUser.username });
     if (d && Array.isArray(d.records)) {
@@ -646,23 +611,18 @@
     }
     try { return JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]'); } catch(e) { return []; }
   }
-
   async function pushRecord(rec) {
     try {
       const cached = JSON.parse(localStorage.getItem(`fish_records_${currentUser.username}`) || '[]');
-      cached.push(rec);
-      localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(cached));
+      cached.push(rec); localStorage.setItem(`fish_records_${currentUser.username}`, JSON.stringify(cached));
     } catch(e) {}
     if (getGasUrl()) {
       const d = await gasCall({ action:'pushRecord', user:currentUser.username, record:rec });
-      if (d && d.ok) toast(tr('toastSheetOk'));
-      else toast(tr('toastSheetFail'));
+      if (d && d.ok) toast(tr('toastSheetOk')); else toast(tr('toastSheetFail'));
     }
   }
-
   function stateKey() { return `fish_state_${currentUser.username}`; }
 
-  // ── AUTH ────────────────────────────────────────────────────────────────────
   (async function initAuth() {
     applyLang();
     document.getElementById('login-subtitle').textContent = tr('loading');
@@ -697,11 +657,9 @@
     const btn=document.getElementById('btn-create-admin');
     btn.textContent=tr('creating'); btn.disabled=true;
     const admin={username,password,isAdmin:true,createdAt:new Date().toISOString()};
-    await saveUsers([admin]);
-    currentUser=admin;
+    await saveUsers([admin]); currentUser=admin;
     localStorage.setItem('fish_session',JSON.stringify(admin));
-    btn.textContent=tr('createAdmin'); btn.disabled=false;
-    showApp();
+    btn.textContent=tr('createAdmin'); btn.disabled=false; showApp();
   }
 
   async function doLogin() {
@@ -715,9 +673,7 @@
     btn.textContent=tr('signInBtn'); btn.disabled=false;
     const found=users.find(u=>u.username===username&&u.password===password);
     if (!found) { showFormError(errEl,tr('errInvalidCreds')); document.getElementById('reset-hint').style.display=''; return; }
-    currentUser=found;
-    localStorage.setItem('fish_session',JSON.stringify(found));
-    showApp();
+    currentUser=found; localStorage.setItem('fish_session',JSON.stringify(found)); showApp();
   }
 
   function logout() {
@@ -736,7 +692,6 @@
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent=currentUser.username;
-    const isAdmin = currentUser.isAdmin || loadUsers().then(u=>u.length===1);
     document.getElementById('tab-admin').style.display = (currentUser.isAdmin || true) ? 'block' : 'none';
     loadUsers().then(users => {
       const admin = currentUser.isAdmin || users.length === 1;
@@ -745,12 +700,8 @@
     initUserData();
   }
 
-  function resetAppData() {
-    if (!confirm(tr('resetConfirm'))) return;
-    localStorage.clear(); location.reload();
-  }
+  function resetAppData() { if (!confirm(tr('resetConfirm'))) return; localStorage.clear(); location.reload(); }
 
-  // ── USER DATA ──────────────────────────────────────────────────────────────
   function initUserData() {
     catches=[];
     document.getElementById('delivery-date').value=todayISO();
@@ -792,7 +743,6 @@
     }));
   }
 
-  // ── HELPERS ────────────────────────────────────────────────────────────────
   function showFormError(el,msg){el.textContent=msg;setTimeout(()=>{if(el.textContent===msg)el.textContent='';},3500);}
   function switchTab(tab){['logger','records','admin'].forEach(t=>{document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);document.getElementById(`view-${t}`).classList.toggle('active',t===tab);});if(tab==='records')renderRecords();if(tab==='admin')renderAdminUsers();}
   function todayISO(){return new Date().toISOString().slice(0,10);}
@@ -803,7 +753,6 @@
   function openModal(id){document.getElementById(id).classList.add('open');}
   function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-  // ── CATCHES ────────────────────────────────────────────────────────────────
   function addCatch(){
     const timeEl=document.getElementById('catch-time'),weightEl=document.getElementById('catch-weight'),noteEl=document.getElementById('catch-note');
     const time=timeEl.value.trim(),weight=parseFloat(weightEl.value),note=noteEl.value.trim();
@@ -855,7 +804,6 @@
     closeModal('delete-modal');
   }
 
-  // ── FINALISE ────────────────────────────────────────────────────────────────
   function openFinish(){
     if(catches.length===0){toast(tr('toastNoFinaliseCatch'));return;}
     const vessel=document.getElementById('vessel').value||'(unnamed)';
@@ -897,8 +845,7 @@
     const receiptText=lines.join('\n');
     const blob=new Blob([receiptText],{type:'text/plain'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`harvest_${date}_${vessel.replace(/\s+/g,'_')}.txt`;a.click();
-    closeModal('finish-modal');
-    toast(tr('toastSaved'));
+    closeModal('finish-modal'); toast(tr('toastSaved'));
     await pushRecord(rec);
     if(buyerEmail){
       const emailApp=document.getElementById('email-app').value;
@@ -926,7 +873,6 @@
     localStorage.removeItem(stateKey());render();calcTotal();closeModal('reset-modal');toast(tr('toastReset'));
   }
 
-  // ── RECORDS ────────────────────────────────────────────────────────────────
   async function renderRecords(){
     let recs=await loadRecords();
     const from=document.getElementById('f-from').value,to=document.getElementById('f-to').value;
@@ -957,7 +903,6 @@
     }).join('');
   }
 
-  // ── ADMIN ──────────────────────────────────────────────────────────────────
   async function adminAddUser(){
     const username=document.getElementById('new-username').value.trim();
     const password=document.getElementById('new-password').value;
@@ -1007,4 +952,3 @@
 </script>
 </body>
 </html>
-

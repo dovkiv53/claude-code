@@ -21,9 +21,9 @@
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden; }
 
-    /* LOGIN — fixed overlay, flex centering, no wrapper tricks needed */
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto; }
-    #login-screen .login-card-wrap { width:100%;max-width:420px; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto; }
+    #login-screen .login-card-wrap { min-height:100%;display:table;width:100%; }
+    #login-screen .login-card-inner { display:table-cell;vertical-align:middle;padding:24px; }
     #login-screen.hidden { display:none; }
 
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
@@ -38,7 +38,8 @@
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
     /* HEADER — compact, username subtitle hidden, sign-out is icon only */
-    header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
+    header { background:var(--blue);color:#fff;padding:8px 0;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10; }
+    header .header-inner { max-width:540px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:8px;width:100%; }
     header svg { flex-shrink:0; }
     header h1 { font-size:17px;font-weight:700;line-height:1.2; }
     header p  { display:none; }
@@ -46,7 +47,8 @@
     .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
 
-    #tab-bar { background:var(--card);display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06); }
+    #tab-bar { background:var(--card);border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06); }
+    #tab-bar .tab-inner { max-width:540px;margin:0 auto;display:flex;width:100%; }
     .tab { flex:1;padding:11px;background:none;border:none;font-size:16px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
@@ -143,7 +145,8 @@
 
 <div id="login-screen" class="hidden">
   <div class="login-card-wrap">
-  <div class="login-card">
+  <div class="login-card-inner">
+  <div class="login-card" style="max-width:420px;margin:0 auto;">
     <div class="login-logo">
       <div class="login-logo-icon">
         <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
@@ -177,9 +180,11 @@
     </div>
   </div>
   </div>
+  </div>
 </div>
 
 <header>
+  <div class="header-inner">
   <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
     <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.25)"/>
     <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="rgba(255,255,255,.7)"/>
@@ -187,17 +192,20 @@
     <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </svg>
   <div class="header-info">
-    <h1 id="app-title">Fish Harvest Logger</h1>
+    <h1 id="app-title">Fish Logger</h1>
     <p id="header-sub">—</p>
   </div>
   <button class="btn-lang" id="btn-lang" onclick="toggleLang()">ES</button>
   <button class="btn-logout" id="btn-logout" onclick="logout()" title="Sign out">&#x23FB;</button>
+  </div>
 </header>
 
 <nav id="tab-bar">
+  <div class="tab-inner">
   <button class="tab active" id="tab-logger"  onclick="switchTab('logger')">Logger</button>
   <button class="tab"        id="tab-records" onclick="switchTab('records')">History</button>
   <button class="tab"        id="tab-admin"   onclick="switchTab('admin')">Admin</button>
+  </div>
 </nav>
 
 <main>
@@ -360,7 +368,7 @@
   let lang = localStorage.getItem('fish_lang') || 'en';
   const TR = {
     en: {
-      appTitle:'Fish Harvest Logger', signIn:'Sign in to continue',
+      appTitle:'Fish Logger', signIn:'Sign in to continue',
       firstTimeSetup:'First-time setup', loading:'Loading\u2026',
       signInBtn:'Sign In', signingIn:'Signing in\u2026',
       createAdmin:'Create Admin Account', creating:'Creating\u2026',
@@ -431,7 +439,7 @@
       enterTime:'Please enter a time.', enterWeight:'Please enter a valid weight.',
     },
     es: {
-      appTitle:'Registro de Cosecha de Peces', signIn:'Inicia sesi\u00f3n para continuar',
+      appTitle:'Registro de Peces', signIn:'Inicia sesi\u00f3n para continuar',
       firstTimeSetup:'Configuraci\u00f3n inicial', loading:'Cargando\u2026',
       signInBtn:'Iniciar sesi\u00f3n', signingIn:'Ingresando\u2026',
       createAdmin:'Crear cuenta de administrador', creating:'Creando\u2026',

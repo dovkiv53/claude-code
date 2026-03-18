@@ -12,8 +12,6 @@
   <script src="config.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 18px; }
-    @media (max-width: 380px) { html { font-size: 17px; } }
     :root {
       --blue:#0d6efd;--green:#198754;--red:#dc3545;
       --bg:#f0f4f8;--card:#ffffff;--text:#1a1a2e;--muted:#6c757d;
@@ -26,8 +24,7 @@
     #login-screen.hidden { display:none; }
 
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
-    .login-logo { display:flex;align-items:center;gap:14px;margin-bottom:24px; }
-    .login-logo-icon { background:var(--blue);border-radius:12px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .login-logo { margin-bottom:20px; }
     .login-logo h1 { font-size:26px;font-weight:800;color:var(--text);line-height:1.2; }
     .login-logo p  { font-size:18px;color:var(--muted);margin-top:2px; }
     .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:10px; }
@@ -144,14 +141,6 @@
   <div class="login-card-wrap">
   <div class="login-card" style="max-width:420px;margin:0 auto;">
     <div class="login-logo">
-      <div class="login-logo-icon">
-        <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <ellipse cx="13" cy="16" rx="11" ry="7" fill="rgba(255,255,255,.4)"/>
-          <path d="M24 16 C28 10 31 16 28 16 C31 16 28 22 24 16Z" fill="white"/>
-          <circle cx="9" cy="14" r="1.5" fill="rgba(0,0,0,.35)"/>
-          <path d="M4 12 Q7 16 4 20" stroke="rgba(255,255,255,.6)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-        </svg>
-      </div>
       <div>
         <h1 id="login-title">Fish Harvest Logger</h1>
         <p id="login-subtitle">Sign in to continue</p>
@@ -619,23 +608,25 @@
   // Center login card vertically
   function centerLogin() {
     const screen = document.getElementById('login-screen');
-    const card = screen.querySelector('.login-card-wrap');
-    if (!screen.classList.contains('hidden')) {
-      const gap = Math.max(0, (screen.clientHeight - card.scrollHeight) / 2);
-      screen.scrollTop = 0;
-      card.style.paddingTop = gap + 'px';
-    }
+    const wrap = screen.querySelector('.login-card-wrap');
+    const card = screen.querySelector('.login-card');
+    if (screen.classList.contains('hidden')) return;
+    const available = window.innerHeight;
+    const cardH = card.offsetHeight;
+    const top = Math.max(24, (available - cardH) / 2);
+    wrap.style.paddingTop = top + 'px';
+    wrap.style.paddingBottom = '24px';
   }
   window.addEventListener('resize', centerLogin);
-  setTimeout(centerLogin, 100);
 
   (async function initAuth() {
     applyLang();
     document.getElementById('login-subtitle').textContent = tr('loading');
     document.getElementById('login-screen').classList.remove('hidden');
+    setTimeout(centerLogin, 50);
     const users = await loadUsers();
     document.getElementById('login-subtitle').textContent = tr('signIn');
-    centerLogin();
+    setTimeout(centerLogin, 50);
     try {
       const sess = JSON.parse(localStorage.getItem('fish_session') || 'null');
       if (sess) {

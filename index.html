@@ -35,18 +35,10 @@
 
 
     /* ── MOBILE WIZARD ─────────────────────────────────────────────── */
-    @media (max-width:599px) {
-      .wizard-card { display:none !important; }
-      .wizard-card.wiz-active { display:block !important; }
-      .wiz-nav { display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
-      .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-      .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-      .wiz-step-indicator { font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
-    }
-    @media (min-width:600px) {
-      .wizard-card { display:block !important; }
-      .wiz-nav,.wiz-step-indicator { display:none !important; }
-    }
+    .wiz-nav { display:none;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
+    .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+    .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+    .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
 
     /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
@@ -199,7 +191,7 @@
 
 <main>
   <div id="view-logger" class="view active">
-    <div class="card wizard-card wiz-active" data-step="1">
+    <div class="card wizard-card" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
         <label id="lbl-email-app">Email App for Buyer Receipt</label>
@@ -950,25 +942,29 @@
   const WIZ_TOTAL = 6;
   let wizStep = 1;
 
+  const isMobile = () => window.innerWidth < 600;
+
   function wizInit() {
-    if (window.innerWidth >= 600) return;
-    // ensure only step 1 is active on first run if no step set yet
-    const hasActive = document.querySelector('.wizard-card.wiz-active');
-    if (!hasActive) wizStep = 1;
+    if (!isMobile()) return;
     document.querySelectorAll('.wizard-card').forEach(card => {
       const step = parseInt(card.dataset.step);
+      // Add step indicator if not present
       if (!card.querySelector('.wiz-step-indicator')) {
         const ind = document.createElement('div');
         ind.className = 'wiz-step-indicator';
+        ind.style.cssText = 'font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px;';
         ind.textContent = step + ' / ' + WIZ_TOTAL;
         card.insertBefore(ind, card.firstChild);
       }
+      // Add nav buttons if not present
       if (!card.querySelector('.wiz-nav')) {
         const nav = document.createElement('div');
         nav.className = 'wiz-nav';
+        nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px;';
         if (step > 1) {
           const back = document.createElement('button');
           back.className = 'wiz-back';
+          back.style.cssText = 'background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
           back.textContent = '← Back';
           back.onclick = () => wizGo(step - 1);
           nav.appendChild(back);
@@ -976,6 +972,7 @@
         if (step < WIZ_TOTAL) {
           const next = document.createElement('button');
           next.className = 'wiz-next';
+          next.style.cssText = 'flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
           next.textContent = step === 4 ? 'View Catches →' : 'Next →';
           next.onclick = () => wizGo(step + 1);
           nav.appendChild(next);
@@ -987,9 +984,11 @@
   }
 
   function wizGo(step) {
+    if (!isMobile()) return;
     wizStep = step;
     document.querySelectorAll('.wizard-card').forEach(card => {
-      card.classList.toggle('wiz-active', parseInt(card.dataset.step) === step);
+      const active = parseInt(card.dataset.step) === step;
+      card.style.display = active ? 'block' : 'none';
     });
     window.scrollTo(0, 0);
   }

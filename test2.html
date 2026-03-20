@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; background:#f0f4f8; margin:0; padding:12px; }
+  #container .card { display:none; background:white; padding:20px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.1); flex-direction:column; min-height:calc(100dvh - 40px); }
+  #container[data-step="1"] .card[data-step="1"] { display:flex; }
+  #container[data-step="2"] .card[data-step="2"] { display:flex; }
+  #container[data-step="3"] .card[data-step="3"] { display:flex; }
+  .card h2 { margin-bottom:12px; }
+  .card p { color:#666; }
+  .nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; }
+  .btn-next { flex:1; background:#0d6efd; color:#fff; border:none; border-radius:10px; padding:13px; font-size:16px; font-weight:600; cursor:pointer; }
+  .btn-back { background:#f0f4f8; color:#666; border:1.5px solid #dee2e6; border-radius:10px; padding:13px; font-size:16px; font-weight:600; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="container" data-step="1">
+  <div class="card" data-step="1">
+    <h2>Step 1 — Setup</h2>
+    <p>This is the setup section content.</p>
+    <div class="nav">
+      <button class="btn-next" onclick="go(2)">Next →</button>
+    </div>
+  </div>
+  <div class="card" data-step="2">
+    <h2>Step 2 — Delivery Info</h2>
+    <p>This is the delivery info section content.</p>
+    <div class="nav">
+      <button class="btn-back" onclick="go(1)">← Back</button>
+      <button class="btn-next" onclick="go(3)">Next →</button>
+    </div>
+  </div>
+  <div class="card" data-step="3">
+    <h2>Step 3 — Buyer Info</h2>
+    <p>This is the buyer info section content.</p>
+    <div class="nav">
+      <button class="btn-back" onclick="go(2)">← Back</button>
+    </div>
+  </div>
+</div>
+<script>
+  function go(n) {
+    document.getElementById('container').dataset.step = n;
+    window.scrollTo(0,0);
+  }
+</script>
+</body>
+</html>

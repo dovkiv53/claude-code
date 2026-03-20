@@ -199,7 +199,7 @@
 
 <main>
   <div id="view-logger" class="view active">
-    <div class="card wizard-card" data-step="1">
+    <div class="card wizard-card wiz-active" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
         <label id="lbl-email-app">Email App for Buyer Receipt</label>
@@ -952,6 +952,9 @@
 
   function wizInit() {
     if (window.innerWidth >= 600) return;
+    // ensure only step 1 is active on first run if no step set yet
+    const hasActive = document.querySelector('.wizard-card.wiz-active');
+    if (!hasActive) wizStep = 1;
     document.querySelectorAll('.wizard-card').forEach(card => {
       const step = parseInt(card.dataset.step);
       if (!card.querySelector('.wiz-step-indicator')) {

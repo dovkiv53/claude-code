@@ -39,6 +39,10 @@
     .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
+    @media (min-width:600px) {
+      .wizard-card { display:block !important; }
+      .wiz-nav, .wiz-step-indicator { display:none !important; }
+    }
 
     /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
@@ -205,7 +209,7 @@
         </select>
       </div>
     </div>
-    <div class="card wizard-card" data-step="2">
+    <div class="card wizard-card" data-step="2" style="display:none">
       <div class="card-title" id="ct-delivery">Delivery Info</div>
       <div class="meta-grid">
         <div class="meta-item"><label id="lbl-vessel">Vessel / Pond (optional)</label><input type="text" id="vessel" placeholder="e.g. Sea Star" /></div>
@@ -213,7 +217,7 @@
         <div class="meta-item full"><label id="lbl-species">Species</label><input type="text" id="species" placeholder="e.g. Atlantic Cod" /></div>
       </div>
     </div>
-    <div class="card wizard-card" data-step="3">
+    <div class="card wizard-card" data-step="3" style="display:none">
       <div class="card-title" id="ct-buyer">Buyer Info</div>
       <div class="meta-grid">
         <div class="meta-item full"><label id="lbl-buyer-name">Buyer Name</label><input type="text" id="buyer-name" placeholder="e.g. John Smith" /></div>
@@ -221,7 +225,7 @@
         <div class="meta-item full"><label id="lbl-buyer-phone">Buyer Phone</label><input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" /></div>
       </div>
     </div>
-    <div class="card wizard-card" data-step="4">
+    <div class="card wizard-card" data-step="4" style="display:none">
       <div class="card-title" id="ct-addcatch">Add Catch</div>
       <div class="catch-form">
         <div class="field"><label id="lbl-time">Time</label><input type="time" id="catch-time" /></div>
@@ -230,14 +234,14 @@
       </div>
       <div style="margin-top:12px;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
     </div>
-    <div class="card wizard-card" data-step="5">
+    <div class="card wizard-card" data-step="5" style="display:none">
       <div class="section-head">
         <div class="card-title" id="ct-catches" style="margin:0">Catches</div>
         <span class="badge" id="catch-count">0</span>
       </div>
       <div id="catch-list"><div class="empty-state" id="no-catches-msg">No catches recorded yet.</div></div>
     </div>
-    <div class="card wizard-card" data-step="6">
+    <div class="card wizard-card" data-step="6" style="display:none">
       <div class="card-title" id="ct-summary">Summary</div>
       <div class="summary-grid">
         <div class="stat-box"><span class="stat-label" id="sl-catches">Catches</span><span class="stat-value" id="sum-count">0</span><span class="stat-unit" id="su-hauls">hauls</span></div>
@@ -942,10 +946,7 @@
   const WIZ_TOTAL = 6;
   let wizStep = 1;
 
-  const isMobile = () => window.innerWidth < 600;
-
   function wizInit() {
-    if (!isMobile()) return;
     document.querySelectorAll('.wizard-card').forEach(card => {
       const step = parseInt(card.dataset.step);
       // Add step indicator if not present
@@ -984,7 +985,6 @@
   }
 
   function wizGo(step) {
-    if (!isMobile()) return;
     wizStep = step;
     document.querySelectorAll('.wizard-card').forEach(card => {
       const active = parseInt(card.dataset.step) === step;

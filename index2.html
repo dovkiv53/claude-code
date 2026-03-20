@@ -972,52 +972,14 @@
   const WIZ_TOTAL = 6;
   let wizStep = 1;
 
-  function wizInit() {
-    document.querySelectorAll('.wizard-card').forEach(card => {
-      const step = parseInt(card.dataset.step);
-      // Add step indicator if not present
-      if (!card.querySelector('.wiz-step-indicator')) {
-        const ind = document.createElement('div');
-        ind.className = 'wiz-step-indicator';
-        ind.style.cssText = 'font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px;';
-        ind.textContent = step + ' / ' + WIZ_TOTAL;
-        card.insertBefore(ind, card.firstChild);
-      }
-      // Add nav buttons if not present
-      if (!card.querySelector('.wiz-nav')) {
-        const nav = document.createElement('div');
-        nav.className = 'wiz-nav';
-        nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px;';
-        if (step > 1) {
-          const back = document.createElement('button');
-          back.className = 'wiz-back';
-          back.style.cssText = 'background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
-          back.textContent = '← Back';
-          back.onclick = () => wizGo(step - 1);
-          nav.appendChild(back);
-        }
-        if (step < WIZ_TOTAL) {
-          const next = document.createElement('button');
-          next.className = 'wiz-next';
-          next.style.cssText = 'flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
-          next.textContent = step === 4 ? 'View Catches →' : 'Next →';
-          next.onclick = () => wizGo(step + 1);
-          nav.appendChild(next);
-        }
-        card.appendChild(nav);
-      }
-    });
+    function wizInit() {
     wizGo(wizStep);
   }
 
+  
   function wizGo(step) {
     wizStep = step;
-    const view = document.getElementById('view-logger');
-    view.dataset.wizStep = step;
-    document.querySelectorAll('.wizard-card').forEach(card => {
-      const active = parseInt(card.dataset.step) === step;
-      card.style.display = active ? 'block' : 'none';
-    });
+    document.getElementById('view-logger').dataset.wizStep = step;
     window.scrollTo(0, 0);
   }
 

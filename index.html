@@ -697,6 +697,7 @@
       document.getElementById('tab-admin').style.display = admin ? 'block' : 'none';
     });
     initUserData();
+    setTimeout(wizInit, 100);
   }
 
   function resetAppData() { if (!confirm(tr('resetConfirm'))) return; localStorage.clear(); location.reload(); }
@@ -743,7 +744,7 @@
   }
 
   function showFormError(el,msg){el.textContent=msg;setTimeout(()=>{if(el.textContent===msg)el.textContent='';},3500);}
-  function switchTab(tab){['logger','records','admin'].forEach(t=>{document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);document.getElementById(`view-${t}`).classList.toggle('active',t===tab);});if(tab==='records')renderRecords();if(tab==='admin')renderAdminUsers();}
+  function switchTab(tab){['logger','records','admin'].forEach(t=>{document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);document.getElementById(`view-${t}`).classList.toggle('active',t===tab);});if(tab==='records')renderRecords();if(tab==='admin')renderAdminUsers();if(tab==='logger')setTimeout(wizInit,50);}
   function todayISO(){return new Date().toISOString().slice(0,10);}
   function nowTime(){const n=new Date();return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}
   function fmt(n,dec=1){return Number(n).toFixed(dec);}
@@ -990,19 +991,7 @@
     window.scrollTo(0, 0);
   }
 
-  const _origSwitchTab = switchTab;
-  function switchTab(tab) {
-    _origSwitchTab(tab);
-    if (tab === 'logger') setTimeout(wizInit, 50);
-  }
-
   window.addEventListener('resize', () => { if (window.innerWidth < 600) wizInit(); });
-
-  const _origShowApp = showApp;
-  function showApp() {
-    _origShowApp();
-    setTimeout(wizInit, 100);
-  }
 
 
   document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));

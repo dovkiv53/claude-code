@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  #container .card { display:none; background:#eee; padding:20px; margin:10px; }
+  #container[data-step="1"] .card[data-step="1"] { display:block; background:lightblue; }
+  #container[data-step="2"] .card[data-step="2"] { display:block; background:lightgreen; }
+  #container[data-step="3"] .card[data-step="3"] { display:block; background:lightyellow; }
+  .nav { margin:10px; }
+  button { padding:10px 20px; margin:5px; font-size:16px; }
+</style>
+</head>
+<body>
+<div id="container" data-step="1">
+  <div class="card" data-step="1">
+    <h2>Step 1 - Setup</h2>
+    <p>This is step 1</p>
+  </div>
+  <div class="card" data-step="2">
+    <h2>Step 2 - Delivery</h2>
+    <p>This is step 2</p>
+  </div>
+  <div class="card" data-step="3">
+    <h2>Step 3 - Buyer</h2>
+    <p>This is step 3</p>
+  </div>
+</div>
+<div class="nav">
+  <button onclick="go(1)">Step 1</button>
+  <button onclick="go(2)">Step 2</button>
+  <button onclick="go(3)">Step 3</button>
+</div>
+<script>
+  function go(n) {
+    document.getElementById('container').dataset.step = n;
+  }
+</script>
+</body>
+</html>

@@ -39,9 +39,6 @@
     .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
-    @media (min-width:600px) {
-      .wizard-card { display:block !important; }
-      .wiz-nav, .wiz-step-indicator { display:none !important; }
     }
 
     /* HEADER — compact, constrained to content width */
@@ -144,26 +141,20 @@
     .checkbox-row { display:flex;align-items:center;gap:8px;padding:4px 0; }
     .checkbox-row input[type="checkbox"] { width:18px;height:18px;cursor:pointer; }
     .checkbox-row label { font-size:15px;color:var(--text);cursor:pointer; }
-  @media (min-width:600px) { #view-logger .wizard-card { display:block !important; } .wiz-nav { display:none !important; } }
-  
-    /* ── WIZARD ── */
-  .wiz-nav { display:flex; align-items:center; justify-content:space-between; margin-top:16px; gap:10px; }
-  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-  /* hide inactive wizard cards */
-  #view-logger .wizard-card { display:none; }
-  #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger .wizard-card .wiz-nav { margin-top:auto; }
-  /* PC: show all cards, hide nav */
-  @media (min-width:600px) {
-    #view-logger .wizard-card { display:block; min-height:0; }
     .wiz-nav { display:none; }
   }
+  /* ── WIZARD ── */
+  #view-logger .wizard-card { display:none; flex-direction:column; min-height:calc(100dvh - 80px); }
+  #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex; }
+  #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex; }
+  #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex; }
+  #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex; }
+  #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex; }
+  #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex; }
+  .wiz-nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; }
+  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
   </style>
 </head>
 <body>

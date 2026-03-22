@@ -33,18 +33,6 @@
     .login-field input:focus { border-color:var(--blue); }
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
-    /* ── WIZARD ── */
-    .wizard-card { display:none; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
-    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex; }
-    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex; }
-    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex; }
-    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex; }
-    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex; }
-    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex; }
-    .wiz-nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; }
-    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-    .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-
         /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
     header svg { flex-shrink:0; }
@@ -152,6 +140,18 @@
   .wiz-nav { display:flex; gap:10px; margin-top:16px; }
   .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
   .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+
+    /* ── WIZARD — must be last ── */
+    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
+    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
+    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
+    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
+    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
+    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
+    .wiz-nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+    .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
   </style>
 </head>
 <body>

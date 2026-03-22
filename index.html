@@ -35,13 +35,10 @@
 
 
     /* ── MOBILE WIZARD ─────────────────────────────────────────────── */
-    .wiz-nav { display:none;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
+    .wiz-nav { display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
     .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
     .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
-    @media (min-width:600px) {
-      .wizard-card { display:block !important; }
-      .wiz-nav, .wiz-step-indicator { display:none !important; }
     }
 
     /* HEADER — compact, constrained to content width */
@@ -144,18 +141,20 @@
     .checkbox-row { display:flex;align-items:center;gap:8px;padding:4px 0; }
     .checkbox-row input[type="checkbox"] { width:18px;height:18px;cursor:pointer; }
     .checkbox-row label { font-size:15px;color:var(--text);cursor:pointer; }
-  @media (min-width:600px) { #view-logger .wizard-card { display:block !important; } .wiz-nav, .wiz-step-indicator { display:none !important; } }
-  /* WIZARD CARD FULL SCREEN */
-  #view-logger .wizard-card { min-height:calc(100dvh - 79px);display:flex;flex-direction:column; }
-  #view-logger .wizard-card > .wiz-nav { margin-top:auto; }
-  /* WIZARD FORCE HIDE - must be last */
-  #view-logger .wizard-card { display:none !important; }
-  #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:block !important; }
-  #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:block !important; }
-  #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:block !important; }
-  #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:block !important; }
-  #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:block !important; }
-  #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:block !important; }
+    .wiz-nav { display:none; }
+  }
+  /* ── WIZARD ── */
+  #view-logger .wizard-card { display:none !important; flex-direction:column; min-height:calc(100dvh - 80px); background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; margin-bottom:16px; }
+  #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
+  #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
+  #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
+  #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
+  #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
+  #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
+  .wiz-nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; }
+  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
   </style>
 </head>
 <body>
@@ -201,13 +200,13 @@
 
 <nav id="tab-bar">
   <button class="tab active" id="tab-logger"  onclick="switchTab('logger')">Logger</button>
-  <button class="tab"        id="tab-records" onclick="switchTab('records')">History</button>
-  <button class="tab"        id="tab-admin"   onclick="switchTab('admin')">Admin</button>
+  <button class="tab" id="tab-records" onclick="switchTab('records')" style="display:none">History</button>
+  <button class="tab" id="tab-admin" onclick="switchTab('admin')" style="display:none">Admin</button>
 </nav>
 
 <main>
   <div id="view-logger" class="view active" data-wiz-step="1">
-    <div class="card wizard-card" data-step="1">
+    <div class="wizard-card" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
         <label id="lbl-email-app">Email App for Buyer Receipt</label>
@@ -220,24 +219,27 @@
           <option value="zoho">Zoho Mail (web)</option>
         </select>
       </div>
+      <div class="wiz-nav"><button class="wiz-next" onclick="wizGo(2)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="2" style="display:none">
+    <div class="wizard-card" data-step="2">
       <div class="card-title" id="ct-delivery">Delivery Info</div>
       <div class="meta-grid">
         <div class="meta-item"><label id="lbl-vessel">Vessel / Pond (optional)</label><input type="text" id="vessel" placeholder="e.g. Sea Star" /></div>
         <div class="meta-item"><label id="lbl-date">Date</label><input type="date" id="delivery-date" /></div>
         <div class="meta-item full"><label id="lbl-species">Species</label><input type="text" id="species" placeholder="e.g. Atlantic Cod" /></div>
       </div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(1)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(3)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="3" style="display:none">
+    <div class="wizard-card" data-step="3">
       <div class="card-title" id="ct-buyer">Buyer Info</div>
       <div class="meta-grid">
         <div class="meta-item full"><label id="lbl-buyer-name">Buyer Name</label><input type="text" id="buyer-name" placeholder="e.g. John Smith" /></div>
         <div class="meta-item full"><label id="lbl-buyer-email">Buyer Email</label><input type="email" id="buyer-email" placeholder="e.g. buyer@example.com" /></div>
         <div class="meta-item full"><label id="lbl-buyer-phone">Buyer Phone</label><input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" /></div>
       </div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(2)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(4)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="4" style="display:none">
+    <div class="wizard-card" data-step="4">
       <div class="card-title" id="ct-addcatch">Add Catch</div>
       <div class="catch-form">
         <div class="field"><label id="lbl-time">Time</label><input type="time" id="catch-time" /></div>
@@ -245,15 +247,17 @@
         <div class="field full"><label id="lbl-note">Note (optional)</label><input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" /></div>
       </div>
       <div style="margin-top:12px;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(3)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(5)">View Catches &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="5" style="display:none">
+    <div class="wizard-card" data-step="5">
       <div class="section-head">
         <div class="card-title" id="ct-catches" style="margin:0">Catches</div>
         <span class="badge" id="catch-count">0</span>
       </div>
       <div id="catch-list"><div class="empty-state" id="no-catches-msg">No catches recorded yet.</div></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(4)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(6)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="6" style="display:none">
+    <div class="wizard-card" data-step="6">
       <div class="card-title" id="ct-summary">Summary</div>
       <div class="summary-grid">
         <div class="stat-box"><span class="stat-label" id="sl-catches">Catches</span><span class="stat-value" id="sum-count">0</span><span class="stat-unit" id="su-hauls">hauls</span></div>
@@ -271,6 +275,7 @@
       </div>
       <button class="btn btn-success" id="btn-finalise" onclick="openFinish()">Finalise Delivery</button>
       <div style="margin-top:10px;"><button class="btn btn-outline" id="btn-reset" onclick="openReset()">Reset / New Delivery</button></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(5)">&#x2190; Back</button></div>
     </div>
   </div>
 
@@ -958,52 +963,14 @@
   const WIZ_TOTAL = 6;
   let wizStep = 1;
 
-  function wizInit() {
-    document.querySelectorAll('.wizard-card').forEach(card => {
-      const step = parseInt(card.dataset.step);
-      // Add step indicator if not present
-      if (!card.querySelector('.wiz-step-indicator')) {
-        const ind = document.createElement('div');
-        ind.className = 'wiz-step-indicator';
-        ind.style.cssText = 'font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px;';
-        ind.textContent = step + ' / ' + WIZ_TOTAL;
-        card.insertBefore(ind, card.firstChild);
-      }
-      // Add nav buttons if not present
-      if (!card.querySelector('.wiz-nav')) {
-        const nav = document.createElement('div');
-        nav.className = 'wiz-nav';
-        nav.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px;';
-        if (step > 1) {
-          const back = document.createElement('button');
-          back.className = 'wiz-back';
-          back.style.cssText = 'background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
-          back.textContent = '← Back';
-          back.onclick = () => wizGo(step - 1);
-          nav.appendChild(back);
-        }
-        if (step < WIZ_TOTAL) {
-          const next = document.createElement('button');
-          next.className = 'wiz-next';
-          next.style.cssText = 'flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;';
-          next.textContent = step === 4 ? 'View Catches →' : 'Next →';
-          next.onclick = () => wizGo(step + 1);
-          nav.appendChild(next);
-        }
-        card.appendChild(nav);
-      }
-    });
+    function wizInit() {
     wizGo(wizStep);
   }
 
+  
   function wizGo(step) {
     wizStep = step;
-    const view = document.getElementById('view-logger');
-    view.dataset.wizStep = step;
-    document.querySelectorAll('.wizard-card').forEach(card => {
-      const active = parseInt(card.dataset.step) === step;
-      card.style.display = active ? 'block' : 'none';
-    });
+    document.getElementById('view-logger').dataset.wizStep = step;
     window.scrollTo(0, 0);
   }
 

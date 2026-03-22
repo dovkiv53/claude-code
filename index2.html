@@ -34,12 +34,19 @@
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
 
-    /* ── MOBILE WIZARD ─────────────────────────────────────────────── */
-    .wiz-nav { display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
-    .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-    .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-    .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
-    }
+    
+
+    /* ── WIZARD ── */
+    .wizard-card { display:none !important; flex-direction:column; min-height:calc(100dvh - 80px); background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
+    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
+    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
+    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
+    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
+    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
+    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
+    .wiz-nav { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:16px; gap:10px; }
+    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 
     /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
@@ -143,18 +150,11 @@
     .checkbox-row label { font-size:15px;color:var(--text);cursor:pointer; }
     .wiz-nav { display:none; }
   }
-  /* ── WIZARD ── */
-  #view-logger .wizard-card { display:none; flex-direction:column; min-height:calc(100dvh - 80px); }
-  #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex; }
-  #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex; }
-  #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex; }
-  #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex; }
-  #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex; }
-  #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex; }
-  .wiz-nav { display:flex; gap:10px; margin-top:auto; padding-top:16px; }
-  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 
+
+  .wiz-nav { display:flex; gap:10px; margin-top:16px; }
+  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -200,13 +200,13 @@
 
 <nav id="tab-bar">
   <button class="tab active" id="tab-logger"  onclick="switchTab('logger')">Logger</button>
-  <button class="tab"        id="tab-records" onclick="switchTab('records')">History</button>
-  <button class="tab"        id="tab-admin"   onclick="switchTab('admin')">Admin</button>
+  <button class="tab" id="tab-records" onclick="switchTab('records')" style="display:none">History</button>
+  <button class="tab" id="tab-admin" onclick="switchTab('admin')" style="display:none !important">Admin</button>
 </nav>
 
 <main>
   <div id="view-logger" class="view active" data-wiz-step="1">
-    <div class="card wizard-card" data-step="1">
+    <div class="wizard-card" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
         <label id="lbl-email-app">Email App for Buyer Receipt</label>
@@ -221,7 +221,7 @@
       </div>
       <div class="wiz-nav"><button class="wiz-next" onclick="wizGo(2)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="2">
+    <div class="wizard-card" data-step="2">
       <div class="card-title" id="ct-delivery">Delivery Info</div>
       <div class="meta-grid">
         <div class="meta-item"><label id="lbl-vessel">Vessel / Pond (optional)</label><input type="text" id="vessel" placeholder="e.g. Sea Star" /></div>
@@ -230,7 +230,7 @@
       </div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(1)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(3)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="3">
+    <div class="wizard-card" data-step="3">
       <div class="card-title" id="ct-buyer">Buyer Info</div>
       <div class="meta-grid">
         <div class="meta-item full"><label id="lbl-buyer-name">Buyer Name</label><input type="text" id="buyer-name" placeholder="e.g. John Smith" /></div>
@@ -239,7 +239,7 @@
       </div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(2)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(4)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="4">
+    <div class="wizard-card" data-step="4">
       <div class="card-title" id="ct-addcatch">Add Catch</div>
       <div class="catch-form">
         <div class="field"><label id="lbl-time">Time</label><input type="time" id="catch-time" /></div>
@@ -249,7 +249,7 @@
       <div style="margin-top:12px;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(3)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(5)">View Catches &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="5">
+    <div class="wizard-card" data-step="5">
       <div class="section-head">
         <div class="card-title" id="ct-catches" style="margin:0">Catches</div>
         <span class="badge" id="catch-count">0</span>
@@ -257,7 +257,7 @@
       <div id="catch-list"><div class="empty-state" id="no-catches-msg">No catches recorded yet.</div></div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(4)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(6)">Next &#x2192;</button></div>
     </div>
-    <div class="card wizard-card" data-step="6">
+    <div class="wizard-card" data-step="6">
       <div class="card-title" id="ct-summary">Summary</div>
       <div class="summary-grid">
         <div class="stat-box"><span class="stat-label" id="sl-catches">Catches</span><span class="stat-value" id="sum-count">0</span><span class="stat-unit" id="su-hauls">hauls</span></div>
@@ -704,11 +704,8 @@
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent=currentUser.username;
-    document.getElementById('tab-admin').style.display = (currentUser.isAdmin || true) ? 'block' : 'none';
-    loadUsers().then(users => {
-      const admin = currentUser.isAdmin || users.length === 1;
-      document.getElementById('tab-admin').style.display = admin ? 'block' : 'none';
-    });
+    // tab-admin hidden for now
+// tab-admin hidden for now
     initUserData();
     setTimeout(wizInit, 100);
   }
@@ -959,20 +956,20 @@
       </div>`).join('');
   }
 
-  // ── MOBILE WIZARD ────────────────────────────────────────────────────
-  const WIZ_TOTAL = 6;
+  // ── MOBILE WIZARD ──
   let wizStep = 1;
+  const WIZ_TOTAL = 6;
+
+    function wizGo(step) {
+    wizStep = step;
+    document.getElementById('view-logger').dataset.wizStep = step;
+    window.scrollTo(0, 0);
+  }
 
     function wizInit() {
     wizGo(wizStep);
   }
 
-  
-  function wizGo(step) {
-    wizStep = step;
-    document.getElementById('view-logger').dataset.wizStep = step;
-    window.scrollTo(0, 0);
-  }
 
   window.addEventListener('resize', () => { wizInit(); });
 

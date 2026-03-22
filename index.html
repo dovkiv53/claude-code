@@ -34,12 +34,19 @@
     .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
 
-    /* ── MOBILE WIZARD ─────────────────────────────────────────────── */
-    .wiz-nav { display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:10px; }
-    .wiz-next { flex:1;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-    .wiz-back { background:var(--bg);color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent; }
-    .wiz-step-indicator { display:none;font-size:12px;color:var(--muted);font-weight:700;text-align:right;margin-bottom:8px; }
-    }
+    
+
+    /* ── WIZARD ── */
+    .wizard-card { display:none !important; flex-direction:column; height:calc(100dvh - 80px); overflow-y:auto; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
+    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
+    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
+    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
+    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
+    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
+    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
+    .wiz-nav { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:16px; gap:10px; }
+    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 
     /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
@@ -198,7 +205,7 @@
 </nav>
 
 <main>
-  <div id="view-logger" class="view active">
+  <div id="view-logger" class="view active" data-wiz-step="1">
     <div class="wizard-card" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
@@ -697,11 +704,8 @@
   function showApp() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('header-sub').textContent=currentUser.username;
-    document.getElementById('tab-admin').style.display = (currentUser.isAdmin || true) ? 'block' : 'none';
-    loadUsers().then(users => {
-      const admin = currentUser.isAdmin || users.length === 1;
-      document.getElementById('tab-admin').style.display = admin ? 'block' : 'none';
-    });
+    // tab-admin hidden for now
+// tab-admin hidden for now
     initUserData();
     setTimeout(wizInit, 100);
   }
@@ -956,19 +960,14 @@
   let wizStep = 1;
   const WIZ_TOTAL = 6;
 
-  function wizGo(step) {
+    function wizGo(step) {
     wizStep = step;
-    document.querySelectorAll('.wizard-card').forEach(function(card) {
-      card.style.display = (parseInt(card.getAttribute('data-step')) === step) ? '' : 'none';
-    });
+    document.getElementById('view-logger').dataset.wizStep = step;
     window.scrollTo(0, 0);
   }
 
-  function wizInit() {
-    document.querySelectorAll('.wizard-card').forEach(function(card) {
-      card.style.display = 'none';
-    });
-    wizGo(1);
+    function wizInit() {
+    wizGo(wizStep);
   }
 
 

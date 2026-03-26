@@ -15,147 +15,148 @@
     :root {
       --blue:#0d6efd;--green:#198754;--red:#dc3545;
       --bg:#f0f4f8;--card:#ffffff;--text:#1a1a2e;--muted:#6c757d;
-      --border:#dee2e6;--radius:14vw;--shadow:0 2vw 12vw rgba(0,0,0,.10);
+      --border:#dee2e6;--radius:14px;--shadow:0 2px 12px rgba(0,0,0,.10);
     }
     body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden;width:100%;max-width:100%; }
 
-    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24vw;box-sizing:border-box; }
-    #login-screen .login-card-wrap { width:100%;max-width:420vw; }
+    #login-screen { position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box; }
+    #login-screen .login-card-wrap { width:100%;max-width:420px; }
     #login-screen.hidden { display:none; }
 
-    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4vw 24vw rvw
-    .login-logo h1 { font-size:20vw;font-weight:800;color:var(--text);line-height:1.2; }
-    .login-logo p  { font-size:14vw;color:var(--muted);margin-top:2vw; }
-    .login-field { display:flex;flex-direction:column;gap:4vw;margin-bottom:10vw; }
-    .login-field label { font-size:15vw;color:var(--muted);font-weight:600; }
-    .login-field input { border:1.5vw solid var(--border);border-radius:8vw;box-sizing:border-box;padding:11vw 12vw;font-size:16vw;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
+    .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
+    .login-logo { margin-bottom:20px; }
+    .login-logo h1 { font-size:20px;font-weight:800;color:var(--text);line-height:1.2; }
+    .login-logo p  { font-size:14px;color:var(--muted);margin-top:2px; }
+    .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:10px; }
+    .login-field label { font-size:15px;color:var(--muted);font-weight:600; }
+    .login-field input { border:1.5px solid var(--border);border-radius:8px;box-sizing:border-box;padding:11px 12px;font-size:16px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
-    .login-error { font-size:15vw;color:var(--red);margin-bottom:10vw;min-height:18vw; }
+    .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
         /* HEADER — compact, constrained to content width */
-    header { background:var(--blue);color:#fff;padding:8vw 12vw;display:flex;align-items:center;gap:8vw;box-shadow:0 2vw 8vw rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
+    header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
     header svg { flex-shrink:0; }
-    header h1 { font-size:17vw;font-weight:700;line-height:1.2; }
+    header h1 { font-size:17px;font-weight:700;line-height:1.2; }
     header p  { display:none; }
     .header-info { flex:1; }
-    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5vw solid rgba(255,255,255,.35);border-radius:7vw;padding:6vw 10vw;font-size:14vw;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
+    .btn-logout,.btn-lang { background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35);border-radius:7px;padding:6px 10px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s; }
     .btn-logout:active,.btn-lang:active { background:rgba(255,255,255,.25); }
 
-    #tab-bar { background:var(--card);display:flex;border-bottom:2vw solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2vw 6vw rgba(0,0,0,.06);width:100%; }
-    .tab { flex:1;padding:10vw;background:none;border:none;font-size:14vw;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3vw solid transparent;margin-bottom:-2vw;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
+    #tab-bar { background:var(--card);display:flex;border-bottom:2px solid var(--border);position:sticky;top:0;z-index:9;box-shadow:0 2px 6px rgba(0,0,0,.06);width:100%; }
+    .tab { flex:1;padding:10px;background:none;border:none;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;-webkit-tap-highlight-color:transparent; }
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
     .view { display:none; }
-    .view.active { display:flex;flex-direction:column;gap:16vw;width:100%; }
-    main { flex:1;padding:12vw;display:block;max-width:100%;width:100%;margin:0 auto; }
-    .card { background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18vw; }
-    .card-title { font-size:13vw;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14vw; }
-    .meta-grid { display:grid;grid-template-columns:1fr;gap:12vw; }
-    .meta-item { display:flex;flex-direction:column;gap:3vw; }
-    .meta-item label { font-size:14vw;color:var(--muted);font-weight:600; }
-    .meta-item input,.meta-item select { border:1.5vw solid var(--border);border-radius:8vw;padding:10vw 12vw;font-size:16vw;color:var(--text);outline:none;transition:border-color .15s;width:100%;background:var(--card); }
+    .view.active { display:flex;flex-direction:column;gap:16px;width:100%; }
+    main { flex:1;padding:12px;display:block;max-width:100%;width:100%;margin:0 auto; }
+    .card { background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px; }
+    .card-title { font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px; }
+    .meta-grid { display:grid;grid-template-columns:1fr;gap:12px; }
+    .meta-item { display:flex;flex-direction:column;gap:3px; }
+    .meta-item label { font-size:14px;color:var(--muted);font-weight:600; }
+    .meta-item input,.meta-item select { border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);outline:none;transition:border-color .15s;width:100%;background:var(--card); }
     .meta-item input:focus,.meta-item select:focus { border-color:var(--blue); }
     .meta-item.full { grid-column:1; }
-    .catch-form { display:grid;grid-template-columns:1fr;gap:12vw; }
-    .catch-form .field { display:flex;flex-direction:column;gap:4vw; }
-    .catch-form label { font-size:14vw;color:var(--muted);font-weight:600; }
-    .catch-form input { border:1.5vw solid var(--border);border-radius:8vw;padding:10vw 12vw;font-size:16vw;color:var(--text);outline:none;transition:border-color .15s;width:100%;-webkit-appearance:none;background:var(--card); }
+    .catch-form { display:grid;grid-template-columns:1fr;gap:12px; }
+    .catch-form .field { display:flex;flex-direction:column;gap:4px; }
+    .catch-form label { font-size:14px;color:var(--muted);font-weight:600; }
+    .catch-form input { border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);outline:none;transition:border-color .15s;width:100%;-webkit-appearance:none;background:var(--card); }
     .catch-form input:focus { border-color:var(--blue); }
     .catch-form .field.full { grid-column:1; }
-    .btn { display:inline-flex;align-items:center;justify-content:center;gap:6vw;border:none;border-radius:10vw;padding:13vw 16vw;font-size:16vw;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
+    .btn { display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:10px;padding:13px 16px;font-size:16px;font-weight:600;cursor:pointer;transition:filter .15s,transform .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation; }
     .btn:active { transform:scale(.97);filter:brightness(.92); }
     .btn-primary  { background:var(--blue);  color:#fff;width:100%; }
     .btn-success  { background:var(--green); color:#fff;width:100%; }
     .btn-danger   { background:var(--red);   color:#fff;width:100%; }
-    .btn-outline  { background:transparent;color:var(--blue);border:1.5vw solid var(--blue);width:100%; }
-    .btn-icon-danger { background:#fff0f0;color:var(--red);border:none;border-radius:7vw;padding:7vw 10vw;cursor:pointer;font-size:.85rem;transition:background .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0; }
+    .btn-outline  { background:transparent;color:var(--blue);border:1.5px solid var(--blue);width:100%; }
+    .btn-icon-danger { background:#fff0f0;color:var(--red);border:none;border-radius:7px;padding:7px 10px;cursor:pointer;font-size:.85rem;transition:background .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0; }
     .btn-icon-danger:active { background:#ffd6d6; }
-    #catch-list { display:flex;flex-direction:column;gap:10vw; }
-    .catch-item { border:1.5vw solid var(--border);border-radius:10vw;padding:12vw 14vw;display:flex;align-items:center;justify-content:space-between;gap:10vw;background:#fafdff; }
-    .catch-item .catch-num { background:var(--blue);color:#fff;border-radius:50%;width:30vw;height:30vw;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0; }
+    #catch-list { display:flex;flex-direction:column;gap:10px; }
+    .catch-item { border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fafdff; }
+    .catch-item .catch-num { background:var(--blue);color:#fff;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0; }
     .catch-item .catch-info { flex:1; }
-    .catch-item .catch-weight { font-size:17vw;font-weight:700;color:var(--text); }
-    .catch-item .catch-time   { font-size:14vw;color:var(--muted);margin-top:1vw; }
-    .empty-state { text-align:center;color:var(--muted);font-size:16vw;padding:24vw 0; }
-    .summary-grid { display:grid;grid-template-columns:1fr 1fr;gap:12vw;margin-bottom:16vw; }
-    .stat-box { background:var(--bg);border-radius:10vw;padding:14vw;display:flex;flex-direction:column;gap:3vw; }
-    .stat-box .stat-label { font-size:12vw;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em; }
-    .stat-box .stat-value { font-size:24vw;font-weight:800;color:var(--text);line-height:1.1; }
-    .stat-box .stat-unit  { font-size:12vw;color:var(--muted); }
+    .catch-item .catch-weight { font-size:17px;font-weight:700;color:var(--text); }
+    .catch-item .catch-time   { font-size:14px;color:var(--muted);margin-top:1px; }
+    .empty-state { text-align:center;color:var(--muted);font-size:16px;padding:24px 0; }
+    .summary-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px; }
+    .stat-box { background:var(--bg);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:3px; }
+    .stat-box .stat-label { font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em; }
+    .stat-box .stat-value { font-size:24px;font-weight:800;color:var(--text);line-height:1.1; }
+    .stat-box .stat-unit  { font-size:12px;color:var(--muted); }
     .stat-box.highlight { background:#e8f5e9; }
     .stat-box.highlight .stat-value { color:var(--green); }
-    .price-row { display:flex;align-items:flex-end;gap:10vw;margin-bottom:14vw; }
-    .price-row .field { flex:1;display:flex;flex-direction:column;gap:4vw; }
-    .price-row label { font-size:14vw;color:var(--muted);font-weight:600; }
-    .price-row input { border:1.5vw solid var(--border);border-radius:8vw;padding:11vw 12vw;font-size:17vw;font-weight:700;color:var(--text);outline:none;width:100%;-webkit-appearance:none;background:var(--card); }
+    .price-row { display:flex;align-items:flex-end;gap:10px;margin-bottom:14px; }
+    .price-row .field { flex:1;display:flex;flex-direction:column;gap:4px; }
+    .price-row label { font-size:14px;color:var(--muted);font-weight:600; }
+    .price-row input { border:1.5px solid var(--border);border-radius:8px;padding:11px 12px;font-size:17px;font-weight:700;color:var(--text);outline:none;width:100%;-webkit-appearance:none;background:var(--card); }
     .price-row input:focus { border-color:var(--green); }
-    .total-price-box { background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border-radius:12vw;padding:18vw;text-align:center;margin-bottom:16vw; }
-    .total-price-box .label  { font-size:14vw;opacity:.85;font-weight:600;text-transform:uppercase;letter-spacing:.07em; }
-    .total-price-box .amount { font-size:32vw;font-weight:800;line-height:1.15; }
+    .total-price-box { background:linear-gradient(135deg,#1b5e20,#2e7d32);color:#fff;border-radius:12px;padding:18px;text-align:center;margin-bottom:16px; }
+    .total-price-box .label  { font-size:14px;opacity:.85;font-weight:600;text-transform:uppercase;letter-spacing:.07em; }
+    .total-price-box .amount { font-size:32px;font-weight:800;line-height:1.15; }
     .total-price-box.dim { background:linear-gradient(135deg,#78909c,#90a4ae); }
-    #toast { position:fixed;bottom:24vw;left:50%;transform:translateX(-50%) translateY(80vw);background:#1a1a2e;color:#fff;padding:12vw 22vw;border-radius:50vw;font-size:15vw;font-weight:600;box-shadow:0 4vw 16vw rgba(0,0,0,.3);transition:transform .25s ease;z-index:100;max-width:90vw;text-align:center; }
+    #toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a2e;color:#fff;padding:12px 22px;border-radius:50px;font-size:15px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:transform .25s ease;z-index:100;max-width:90vw;text-align:center; }
     #toast.show { transform:translateX(-50%) translateY(0); }
     .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s; }
     .modal-overlay.open { opacity:1;pointer-events:all; }
-    .modal { background:var(--card);border-radius:var(--radius) var(--radius) 0 0;padding:24vw 20vw 36vw;width:100%;transform:translateY(100%);transition:transform .25s ease;max-width:540vw;margin:0 auto; }
+    .modal { background:var(--card);border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px 36px;width:100%;transform:translateY(100%);transition:transform .25s ease;max-width:540px;margin:0 auto; }
     .modal-overlay.open .modal { transform:translateY(0); }
-    .modal h2 { font-size:18vw;margin-bottom:8vw;color:var(--text); }
-    .modal p  { font-size:14vw;color:var(--muted);margin-bottom:20vw;white-space:pre-wrap; }
-    .modal .actions { display:flex;gap:10vw; }
-    .section-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:12vw; }
-    .badge { background:var(--blue);color:#fff;border-radius:50vw;padding:2vw 10vw;font-size:.75rem;font-weight:700; }
-    .filter-grid { display:grid;grid-template-columns:1fr;gap:12vw;margin-bottom:12vw; }
-    .filter-grid .field { display:flex;flex-direction:column;gap:4vw; }
-    .filter-grid label  { font-size:14vw;color:var(--muted);font-weight:600; }
-    .filter-grid input  { border:1.5vw solid var(--border);border-radius:8vw;padding:10vw 12vw;font-size:16vw;color:var(--text);outline:none;width:100%;-webkit-appearance:none;background:var(--card); }
+    .modal h2 { font-size:18px;margin-bottom:8px;color:var(--text); }
+    .modal p  { font-size:14px;color:var(--muted);margin-bottom:20px;white-space:pre-wrap; }
+    .modal .actions { display:flex;gap:10px; }
+    .section-head { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+    .badge { background:var(--blue);color:#fff;border-radius:50px;padding:2px 10px;font-size:.75rem;font-weight:700; }
+    .filter-grid { display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px; }
+    .filter-grid .field { display:flex;flex-direction:column;gap:4px; }
+    .filter-grid label  { font-size:14px;color:var(--muted);font-weight:600; }
+    .filter-grid input  { border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);outline:none;width:100%;-webkit-appearance:none;background:var(--card); }
     .filter-grid input:focus { border-color:var(--blue); }
-    .sort-row { display:flex;align-items:center;gap:8vw; }
-    .sort-row label { font-size:14vw;color:var(--muted);font-weight:600;}
-    .sort-row select { flex:1;border:1.5vw solid var(--border);border-radius:8vw;padding:10vw 12vw;font-size:16vw;color:var(--text);background:var(--card);outline:none; }
+    .sort-row { display:flex;align-items:center;gap:8px; }
+    .sort-row label { font-size:14px;color:var(--muted);font-weight:600;}
+    .sort-row select { flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);background:var(--card);outline:none; }
     .sort-row select:focus { border-color:var(--blue); }
     #rec-totals { margin-bottom:0; }
     #rec-totals .summary-grid { margin-bottom:0; }
-    .rec-card { padding:14vw 16vw; }
-    .rec-date { font-size:17vw;font-weight:700;color:var(--text);line-height:1.2; }
-    .rec-meta { font-size:14vw;color:var(--muted);margin-top:2vw; }
-    .rec-pills { display:flex;flex-wrap:wrap;gap:6vw; }
-    .rec-pill { background:var(--bg);border-radius:50vw;padding:4vw 10vw;font-size:13vw;font-weight:600;color:var(--text); }
+    .rec-card { padding:14px 16px; }
+    .rec-date { font-size:17px;font-weight:700;color:var(--text);line-height:1.2; }
+    .rec-meta { font-size:14px;color:var(--muted);margin-top:2px; }
+    .rec-pills { display:flex;flex-wrap:wrap;gap:6px; }
+    .rec-pill { background:var(--bg);border-radius:50px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--text); }
     .rec-pill.green { background:#e8f5e9;color:var(--green); }
-    .user-item { border:1.5vw solid var(--border);border-radius:10vw;padding:12vw 14vw;display:flex;align-items:center;justify-content:space-between;gap:10vw;background:#fafdff;margin-bottom:8vw; }
+    .user-item { border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fafdff;margin-bottom:8px; }
     .user-item:last-child { margin-bottom:0; }
-    .role-badge { display:inline-block;border-radius:50vw;padding:3vw 10vw;font-size:13vw;font-weight:700; }
+    .role-badge { display:inline-block;border-radius:50px;padding:3px 10px;font-size:13px;font-weight:700; }
     .role-badge.admin { background:#fff3cd;color:#856404; }
     .role-badge.user  { background:#e8f4fd;color:#0c63e4; }
-    .admin-form { display:flex;flex-direction:column;gap:10vw; }
-    .admin-form input { border:1.5vw solid var(--border);border-radius:8vw;padding:10vw 12vw;font-size:16vw;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card); }
+    .admin-form { display:flex;flex-direction:column;gap:10px; }
+    .admin-form input { border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:16px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card); }
     .admin-form input:focus { border-color:var(--blue); }
-    .checkbox-row { display:flex;align-items:center;gap:8vw;padding:4vw 0; }
-    .checkbox-row input[type="checkbox"] { width:18vw;height:18vw;cursor:pointer; }
-    .checkbox-row label { font-size:15vw;color:var(--text);cursor:pointer; }
+    .checkbox-row { display:flex;align-items:center;gap:8px;padding:4px 0; }
+    .checkbox-row input[type="checkbox"] { width:18px;height:18px;cursor:pointer; }
+    .checkbox-row label { font-size:15px;color:var(--text);cursor:pointer; }
   }
 
 
-  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10vw; padding:13vw 16vw; font-size:16vw; font-weight:600; cursor:pointer; }
-  .wiz-back { background:var(--bg); color:var(--muted); border:1.5vw solid var(--border); border-radius:10vw; padding:13vw 16vw; font-size:16vw; font-weight:600; cursor:pointer; }
+  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
 
     /* ── WIZARD — must be last ── */
-    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18vw; }
-    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
-    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
-    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
-    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
-    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
-    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
-    .wiz-nav { display:flex !important; gap:10vw; margin-top:20vw; padding-top:16vw; border-top:1vw solid var(--border); }
-    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10vw; padding:13vw 16vw; font-size:16vw; font-weight:600; cursor:pointer; }
-    .wiz-back { background:var(--bg); color:var(--muted); border:1.5vw solid var(--border); border-radius:10vw; padding:13vw 16vw; font-size:16vw; font-weight:600; cursor:pointer; }
+    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
+    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    .wiz-nav { display:flex !important; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+    .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+    .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
   </style>
 </head>
 <body>
 
 <div id="login-screen" class="hidden">
   <div class="login-card-wrap">
-  <div class="login-card" style="max-width:420vw;margin:0 auto;">
+  <div class="login-card" style="max-width:420px;margin:0 auto;">
     <div class="login-logo">
       <div>
         <h1 id="login-title">Fish Harvest Logger</h1>
@@ -167,12 +168,12 @@
       <div class="login-field"><label id="lbl-password">Password</label><input type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" /></div>
       <div class="login-error" id="login-error"></div>
       <button class="btn btn-primary" id="btn-signin" onclick="doLogin()">Sign In</button>
-      <p id="reset-hint" style="display:none;text-align:center;margin-top:12vw;font-size:.8rem;color:var(--muted);">
+      <p id="reset-hint" style="display:none;text-align:center;margin-top:12px;font-size:.8rem;color:var(--muted);">
         <span id="rh-text">Can't log in?</span> <a href="#" id="rh-link" onclick="resetAppData()" style="color:var(--red);">Reset app data</a>
       </p>
     </div>
     <div id="setup-form" style="display:none;">
-      <p id="setup-intro" style="font-size:.85rem;color:var(--muted);margin-bottom:16vw;line-height:1.5;">No users found. Create the admin account to get started.</p>
+      <p id="setup-intro" style="font-size:.85rem;color:var(--muted);margin-bottom:16px;line-height:1.5;">No users found. Create the admin account to get started.</p>
       <div class="login-field"><label id="lbl-admin-username">Admin Username</label><input type="text" id="setup-username" placeholder="Choose a username" /></div>
       <div class="login-field"><label id="lbl-setup-password">Password</label><input type="password" id="setup-password" placeholder="At least 4 characters" /></div>
       <div class="login-field"><label id="lbl-confirm-password">Confirm Password</label><input type="password" id="setup-password2" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doSetup()" /></div>
@@ -240,7 +241,7 @@
         <div class="field"><label id="lbl-weight">Weight (kg)</label><input type="number" id="catch-weight" placeholder="0.0" min="0" step="0.1" inputmode="decimal" /></div>
         <div class="field full"><label id="lbl-note">Note (optional)</label><input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" /></div>
       </div>
-      <div style="margin-top:12vw;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
+      <div style="margin-top:12px;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(3)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(5)">View Catches &#x2192;</button></div>
     </div>
     <div class="wizard-card" data-step="5">
@@ -260,7 +261,7 @@
         <div class="stat-box"><span class="stat-label" id="sl-dur">Duration</span><span class="stat-value" id="sum-dur">—</span><span class="stat-unit" id="su-firstlast">first &#x2192; last</span></div>
       </div>
       <div class="price-row">
-        <div class="field"><label id="lbl-currency">Currency</label><input type="text" id="currency" value="$" style="max-width:70vw;text-align:center;font-size:1.3rem;" maxlength="5" /></div>
+        <div class="field"><label id="lbl-currency">Currency</label><input type="text" id="currency" value="$" style="max-width:70px;text-align:center;font-size:1.3rem;" maxlength="5" /></div>
         <div class="field" style="flex:3"><label id="lbl-price-per-kg">Price per kg</label><input type="number" id="price-per-kg" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="calcTotal()" /></div>
       </div>
       <div class="total-price-box dim" id="total-box">
@@ -268,7 +269,7 @@
         <div class="amount" id="total-price">—</div>
       </div>
       <button class="btn btn-success" id="btn-finalise" onclick="openFinish()">Finalise Delivery</button>
-      <div style="margin-top:10vw;"><button class="btn btn-outline" id="btn-reset" onclick="openReset()">Reset / New Delivery</button></div>
+      <div style="margin-top:10px;"><button class="btn btn-outline" id="btn-reset" onclick="openReset()">Reset / New Delivery</button></div>
       <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(5)">&#x2190; Back</button></div>
     </div>
   </div>
@@ -295,7 +296,7 @@
       </div>
     </div>
     <div class="card" id="rec-totals" style="display:none;">
-      <div class="card-title" id="ct-totals" style="margin-bottom:12vw;">Filtered Totals</div>
+      <div class="card-title" id="ct-totals" style="margin-bottom:12px;">Filtered Totals</div>
       <div class="summary-grid" style="margin-bottom:0;">
         <div class="stat-box"><span class="stat-label" id="sl-deliveries">Deliveries</span><span class="stat-value" id="rt-count">0</span><span class="stat-unit" id="su-records">records</span></div>
         <div class="stat-box"><span class="stat-label" id="sl-rt-weight">Total Weight</span><span class="stat-value" id="rt-weight">0.0</span><span class="stat-unit">kg</span></div>
@@ -898,12 +899,12 @@
       else{document.getElementById('rt-price').textContent='—';document.getElementById('rt-price-unit').textContent='';}
     } else totalsEl.style.display='none';
     const listEl=document.getElementById('rec-list');
-    if(recs.length===0){listEl.innerHTML=`<div class="empty-state" style="padding:32vw 0;">${tr('noRecords')}</div>`;return;}
+    if(recs.length===0){listEl.innerHTML=`<div class="empty-state" style="padding:32px 0;">${tr('noRecords')}</div>`;return;}
     listEl.innerHTML=recs.map(r=>{
       const cc=Array.isArray(r.catches)?r.catches.length:0;
       const priceTag=r.totalPrice!==null?`<span class="rec-pill green">${r.currency}${r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</span>`:'';
       const buyerMeta=[r.buyerName,r.buyerEmail,r.buyerPhone].filter(Boolean).join(' \u00b7 ');
-      return `<div class="card rec-card"><div class="rec-date">${r.date}</div><div class="rec-meta" style="margin-bottom:${buyerMeta?4:10}vw;">${escHtml(r.vessel)} \u00b7 ${escHtml(r.species)}</div>${buyerMeta?`<div class="rec-meta" style="margin-bottom:10vw;">${escHtml(buyerMeta)}</div>`:''}<div class="rec-pills"><span class="rec-pill">${cc} ${tr('slCatches').toLowerCase()}</span><span class="rec-pill">${fmt(r.totalWeight)} kg</span>${r.pricePerKg!==null?`<span class="rec-pill">${r.currency}${fmt(r.pricePerKg,2)}/kg</span>`:''} ${priceTag}</div></div>`;
+      return `<div class="card rec-card"><div class="rec-date">${r.date}</div><div class="rec-meta" style="margin-bottom:${buyerMeta?4:10}px;">${escHtml(r.vessel)} \u00b7 ${escHtml(r.species)}</div>${buyerMeta?`<div class="rec-meta" style="margin-bottom:10px;">${escHtml(buyerMeta)}</div>`:''}<div class="rec-pills"><span class="rec-pill">${cc} ${tr('slCatches').toLowerCase()}</span><span class="rec-pill">${fmt(r.totalWeight)} kg</span>${r.pricePerKg!==null?`<span class="rec-pill">${r.currency}${fmt(r.pricePerKg,2)}/kg</span>`:''} ${priceTag}</div></div>`;
     }).join('');
   }
 
@@ -942,7 +943,7 @@
     listEl.innerHTML=users.length===0?`<div class="empty-state">${tr('noUsers')}</div>`:users.map(u=>`
       <div class="user-item">
         <div><div style="font-weight:700;font-size:.95rem;">${escHtml(u.username)}</div>
-        <div style="font-size:.75rem;color:var(--muted);margin-top:3vw;">
+        <div style="font-size:.75rem;color:var(--muted);margin-top:3px;">
           <span class="role-badge ${u.isAdmin?'admin':'user'}">${u.isAdmin?tr('roleAdmin'):tr('roleUser')}</span>
           &nbsp;\u00b7 ${tr('addedOn')} ${new Date(u.createdAt).toLocaleDateString()}
         </div></div>

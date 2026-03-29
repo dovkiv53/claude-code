@@ -135,22 +135,12 @@
     .checkbox-row label { font-size:15px;color:var(--text);cursor:pointer; }
   }
 
-
-  .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-  .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-
-
-    .wizard-card label { font-size:18px !important; }
-    .wizard-card input, .wizard-card select { font-size:20px !important; padding:14px !important; }
-    .wizard-card .card-title { font-size:16px !important; margin-bottom:20px !important; }
-    .wizard-card .btn { font-size:20px !important; padding:16px !important; }
-    /* ── WIZARD — must be last ── */
+    /* WIZARD */
     .wizard-card { display:none !important; }
-    .wizard-card.wiz-active-card { display:flex !important; position:fixed; top:79px; left:0; right:0; bottom:0; flex-direction:column; background:var(--bg); padding:16px; overflow-y:auto; z-index:999; }
-    .wiz-nav { display:flex !important; gap:10px; padding:12px 0 0 0; margin-top:auto; border-top:1px solid var(--border); }
+    .wizard-card.wiz-active-card { display:block !important; }
+    .wiz-nav { display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
     .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
     .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
-
   </style>
 </head>
 <body>
@@ -201,8 +191,8 @@
 </nav>
 
 <main>
-  <div id="view-logger" class="view active" data-wiz-step="1">
-    <div class="wizard-card" data-step="1">
+  <div id="view-logger" class="view active">
+    <div class="wizard-card wiz-active-card" data-step="1">
       <div class="card-title" id="ct-setup">Setup</div>
       <div class="meta-item">
         <label id="lbl-email-app">Email App for Buyer Receipt</label>
@@ -960,13 +950,7 @@
     wizStep = step;
     document.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('wiz-active-card'));
     const active = document.querySelector('.wizard-card[data-step="' + step + '"]');
-    if (active) {
-      const tabBar = document.getElementById('tab-bar');
-      const top = tabBar ? Math.round(tabBar.getBoundingClientRect().bottom) : 79;
-      active.style.top = top + 'px';
-      active.classList.add('wiz-active-card');
-      console.log('wizGo: step=' + step + ' top=' + top + ' card=' + active.className);
-    }
+    if (active) active.classList.add('wiz-active-card');
     window.scrollTo(0, 0);
   }
 

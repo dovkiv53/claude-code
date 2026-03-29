@@ -25,13 +25,13 @@
 
     .login-card { background:var(--card);border-radius:var(--radius);box-shadow:0 4px 24px rgba(0,0,0,.12);padding:32px 24px;width:100%; }
     .login-logo { margin-bottom:20px; }
-    .login-logo h1 { font-size:20vw;font-weight:800;color:var(--text);line-height:1.2; }
-    .login-logo p  { font-size:14vw;color:var(--muted);margin-top:2px; }
+    .login-logo h1 { font-size:20px;font-weight:800;color:var(--text);line-height:1.2; }
+    .login-logo p  { font-size:14px;color:var(--muted);margin-top:2px; }
     .login-field { display:flex;flex-direction:column;gap:4px;margin-bottom:10px; }
-    .login-field label { font-size:15vw;color:var(--muted);font-weight:600; }
-    .login-field input { border:1.5px solid var(--border);border-radius:8px;box-sizing:border-box;padding:11px 12px;font-size:16vw;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
+    .login-field label { font-size:15px;color:var(--muted);font-weight:600; }
+    .login-field input { border:1.5px solid var(--border);border-radius:8px;box-sizing:border-box;padding:11px 12px;font-size:16px;color:var(--text);outline:none;width:100%;transition:border-color .15s;background:var(--card);-webkit-appearance:none; }
     .login-field input:focus { border-color:var(--blue); }
-    .login-error { font-size:15vw;color:var(--red);margin-bottom:10px;min-height:18px; }
+    .login-error { font-size:15px;color:var(--red);margin-bottom:10px;min-height:18px; }
 
         /* HEADER — compact, constrained to content width */
     header { background:var(--blue);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);position:sticky;top:0;z-index:10;width:100%; }
@@ -47,8 +47,8 @@
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
     .view { display:none; }
-    .view.active { display:flex;flex-direction:column;gap:16px;width:100%; }
-    main { flex:1;padding:12px;display:block;max-width:100%;width:100%;margin:0 auto; }
+    .view.active { display:flex;flex-direction:column;gap:16px;width:100%;flex:1; }
+    main { flex:1;padding:12px;display:flex;flex-direction:column;max-width:100%;width:100%;margin:0 auto; }
     .card { background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px; }
     .card-title { font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px; }
     .meta-grid { display:grid;grid-template-columns:1fr;gap:12px; }

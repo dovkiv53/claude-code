@@ -47,8 +47,8 @@
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
     .view { display:none; }
-    .view.active { display:flex;flex-direction:column;gap:16px;width:100%; }
-    main { flex:1;padding:12px;display:block;max-width:100%;width:100%;margin:0 auto; }
+    .view.active { display:flex;flex-direction:column;gap:16px;width:100%;flex:1; }
+    main { flex:1;padding:12px;display:flex;flex-direction:column;max-width:100%;width:100%;margin:0 auto; }
     .card { background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px; }
     .card-title { font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px; }
     .meta-grid { display:grid;grid-template-columns:1fr;gap:12px; }
@@ -140,13 +140,14 @@
   .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
 
     /* ── WIZARD — must be last ── */
-    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
-    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; min-height:calc(100dvh - 80px); }
+    .wizard-card { display:none !important; flex-direction:column; background:var(--bg); padding:12px; }
+    .wizard-card.wiz-active-card { display:flex !important; position:fixed; left:0; right:0; bottom:0; overflow-y:auto; z-index:5; }
+    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; }
+    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; }
+    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; }
+    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; }
+    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; }
+    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; }
     .wiz-nav { display:flex !important; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
     .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
     .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
@@ -958,11 +959,20 @@
     function wizGo(step) {
     wizStep = step;
     document.getElementById('view-logger').dataset.wizStep = step;
+    // Set top of active card to bottom of tab-bar
+    document.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('wiz-active-card'));
+    const active = document.querySelector('.wizard-card[data-step="' + step + '"]');
+    if (active) {
+      const tabBar = document.getElementById('tab-bar');
+      const top = tabBar ? tabBar.getBoundingClientRect().bottom : 80;
+      active.style.top = top + 'px';
+      active.classList.add('wiz-active-card');
+    }
     window.scrollTo(0, 0);
   }
 
     function wizInit() {
-    wizGo(wizStep);
+    setTimeout(() => wizGo(wizStep), 50);
   }
 
 

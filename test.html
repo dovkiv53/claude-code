@@ -47,8 +47,8 @@
     .tab.active { color:var(--blue);border-bottom-color:var(--blue); }
     #tab-admin { display:none; }
     .view { display:none; }
-    .view.active { display:flex;flex-direction:column;gap:16px;width:100%; }
-    main { flex:1;padding:12px;display:block;max-width:100%;width:100%;margin:0 auto; }
+    .view.active { display:flex;flex-direction:column;gap:16px;width:100%;flex:1; }
+    main { flex:1;padding:12px;display:flex;flex-direction:column;max-width:100%;width:100%;margin:0 auto; }
     .card { background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px; }
     .card-title { font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px; }
     .meta-grid { display:grid;grid-template-columns:1fr;gap:12px; }
@@ -139,17 +139,18 @@
   .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
   .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
 
+
+    .wizard-card label { font-size:18px !important; }
+    .wizard-card input, .wizard-card select { font-size:20px !important; padding:14px !important; }
+    .wizard-card .card-title { font-size:16px !important; margin-bottom:20px !important; }
+    .wizard-card .btn { font-size:20px !important; padding:16px !important; }
     /* ── WIZARD — must be last ── */
-    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
-    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    .wiz-nav { display:flex !important; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+    .wizard-card { display:none !important; }
+    .wizard-card.wiz-active-card { display:flex !important; position:fixed; top:79px; left:0; right:0; bottom:0; flex-direction:column; background:var(--bg); padding:16px; overflow-y:auto; z-index:999; }
+    .wiz-nav { display:flex !important; gap:10px; padding:12px 0 0 0; margin-top:auto; border-top:1px solid var(--border); }
     .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
     .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+
   </style>
 </head>
 <body>
@@ -216,7 +217,96 @@
       </div>
       <div class="wiz-nav"><button class="wiz-next" onclick="wizGo(2)">Next &#x2192;</button></div>
     </div>
-    
+    <div class="wizard-card" data-step="2">
+      <div class="card-title" id="ct-delivery">Delivery Info</div>
+      <div class="meta-grid">
+        <div class="meta-item"><label id="lbl-vessel">Vessel / Pond (optional)</label><input type="text" id="vessel" placeholder="e.g. Sea Star" /></div>
+        <div class="meta-item"><label id="lbl-date">Date</label><input type="date" id="delivery-date" /></div>
+        <div class="meta-item full"><label id="lbl-species">Species</label><input type="text" id="species" placeholder="e.g. Atlantic Cod" /></div>
+      </div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(1)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(3)">Next &#x2192;</button></div>
+    </div>
+    <div class="wizard-card" data-step="3">
+      <div class="card-title" id="ct-buyer">Buyer Info</div>
+      <div class="meta-grid">
+        <div class="meta-item full"><label id="lbl-buyer-name">Buyer Name</label><input type="text" id="buyer-name" placeholder="e.g. John Smith" /></div>
+        <div class="meta-item full"><label id="lbl-buyer-email">Buyer Email</label><input type="email" id="buyer-email" placeholder="e.g. buyer@example.com" /></div>
+        <div class="meta-item full"><label id="lbl-buyer-phone">Buyer Phone</label><input type="tel" id="buyer-phone" placeholder="e.g. +1 555 000 0000" /></div>
+      </div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(2)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(4)">Next &#x2192;</button></div>
+    </div>
+    <div class="wizard-card" data-step="4">
+      <div class="card-title" id="ct-addcatch">Add Catch</div>
+      <div class="catch-form">
+        <div class="field"><label id="lbl-time">Time</label><input type="time" id="catch-time" /></div>
+        <div class="field"><label id="lbl-weight">Weight (kg)</label><input type="number" id="catch-weight" placeholder="0.0" min="0" step="0.1" inputmode="decimal" /></div>
+        <div class="field full"><label id="lbl-note">Note (optional)</label><input type="text" id="catch-note" placeholder="e.g. Net 3, fresh haul" /></div>
+      </div>
+      <div style="margin-top:12px;"><button class="btn btn-primary" id="btn-record-catch" onclick="addCatch()">+ Record Catch</button></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(3)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(5)">View Catches &#x2192;</button></div>
+    </div>
+    <div class="wizard-card" data-step="5">
+      <div class="section-head">
+        <div class="card-title" id="ct-catches" style="margin:0">Catches</div>
+        <span class="badge" id="catch-count">0</span>
+      </div>
+      <div id="catch-list"><div class="empty-state" id="no-catches-msg">No catches recorded yet.</div></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(4)">&#x2190; Back</button><button class="wiz-next" onclick="wizGo(6)">Next &#x2192;</button></div>
+    </div>
+    <div class="wizard-card" data-step="6">
+      <div class="card-title" id="ct-summary">Summary</div>
+      <div class="summary-grid">
+        <div class="stat-box"><span class="stat-label" id="sl-catches">Catches</span><span class="stat-value" id="sum-count">0</span><span class="stat-unit" id="su-hauls">hauls</span></div>
+        <div class="stat-box"><span class="stat-label" id="sl-weight">Total Weight</span><span class="stat-value" id="sum-weight">0.0</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box"><span class="stat-label" id="sl-avg">Avg per Catch</span><span class="stat-value" id="sum-avg">—</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box"><span class="stat-label" id="sl-dur">Duration</span><span class="stat-value" id="sum-dur">—</span><span class="stat-unit" id="su-firstlast">first &#x2192; last</span></div>
+      </div>
+      <div class="price-row">
+        <div class="field"><label id="lbl-currency">Currency</label><input type="text" id="currency" value="$" style="max-width:70px;text-align:center;font-size:1.3rem;" maxlength="5" /></div>
+        <div class="field" style="flex:3"><label id="lbl-price-per-kg">Price per kg</label><input type="number" id="price-per-kg" placeholder="0.00" min="0" step="0.01" inputmode="decimal" oninput="calcTotal()" /></div>
+      </div>
+      <div class="total-price-box dim" id="total-box">
+        <div class="label" id="lbl-total-price">Total Price</div>
+        <div class="amount" id="total-price">—</div>
+      </div>
+      <button class="btn btn-success" id="btn-finalise" onclick="openFinish()">Finalise Delivery</button>
+      <div style="margin-top:10px;"><button class="btn btn-outline" id="btn-reset" onclick="openReset()">Reset / New Delivery</button></div>
+      <div class="wiz-nav"><button class="wiz-back" onclick="wizGo(5)">&#x2190; Back</button></div>
+    </div>
+  </div>
+
+  <div id="view-records" class="view">
+    <div class="card">
+      <div class="card-title" id="ct-filter">Filter &amp; Sort</div>
+      <div class="filter-grid">
+        <div class="field"><label id="lbl-from">From</label><input type="date" id="f-from" oninput="renderRecords()" /></div>
+        <div class="field"><label id="lbl-to">To</label><input type="date" id="f-to" oninput="renderRecords()" /></div>
+        <div class="field"><label id="lbl-f-vessel">Vessel</label><input type="text" id="f-vessel" placeholder="Any" oninput="renderRecords()" /></div>
+        <div class="field"><label id="lbl-f-species">Species</label><input type="text" id="f-species" placeholder="Any" oninput="renderRecords()" /></div>
+      </div>
+      <div class="sort-row">
+        <label id="lbl-sort">Sort by</label>
+        <select id="f-sort" onchange="renderRecords()">
+          <option value="date-desc">Date (newest first)</option>
+          <option value="date-asc">Date (oldest first)</option>
+          <option value="weight-desc">Weight (high &#x2192; low)</option>
+          <option value="weight-asc">Weight (low &#x2192; high)</option>
+          <option value="price-desc">Price (high &#x2192; low)</option>
+          <option value="price-asc">Price (low &#x2192; high)</option>
+        </select>
+      </div>
+    </div>
+    <div class="card" id="rec-totals" style="display:none;">
+      <div class="card-title" id="ct-totals" style="margin-bottom:12px;">Filtered Totals</div>
+      <div class="summary-grid" style="margin-bottom:0;">
+        <div class="stat-box"><span class="stat-label" id="sl-deliveries">Deliveries</span><span class="stat-value" id="rt-count">0</span><span class="stat-unit" id="su-records">records</span></div>
+        <div class="stat-box"><span class="stat-label" id="sl-rt-weight">Total Weight</span><span class="stat-value" id="rt-weight">0.0</span><span class="stat-unit">kg</span></div>
+        <div class="stat-box highlight"><span class="stat-label" id="sl-total-value">Total Value</span><span class="stat-value" id="rt-price">—</span><span class="stat-unit" id="rt-price-unit"></span></div>
+        <div class="stat-box"><span class="stat-label" id="sl-avg-weight">Avg Weight</span><span class="stat-value" id="rt-avg">—</span><span class="stat-unit" id="su-kg-delivery">kg / delivery</span></div>
+      </div>
+    </div>
+    <div id="rec-list"></div>
+  </div>
 
   <div id="view-admin" class="view">
     <div class="card">
@@ -868,12 +958,20 @@
 
     function wizGo(step) {
     wizStep = step;
-    document.getElementById('view-logger').dataset.wizStep = step;
+    document.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('wiz-active-card'));
+    const active = document.querySelector('.wizard-card[data-step="' + step + '"]');
+    if (active) {
+      const tabBar = document.getElementById('tab-bar');
+      const top = tabBar ? Math.round(tabBar.getBoundingClientRect().bottom) : 79;
+      active.style.top = top + 'wv';
+      active.classList.add('wiz-active-card');
+      console.log('wizGo: step=' + step + ' top=' + top + ' card=' + active.className);
+    }
     window.scrollTo(0, 0);
   }
 
     function wizInit() {
-    wizGo(wizStep);
+    setTimeout(() => wizGo(wizStep), 50);
   }
 
 

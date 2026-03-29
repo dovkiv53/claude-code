@@ -140,16 +140,12 @@
   .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
 
     /* ── WIZARD — must be last ── */
-    .wizard-card { display:none !important; flex-direction:column; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:18px; }
-    #view-logger[data-wiz-step="1"] .wizard-card[data-step="1"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="2"] .wizard-card[data-step="2"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="3"] .wizard-card[data-step="3"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="4"] .wizard-card[data-step="4"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="5"] .wizard-card[data-step="5"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    #view-logger[data-wiz-step="6"] .wizard-card[data-step="6"] { display:flex !important; min-height:calc(100dvh - 80px); }
-    .wiz-nav { display:flex !important; gap:10px; margin-top:auto; padding-top:16px; border-top:1px solid var(--border); }
+    .wizard-card { display:none !important; }
+    .wizard-card.wiz-active-card { display:flex !important; position:fixed; top:79px; left:0; right:0; bottom:0; flex-direction:column; background:var(--bg); padding:12px; overflow-y:auto; z-index:5; }
+    .wiz-nav { display:flex !important; gap:10px; padding:12px 0 0 0; margin-top:auto; border-top:1px solid var(--border); }
     .wiz-next { flex:1; background:var(--blue); color:#fff; border:none; border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
     .wiz-back { background:var(--bg); color:var(--muted); border:1.5px solid var(--border); border-radius:10px; padding:13px 16px; font-size:16px; font-weight:600; cursor:pointer; }
+
   </style>
 </head>
 <body>
@@ -957,12 +953,20 @@
 
     function wizGo(step) {
     wizStep = step;
-    document.getElementById('view-logger').dataset.wizStep = step;
+    document.querySelectorAll('.wizard-card').forEach(c => c.classList.remove('wiz-active-card'));
+    const active = document.querySelector('.wizard-card[data-step="' + step + '"]');
+    if (active) {
+      const tabBar = document.getElementById('tab-bar');
+      const top = tabBar ? Math.round(tabBar.getBoundingClientRect().bottom) : 79;
+      active.style.top = top + 'px';
+      active.classList.add('wiz-active-card');
+      console.log('wizGo: step=' + step + ' top=' + top + ' card=' + active.className);
+    }
     window.scrollTo(0, 0);
   }
 
     function wizInit() {
-    wizGo(wizStep);
+    setTimeout(() => wizGo(wizStep), 50);
   }
 
 

@@ -16,7 +16,7 @@
       --bg: #f0f4f8; --card: #fff; --text: #1a1a2e; --muted: #6c757d;
       --border: #dee2e6; --radius: 14px; --shadow: 0 2px 12px rgba(0,0,0,.10);
     }
-    html { font-size: clamp(20px, 3.5vh, 36px); }
+    html { font-size: clamp(12px, min(3.5vh, 1.8vw), 36px); }
     html, body, #root { height: 100%; margin: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
     #root { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
@@ -278,7 +278,7 @@ function LoggerTab({user, lang, toast}) {
     const lines = [t('rcptTitle'),`Date:       ${date}`,`Vessel:     ${vessel||'(unnamed)'}`,`Species:    ${species||'(unknown)'}`,
       ...(buyerName?[`Buyer:      ${buyerName}`]:[]),...(buyerEmail?[`Email:      ${buyerEmail}`]:[]),...(buyerPhone?[`Phone:      ${buyerPhone}`]:[]),
       '','#   Time    Weight (kg)  Note','--- ------  -----------  ----',
-      ...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`),
+      ...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time.slice(0,5)}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`),
       '',`Total catches : ${catches.length}`,`Total weight  : ${fmt(totalW,2)} kg`,
       ...(hasP?[`Price / kg    : ${currency}${fmt(priceN,2)}`,`TOTAL PRICE   : ${currency}${totalP.toFixed(2)}`]:[]),
       '',`Generated: ${new Date().toLocaleString()}`];
@@ -299,47 +299,39 @@ function LoggerTab({user, lang, toast}) {
 
   const times = catches.map(c=>c.time).sort();
   const dur = times.length>1?`${times[0]} – ${times[times.length-1]}`:times[0]||'—';
-  const stepLabel = (n) => <span style={{float:'right',fontWeight:400,fontSize:11,color:C.muted}}>{n}/6</span>;
+  const stepLabel = (n) => <span style={{float:'right',fontWeight:400,fontSize:11,color:C.muted}}>{n}/5</span>;
 
   return (
     <div style={{flex:1,overflowY:'auto',padding:12}}>
 
-      {step===1 && <div style={card}>
-        <div style={cardTitle}>{t('ctSetup')}{stepLabel(1)}</div>
-        <Field label={t('lblEmailApp')}>
-          <select style={{...inp}} value={emailApp} onChange={e=>{setEmailApp(e.target.value);save({emailApp:e.target.value});}}>
-            {Object.entries(EMAIL_APPS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
-          </select>
-        </Field>
-        <WizNav next={2} onNext={()=>setStep(2)} />
-      </div>}
 
-      {step===2 && <div style={card}>
-        <div style={cardTitle}>{t('ctDelivery')}{stepLabel(2)}</div>
+
+      {step===1 && <div style={card}>
+        <div style={cardTitle}>{t('ctDelivery')}{stepLabel(1)}</div>
         <Field label={t('lblVessel')}><input style={inp} value={vessel} onChange={e=>setVessel(e.target.value)} placeholder={t('phVessel')} /></Field>
         <Field label={t('lblDate')}><input style={inp} type="date" value={date} onChange={e=>setDate(e.target.value)} /></Field>
         <Field label={t('lblSpecies')}><input style={inp} value={species} onChange={e=>setSpecies(e.target.value)} placeholder={t('phSpecies')} /></Field>
-        <WizNav prev={1} next={3} onPrev={()=>setStep(1)} onNext={()=>setStep(3)} />
+        <WizNav prev={1} next={2} onPrev={()=>setStep(1)} onNext={()=>setStep(1)} />
       </div>}
 
-      {step===3 && <div style={card}>
-        <div style={cardTitle}>{t('ctBuyer')}{stepLabel(3)}</div>
+      {step===2 && <div style={card}>
+        <div style={cardTitle}>{t('ctBuyer')}{stepLabel(2)}</div>
         <Field label={t('lblBuyerName')}><input style={inp} value={buyerName} onChange={e=>setBuyerName(e.target.value)} placeholder={t('phBuyerName')} /></Field>
         <Field label={t('lblBuyerEmail')}><input style={inp} type="email" value={buyerEmail} onChange={e=>setBuyerEmail(e.target.value)} placeholder={t('phBuyerEmail')} /></Field>
         <Field label={t('lblBuyerPhone')}><input style={inp} type="tel" value={buyerPhone} onChange={e=>setBuyerPhone(e.target.value)} placeholder={t('phBuyerPhone')} /></Field>
-        <WizNav prev={2} next={4} onPrev={()=>setStep(2)} onNext={()=>setStep(4)} />
+        <WizNav prev={2} next={3} onPrev={()=>setStep(2)} onNext={()=>setStep(3)} />
       </div>}
 
-      {step===4 && <div style={card}>
-        <div style={cardTitle}>{t('ctAddCatch')}{stepLabel(4)}</div>
+      {step===3 && <div style={card}>
+        <div style={cardTitle}>{t('ctAddCatch')}{stepLabel(3)}</div>
         <Field label={t('lblTime')}><input style={inp} type="time" value={cTime} onChange={e=>setCTime(e.target.value)} /></Field>
         <Field label={t('lblWeight')}><input style={inp} type="number" value={cWeight} onChange={e=>setCWeight(e.target.value)} placeholder="0.0" min="0" step="0.1" inputMode="decimal" onKeyDown={e=>e.key==='Enter'&&addCatch()} /></Field>
         <Field label={t('lblNote')}><input style={inp} value={cNote} onChange={e=>setCNote(e.target.value)} placeholder={t('phNote')} /></Field>
         <button style={btn('primary')} onClick={addCatch}>{t('btnRecordCatch')}</button>
-        <WizNav prev={3} next={5} onPrev={()=>setStep(3)} onNext={()=>setStep(5)} nextLabel={`View Catches (${catches.length}) →`} />
+        <WizNav prev={3} next={4} onPrev={()=>setStep(3)} onNext={()=>setStep(4)} nextLabel={`View Catches (${catches.length}) →`} />
       </div>}
 
-      {step===5 && <div style={card}>
+      {step===4 && <div style={card}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
           <div style={{...cardTitle,marginBottom:0}}>{t('ctCatches')}<span style={{fontWeight:400,fontSize:11,color:C.muted,marginLeft:8}}>5/6</span></div>
           <span style={{background:C.blue,color:'#fff',borderRadius:50,padding:'2px 10px',fontSize:12,fontWeight:700}}>{catches.length}</span>
@@ -350,17 +342,17 @@ function LoggerTab({user, lang, toast}) {
               <div style={{background:C.blue,color:'#fff',borderRadius:'50%',width:30,height:30,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,flexShrink:0}}>{i+1}</div>
               <div style={{flex:1}}>
                 <div style={{fontSize:'1.1rem',fontWeight:700}}>{fmt(c.weight)} kg</div>
-                <div style={{fontSize:13,color:C.muted}}>{c.time}{c.note?' · '+c.note:''}</div>
+                <div style={{fontSize:13,color:C.muted}}>{c.time.slice(0,5)}{c.note?' · '+c.note:''}</div>
               </div>
               <button onClick={()=>setDelIdx(i)} style={{background:'#fff0f0',color:C.red,border:'none',borderRadius:7,padding:'7px 10px',fontSize:14,cursor:'pointer',flexShrink:0}}>✕</button>
             </div>
           ))
         }
-        <WizNav prev={4} next={6} onPrev={()=>setStep(4)} onNext={()=>setStep(6)} />
+        <WizNav prev={4} next={5} onPrev={()=>setStep(4)} onNext={()=>setStep(5)} />
       </div>}
 
-      {step===6 && <div style={card}>
-        <div style={cardTitle}>{t('ctSummary')}{stepLabel(6)}</div>
+      {step===5 && <div style={card}>
+        <div style={cardTitle}>{t('ctSummary')}{stepLabel(5)}</div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
           {[
             [t('slCatches'),catches.length,t('suHauls'),false],
@@ -385,7 +377,7 @@ function LoggerTab({user, lang, toast}) {
         </div>
         <button style={btn('success')} onClick={()=>catches.length?setFinModal(true):toast(t('toastNoFinaliseCatch'))}>{t('btnFinalise')}</button>
         <div style={{marginTop:10}}><button style={btn('outline')} onClick={()=>setResetModal(true)}>{t('btnReset')}</button></div>
-        <WizNav prev={5} onPrev={()=>setStep(5)} />
+        <WizNav prev={4} onPrev={()=>setStep(4)} />
       </div>}
 
       <Modal open={finModal} title={t('btnFinalise')}
@@ -466,6 +458,34 @@ function HistoryTab({user, lang}) {
             </div>
           </div>;
         })}
+    </div>
+  );
+}
+
+
+function SettingsTab({user, lang, toast}) {
+  const t = (k,...a) => { const v=TR[lang][k]??TR.en[k]??k; return typeof v==='function'?v(...a):v; };
+  const sk = `fish_state_${user.username}`;
+  const [emailApp, setEmailApp] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(sk)||'{}').emailApp||'mailto'; } catch(e) { return 'mailto'; }
+  });
+  const save = (app) => {
+    try {
+      const s = JSON.parse(localStorage.getItem(sk)||'{}');
+      s.emailApp = app;
+      localStorage.setItem(sk, JSON.stringify(s));
+    } catch(e) {}
+  };
+  return (
+    <div style={{flex:1,overflowY:'auto',padding:'1rem'}}>
+      <div style={card}>
+        <div style={cardTitle}>{t('ctSetup')}</div>
+        <Field label={t('lblEmailApp')}>
+          <select style={{...inp}} value={emailApp} onChange={e=>{setEmailApp(e.target.value);save(e.target.value);}}>
+            {Object.entries(EMAIL_APPS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+          </select>
+        </Field>
+      </div>
     </div>
   );
 }
@@ -561,10 +581,10 @@ function LoginScreen({onLogin, lang, setLang}) {
     const admin={username:su,password:sp,isAdmin:true,createdAt:new Date().toISOString()};
     await saveUsers([admin]); localStorage.setItem('fish_session',JSON.stringify(admin)); onLogin(admin,[admin]);
   };
-  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:420};
+  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:'90vw'};
   if (users===null) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100dvh',background:C.bg}}><div style={cardStyle}><h1 style={{fontSize:20,fontWeight:800}}>Fish Logger</h1><p style={{color:C.muted,fontSize:14,marginTop:4}}>{t('loading')}</p></div></div>;
   return (
-    <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh',background:C.bg,padding:24}}>
+    <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh',background:C.bg,padding:'1rem'}}>
       <div style={cardStyle}>
         <h1 style={{fontSize:20,fontWeight:800,marginBottom:4}}>Fish Logger</h1>
         <p style={{fontSize:14,color:C.muted,marginBottom:20}}>{users.length===0?t('firstTimeSetup'):t('signIn')}</p>
@@ -610,15 +630,16 @@ function App() {
         <button onClick={logout} style={{background:'rgba(255,255,255,.15)',color:'#fff',border:'1.5px solid rgba(255,255,255,.35)',borderRadius:7,padding:'0.4rem 0.65rem',fontSize:'0.85rem',fontWeight:600,marginLeft:4}}>{t('signOut')}</button>
       </div>
       <div style={{background:C.card,display:'flex',borderBottom:`2px solid ${C.border}`,flexShrink:0}}>
-        {['logger','history',...(showAdmin?['admin']:[])].map(k=>(
+        {['logger','history','settings',...(showAdmin?['admin']:[])].map(k=>(
           <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:'0.75rem',background:'none',border:'none',fontSize:'0.9rem',fontWeight:600,color:tab===k?C.blue:C.muted,borderBottom:tab===k?`3px solid ${C.blue}`:'3px solid transparent',marginBottom:-2,cursor:'pointer'}}>
-            {k==='logger'?t('tabLogger'):k==='history'?t('tabHistory'):t('tabAdmin')}
+            {k==='logger'?t('tabLogger'):k==='history'?t('tabHistory'):k==='settings'?'Settings':t('tabAdmin')}
           </button>
         ))}
       </div>
       <div style={{display:'flex',flex:1,overflow:'hidden',flexDirection:'column'}}>
         {tab==='logger'&&<LoggerTab user={user} lang={lang} toast={showToast} />}
         {tab==='history'&&<HistoryTab user={user} lang={lang} />}
+        {tab==='settings'&&<SettingsTab user={user} lang={lang} toast={showToast} />}
         {tab==='admin'&&showAdmin&&<AdminTab user={user} lang={lang} toast={showToast} />}
       </div>
       <Toast msg={toastMsg} />

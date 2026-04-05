@@ -27,16 +27,20 @@
   <script>
     // Set font size based on screen
     function setFontSize() {
-      var w = window.innerWidth;
-      var h = window.innerHeight;
-      var shorter = Math.min(w, h);
-      var longer = Math.max(w, h);
-      // Phone: shorter dimension < 500px
-      if (shorter < 500) {
-        document.documentElement.style.fontSize = Math.min(36, Math.max(22, longer * 0.045)) + "px";
+      var sw = window.screen.width;
+      var sh = window.screen.height;
+      var iw = window.innerWidth;
+      var ih = window.innerHeight;
+      var shorter = Math.min(sw, sh);
+      var longer = Math.max(sw, sh);
+      var size;
+      if (shorter < 600) {
+        // Phone: use longer screen dimension to scale font
+        size = Math.min(36, Math.max(22, longer * 0.045));
       } else {
-        document.documentElement.style.fontSize = "14px";
+        size = 14;
       }
+      document.documentElement.style.fontSize = size + "px";
     }
     setFontSize();
     window.addEventListener('resize', setFontSize);
@@ -78,7 +82,7 @@ const TR = {
     sortDateNewest:'Date (newest first)', sortDateOldest:'Date (oldest first)',
     sortWeightHigh:'Weight (high → low)', sortWeightLow:'Weight (low → high)',
     sortPriceHigh:'Price (high → low)', sortPriceLow:'Price (low → high)',
-    slCatches:'Catches', suHauls:'hauls', slWeight:'Total Weight', slAvg:'Avg per Catch',
+    lblFrom:'From', lblTo:'To', slCatches:'Catches', suHauls:'hauls', slWeight:'Total Weight', slAvg:'Avg per Catch',
     slDur:'Duration', slDeliveries:'Deliveries', suRecords:'records', slTotalValue:'Total Value',
     slAvgWeight:'Avg Weight', suKgDelivery:'kg / delivery',
     toastCatchRecorded:(n,w)=>`Catch #${n} recorded — ${w} kg`,
@@ -123,7 +127,7 @@ const TR = {
     sortDateNewest:'Fecha (más reciente)', sortDateOldest:'Fecha (más antigua)',
     sortWeightHigh:'Peso (mayor → menor)', sortWeightLow:'Peso (menor → mayor)',
     sortPriceHigh:'Precio (mayor → menor)', sortPriceLow:'Precio (menor → mayor)',
-    slCatches:'Capturas', suHauls:'halas', slWeight:'Peso total', slAvg:'Promedio por captura',
+    lblFrom:'Desde', lblTo:'Hasta', slCatches:'Capturas', suHauls:'halas', slWeight:'Peso total', slAvg:'Promedio por captura',
     slDur:'Duración', slDeliveries:'Entregas', suRecords:'registros', slTotalValue:'Valor total',
     slAvgWeight:'Peso promedio', suKgDelivery:'kg / entrega',
     toastCatchRecorded:(n,w)=>`Captura #${n} registrada — ${w} kg`,
@@ -443,14 +447,21 @@ function HistoryTab({user, lang}) {
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:12}}>
           <Field label={t('lblFrom')}><input style={inp} type="date" value={from} onChange={e=>setFrom(e.target.value)} /></Field>
           <Field label={t('lblTo')}><input style={inp} type="date" value={to} onChange={e=>setTo(e.target.value)} /></Field>
-          <Field label={t('lblVessel')}><input style={inp} value={fV} onChange={e=>setFV(e.target.value)} placeholder={t('phAny')} /></Field>
-          <Field label={t('lblSpecies')}><input style={inp} value={fS} onChange={e=>setFS(e.target.value)} placeholder={t('phAny')} /></Field>
+          <Field label={t('lblVessel')}><input style={inp} value={fV} onChange={e=>setFV(e.target.value)} placeholder="" /></Field>
+          <Field label={t('lblSpecies')}><input style={inp} value={fS} onChange={e=>setFS(e.target.value)} placeholder="" /></Field>
         </div>
         <button style={{...btn('primary'),marginBottom:'0.75rem'}} onClick={()=>loadRecords(user.username).then(setRecs)}>🔍 Search</button>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <label style={lbl}>Sort</label>
           <select style={inp} value={sort} onChange={e=>setSort(e.target.value)}>
-            {['date-desc','date-asc','weight-desc','weight-asc','price-desc','price-asc'].map(k=><option key={k} value={k}>{t('sort'+k.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(''))}</option>)}
+            {[
+            ['date-desc', t('sortDateNewest')],
+            ['date-asc', t('sortDateOldest')],
+            ['weight-desc', t('sortWeightHigh')],
+            ['weight-asc', t('sortWeightLow')],
+            ['price-desc', t('sortPriceHigh')],
+            ['price-asc', t('sortPriceLow')],
+          ].map(([val, label]) => <option key={val} value={val}>{label}</option>)}
           </select>
         </div>
       </div>
@@ -471,11 +482,23 @@ function HistoryTab({user, lang}) {
             <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{r.date ? (()=>{ const d = new Date(r.date); const safe = isNaN(d) ? r.date : d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); return safe; })() : ""}</div>
             <div style={{fontSize:'0.9rem',color:C.muted,marginBottom:bm?4:10}}>{r.vessel} · {r.species}</div>
             {bm&&<div style={{fontSize:'0.9rem',color:C.muted,marginBottom:10}}>{bm}</div>}
-            <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
-              <span style={{background:C.bg,borderRadius:50,padding:'4px 10px',fontSize:13,fontWeight:600}}>{cc} catches</span>
-              <span style={{background:C.bg,borderRadius:50,padding:'4px 10px',fontSize:13,fontWeight:600}}>{fmt(r.totalWeight)} kg</span>
-              {r.pricePerKg!=null&&<span style={{background:C.bg,borderRadius:50,padding:'4px 10px',fontSize:13,fontWeight:600}}>{r.currency}{fmt(r.pricePerKg,2)}/kg</span>}
-              {r.totalPrice!=null&&<span style={{background:'#e8f5e9',color:C.green,borderRadius:50,padding:'4px 10px',fontSize:13,fontWeight:600}}>{r.currency}{r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</span>}
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.5rem',marginTop:'0.5rem'}}>
+              <div style={{background:C.bg,borderRadius:'0.5rem',padding:'0.5rem 0.75rem'}}>
+                <div style={{fontSize:'0.75rem',color:C.muted,fontWeight:600,textTransform:'uppercase'}}>Catches</div>
+                <div style={{fontSize:'1.4rem',fontWeight:800}}>{cc}</div>
+              </div>
+              <div style={{background:C.bg,borderRadius:'0.5rem',padding:'0.5rem 0.75rem'}}>
+                <div style={{fontSize:'0.75rem',color:C.muted,fontWeight:600,textTransform:'uppercase'}}>Weight</div>
+                <div style={{fontSize:'1.4rem',fontWeight:800}}>{fmt(r.totalWeight)} kg</div>
+              </div>
+              {r.pricePerKg!=null&&<div style={{background:C.bg,borderRadius:'0.5rem',padding:'0.5rem 0.75rem'}}>
+                <div style={{fontSize:'0.75rem',color:C.muted,fontWeight:600,textTransform:'uppercase'}}>Price/kg</div>
+                <div style={{fontSize:'1.4rem',fontWeight:800}}>{r.currency}{fmt(r.pricePerKg,2)}</div>
+              </div>}
+              {r.totalPrice!=null&&<div style={{background:'#e8f5e9',borderRadius:'0.5rem',padding:'0.5rem 0.75rem'}}>
+                <div style={{fontSize:'0.75rem',color:C.green,fontWeight:600,textTransform:'uppercase'}}>Total</div>
+                <div style={{fontSize:'1.4rem',fontWeight:800,color:C.green}}>{r.currency}{r.totalPrice.toLocaleString(undefined,{minimumFractionDigits:2})}</div>
+              </div>}
             </div>
           </div>;
         })}

@@ -220,12 +220,12 @@ function Modal({open, title, body, actions, onClose}) {
 }
 
 function WizNav({prev, next, nextLabel, onPrev, onNext}) {
-  const backStyle = {background:'var(--bg)',color:'var(--muted)',border:'1.5px solid var(--border)',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',minWidth:'5rem'};
-  const nextStyle = {flex:1,background:'var(--blue)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem'};
+  const backStyle = {background:'var(--bg)',color:'var(--muted)',border:'1.5px solid var(--border)',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',minWidth:'5rem',WebkitTapHighlightColor:'transparent'};
+  const nextStyle = {flex:1,background:'var(--blue)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',WebkitTapHighlightColor:'transparent'};
   return (
     <div style={{display:'flex',gap:'0.5rem',marginTop:'1.25rem',paddingTop:'1rem',borderTop:'1px solid var(--border)'}}>
-      {prev && <button type="button" style={backStyle} onClick={onPrev} onTouchEnd={e=>{e.preventDefault();onPrev();}} >← Back</button>}
-      {next && <button type="button" style={nextStyle} onClick={onNext} onTouchEnd={e=>{e.preventDefault();onNext();}} >{nextLabel||'Next →'}</button>}
+      {prev && <button type="button" style={backStyle} onClick={onPrev}>← Back</button>}
+      {next && <button type="button" style={nextStyle} onClick={onNext}>{nextLabel||'Next →'}</button>}
     </div>
   );
 }
@@ -323,7 +323,7 @@ function LoggerTab({user, lang, toast}) {
 
   const times = catches.map(c=>c.time.slice(0,5)).sort();
   const dur = times.length>1?`${times[0]} – ${times[times.length-1]}`:times[0]||'—';
-  const stepLabel = (n) => <span style={{float:'right',fontWeight:400,fontSize:11,color:C.muted}}>{n}/5</span>;
+  const stepLabel = (n) => <span style={{float:'right',fontWeight:700,fontSize:'0.85rem',color:C.blue,background:'#e8f0fe',borderRadius:'1rem',padding:'2px 10px'}}>{n} / 5</span>;
 
   return (
     <div style={{flex:1,overflowY:'auto',padding:12}}>

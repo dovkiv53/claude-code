@@ -24,6 +24,23 @@
     button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     input, select { font-family: inherit; }
   </style>
+  <script>
+    // Set font size based on screen
+    function setFontSize() {
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var shorter = Math.min(w, h);
+      var longer = Math.max(w, h);
+      // Phone: shorter dimension < 500px
+      if (shorter < 500) {
+        document.documentElement.style.fontSize = Math.min(36, Math.max(22, longer * 0.045)) + "px";
+      } else {
+        document.documentElement.style.fontSize = "14px";
+      }
+    }
+    setFontSize();
+    window.addEventListener('resize', setFontSize);
+  </script>
 </head>
 <body>
 <div id="root"></div>
@@ -314,7 +331,7 @@ function LoggerTab({user, lang, toast}) {
         <Field label={t('lblVessel')}><input style={inp} value={vessel} onChange={e=>setVessel(e.target.value)} placeholder={t('phVessel')} /></Field>
         <Field label={t('lblDate')}><input style={inp} type="date" value={date} onChange={e=>setDate(e.target.value)} /></Field>
         <Field label={t('lblSpecies')}><input style={inp} value={species} onChange={e=>setSpecies(e.target.value)} placeholder={t('phSpecies')} /></Field>
-        <WizNav prev={1} next={2} onPrev={()=>setStep(1)} onNext={()=>setStep(1)} />
+        <WizNav prev={1} next={2} onPrev={()=>setStep(1)} onNext={()=>setStep(2)} />
       </div>}
 
       {step===2 && <div style={card}>
@@ -451,7 +468,7 @@ function HistoryTab({user, lang}) {
           const cc=Array.isArray(r.catches)?r.catches.length:0;
           const bm=[r.buyerName,r.buyerEmail,r.buyerPhone].filter(Boolean).join(' · ');
           return <div key={r.id} style={{...card,padding:'14px 16px'}}>
-            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{r.date}</div>
+            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{r.date ? (()=>{ const d = new Date(r.date); const safe = isNaN(d) ? r.date : d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); return safe; })() : ""}</div>
             <div style={{fontSize:'0.9rem',color:C.muted,marginBottom:bm?4:10}}>{r.vessel} · {r.species}</div>
             {bm&&<div style={{fontSize:'0.9rem',color:C.muted,marginBottom:10}}>{bm}</div>}
             <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
@@ -585,7 +602,7 @@ function LoginScreen({onLogin, lang, setLang}) {
     const admin={username:su,password:sp,isAdmin:true,createdAt:new Date().toISOString()};
     await saveUsers([admin]); localStorage.setItem('fish_session',JSON.stringify(admin)); onLogin(admin,[admin]);
   };
-  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:'90vw'};
+  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:'24rem'};
   if (users===null) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100dvh',background:C.bg}}><div style={cardStyle}><h1 style={{fontSize:20,fontWeight:800}}>Fish Logger</h1><p style={{color:C.muted,fontSize:14,marginTop:4}}>{t('loading')}</p></div></div>;
   return (
     <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh',background:C.bg,padding:'1rem'}}>

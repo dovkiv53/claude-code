@@ -27,16 +27,21 @@
   <script>
     // Set font size based on screen
     function setFontSize() {
-      var w = window.innerWidth;
-      var h = window.innerHeight;
-      var shorter = Math.min(w, h);
-      var longer = Math.max(w, h);
-      // Phone: shorter dimension < 500px
-      if (shorter < 500) {
-        document.documentElement.style.fontSize = Math.min(32, Math.max(20, longer * 0.038)) + "px";
+      var sw = window.screen.width;
+      var sh = window.screen.height;
+      var iw = window.innerWidth;
+      var ih = window.innerHeight;
+      var shorter = Math.min(sw, sh);
+      var longer = Math.max(sw, sh);
+      var size;
+      if (shorter < 600) {
+        // Phone: use longer screen dimension to scale font
+        size = Math.min(36, Math.max(22, longer * 0.045));
       } else {
-        document.documentElement.style.fontSize = "14px";
+        size = 14;
       }
+      document.documentElement.style.fontSize = size + "px";
+      document.title = "Fish " + size + "px " + sw + "x" + sh;
     }
     setFontSize();
     window.addEventListener('resize', setFontSize);
@@ -602,7 +607,7 @@ function LoginScreen({onLogin, lang, setLang}) {
     const admin={username:su,password:sp,isAdmin:true,createdAt:new Date().toISOString()};
     await saveUsers([admin]); localStorage.setItem('fish_session',JSON.stringify(admin)); onLogin(admin,[admin]);
   };
-  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:'90vw'};
+  const cardStyle = {background:C.card,borderRadius:'var(--radius)',boxShadow:'0 4px 24px rgba(0,0,0,.12)',padding:'32px 24px',width:'100%',maxWidth:'24rem'};
   if (users===null) return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100dvh',background:C.bg}}><div style={cardStyle}><h1 style={{fontSize:20,fontWeight:800}}>Fish Logger</h1><p style={{color:C.muted,fontSize:14,marginTop:4}}>{t('loading')}</p></div></div>;
   return (
     <div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100dvh',background:C.bg,padding:'1rem'}}>

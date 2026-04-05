@@ -220,12 +220,12 @@ function Modal({open, title, body, actions, onClose}) {
 }
 
 function WizNav({prev, next, nextLabel, onPrev, onNext}) {
-  const backStyle = {background:'var(--bg)',color:'var(--muted)',border:'1.5px solid var(--border)',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',minWidth:'5rem'};
-  const nextStyle = {flex:1,background:'var(--blue)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem'};
+  const backStyle = {background:'var(--bg)',color:'var(--muted)',border:'1.5px solid var(--border)',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',minWidth:'5rem',WebkitTapHighlightColor:'transparent'};
+  const nextStyle = {flex:1,background:'var(--blue)',color:'#fff',border:'none',borderRadius:'0.6rem',padding:'1rem 1.25rem',fontSize:'1.1rem',fontWeight:600,cursor:'pointer',minHeight:'3.5rem',WebkitTapHighlightColor:'transparent'};
   return (
     <div style={{display:'flex',gap:'0.5rem',marginTop:'1.25rem',paddingTop:'1rem',borderTop:'1px solid var(--border)'}}>
-      {prev && <button type="button" style={backStyle} onClick={onPrev} onTouchEnd={e=>{e.preventDefault();onPrev();}} >← Back</button>}
-      {next && <button type="button" style={nextStyle} onClick={onNext} onTouchEnd={e=>{e.preventDefault();onNext();}} >{nextLabel||'Next →'}</button>}
+      {prev && <button type="button" style={backStyle} onClick={onPrev}>← Back</button>}
+      {next && <button type="button" style={nextStyle} onClick={onNext}>{nextLabel||'Next →'}</button>}
     </div>
   );
 }
@@ -335,7 +335,7 @@ function LoggerTab({user, lang, toast}) {
         <Field label={t('lblVessel')}><input style={inp} value={vessel} onChange={e=>setVessel(e.target.value)} placeholder={t('phVessel')} /></Field>
         <Field label={t('lblDate')}><input style={inp} type="date" value={date} onChange={e=>setDate(e.target.value)} /></Field>
         <Field label={t('lblSpecies')}><input style={inp} value={species} onChange={e=>setSpecies(e.target.value)} placeholder={t('phSpecies')} /></Field>
-        <WizNav prev={1} next={2} onPrev={()=>setStep(1)} onNext={()=>setStep(2)} />
+        <WizNav next={2} onNext={()=>setStep(2)} />
       </div>}
 
       {step===2 && <div style={card}>
@@ -695,3 +695,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 </body>
 </html>
+

@@ -27,17 +27,19 @@
   <script>
     // Set font size based on screen
     function setFontSize() {
-      var sw = window.screen.width;
-      var sh = window.screen.height;
       var iw = window.innerWidth;
       var ih = window.innerHeight;
-      var shorter = Math.min(sw, sh);
-      var longer = Math.max(sw, sh);
+      var shorter = Math.min(iw, ih);
+      var longer = Math.max(iw, ih);
       var size;
-      if (shorter < 600) {
-        // Phone: use longer screen dimension to scale font
-        size = Math.min(36, Math.max(22, longer * 0.045));
+      if (shorter < 500) {
+        // Phone portrait: scale based on viewport height
+        size = Math.round(Math.min(22, Math.max(14, longer / 45)));
+      } else if (shorter < 900) {
+        // Phone landscape or small tablet
+        size = Math.round(Math.min(18, Math.max(13, longer / 60)));
       } else {
+        // PC / large tablet
         size = 14;
       }
       document.documentElement.style.fontSize = size + "px";

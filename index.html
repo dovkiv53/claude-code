@@ -430,7 +430,8 @@ function HistoryTab({user, lang}) {
   const [fV, setFV] = useState(''); const [fS, setFS] = useState('');
   const [sort, setSort] = useState('date-desc');
   useEffect(()=>{ loadRecords(user.username).then(setRecs); },[]);
-  let filtered = recs.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to)&&(!fV||r.vessel.toLowerCase().includes(fV.toLowerCase()))&&(!fS||r.species.toLowerCase().includes(fS.toLowerCase())));
+  const toISO = d => { try { const p=new Date(d); return isNaN(p)?d:p.toISOString().slice(0,10); } catch(e) { return d; } };
+  let filtered = recs.filter(r=>{ const rd=toISO(r.date); return (!from||rd>=from)&&(!to||rd<=to)&&(!fV||r.vessel.toLowerCase().includes(fV.toLowerCase()))&&(!fS||r.species.toLowerCase().includes(fS.toLowerCase())); });
   filtered = [...filtered].sort((a,b)=>{
     switch(sort){
       case 'date-asc': return a.date.localeCompare(b.date);

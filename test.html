@@ -16,35 +16,19 @@
       --bg: #f0f4f8; --card: #fff; --text: #1a1a2e; --muted: #6c757d;
       --border: #dee2e6; --radius: 14px; --shadow: 0 2px 12px rgba(0,0,0,.10);
     }
-    html { font-size: 14px; }
-    @media (max-width: 600px) { html { font-size: clamp(20px, 3.8vh, 34px); } }
+    /* Root font size scales with the smaller viewport dimension (vmin).
+       - vmin keeps size consistent between phone portrait and landscape
+         (uses whichever edge is shorter, which is the "phone" dimension).
+       - clamp() caps the range so tiny browsers stay readable and
+         desktop monitors don't get giant text.
+       Tune: change the middle value (5.2vmin) to scale all type at once. */
+    html { font-size: clamp(14px, 5.2vmin, 20px); }
     html, body, #root { height: 100%; margin: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
     #root { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
     button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     input, select { font-family: inherit; }
   </style>
-  <script>
-    // Set font size based on screen
-    function setFontSize() {
-      var iw = window.innerWidth;
-      var ih = window.innerHeight;
-      var shorter = Math.min(iw, ih);
-      var longer = Math.max(iw, ih);
-      var size;
-      if (shorter < 500) {
-        size = Math.round(Math.min(22, Math.max(14, longer / 45)));
-      } else if (shorter < 900) {
-        size = Math.round(Math.min(18, Math.max(13, longer / 60)));
-      } else {
-        size = 14;
-      }
-      document.documentElement.style.fontSize = size + "px";
-      document.title = "Fish " + size + "px " + iw + "x" + ih;
-    }
-    setFontSize();
-    window.addEventListener('resize', setFontSize);
-  </script>
 </head>
 <body>
 <div id="root"></div>
@@ -197,13 +181,30 @@ async function pushRecord(username, rec) {
   if (getGasUrl()) return gasCall({action:'pushRecord',user:username,record:rec});
 }
 
-// --- Buyer storage (per user, local) ---
-function loadBuyers(username) {
+// --- Buyer storage (per user, synced via GAS when configured) ---
+// Local cache mirrors remote; if GAS is configured, remote wins on load
+// and every save is pushed. Matches the pattern used by loadUsers/saveUsers.
+function loadBuyersLocal(username) {
   try { return JSON.parse(localStorage.getItem(`fish_buyers_${username}`)||'[]'); }
   catch(e) { return []; }
 }
-function saveBuyers(username, buyers) {
+async function loadBuyers(username) {
+  if (getGasUrl()) {
+    const d = await gasCall({action:'getBuyers', user:username});
+    if (d && Array.isArray(d.buyers)) {
+      localStorage.setItem(`fish_buyers_${username}`, JSON.stringify(d.buyers));
+      return d.buyers;
+    }
+    // If remote had nothing but we have local data, push it up so next device sees it
+    const local = loadBuyersLocal(username);
+    if (local.length) await gasCall({action:'saveBuyers', user:username, buyers:local});
+    return local;
+  }
+  return loadBuyersLocal(username);
+}
+async function saveBuyers(username, buyers) {
   localStorage.setItem(`fish_buyers_${username}`, JSON.stringify(buyers));
+  if (getGasUrl()) await gasCall({action:'saveBuyers', user:username, buyers});
 }
 function findBuyer(buyers, name) {
   if (!name) return null;
@@ -214,6 +215,47 @@ function findBuyer(buyers, name) {
 const todayISO = () => new Date().toISOString().slice(0,10);
 const nowTime = () => { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
 const fmt = (n,dec=1) => Number(n).toFixed(dec);
+
+// Parse a value (ISO string, Date, or sheet-formatted string) into a Date
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  // Handle 'YYYY-MM-DD' specially to avoid timezone shift
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) {
+    const [y,m,d] = v.split('-').map(Number);
+    return new Date(Date.UTC(y, m-1, d));
+  }
+  const p = new Date(v);
+  return isNaN(p) ? null : p;
+}
+
+// Format a date for display. Spanish -> dd/mm/yyyy, English -> "Mon, Jan 15, 2026"
+function formatDate(v, lang) {
+  const d = parseDate(v);
+  if (!d) return typeof v === 'string' ? v : '';
+  if (lang === 'es') {
+    const dd = String(d.getUTCDate()).padStart(2,'0');
+    const mm = String(d.getUTCMonth()+1).padStart(2,'0');
+    const yy = d.getUTCFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+}
+
+// Format a date+time for "generated at" lines on the receipt
+function formatDateTime(v, lang) {
+  const d = v instanceof Date ? v : parseDate(v);
+  if (!d) return '';
+  if (lang === 'es') {
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mi = String(d.getMinutes()).padStart(2,'0');
+    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+  }
+  return d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+}
 
 const C = {
   blue:'var(--blue)', green:'var(--green)', red:'var(--red)',
@@ -428,26 +470,61 @@ function LoggerTab({user, lang, toast, buyers, setBuyers}) {
   const doFinalise = async () => {
     const b = matchedBuyer || { name: buyerName.trim(), email:'', phone:'' };
     const rec = {id:Date.now(),date,vessel:vessel||'(unnamed)',species:species||'(unknown)',catches:catches.slice(),totalWeight:totalW,pricePerKg:hasP?priceN:null,currency,totalPrice:hasP?parseFloat(totalP.toFixed(2)):null,buyerName:b.name,buyerEmail:b.email||'',buyerPhone:b.phone||'',savedAt:new Date().toISOString()};
-    const lines = [t('rcptTitle'),`Date:       ${date}`,`Vessel:     ${vessel||'(unnamed)'}`,`Species:    ${species||'(unknown)'}`,
+    const lines = [t('rcptTitle'),`Date:       ${formatDate(date, lang)}`,`Vessel:     ${vessel||'(unnamed)'}`,`Species:    ${species||'(unknown)'}`,
       ...(b.name?[`Buyer:      ${b.name}`]:[]),...(b.email?[`Email:      ${b.email}`]:[]),...(b.phone?[`Phone:      ${b.phone}`]:[]),
       '','#   Time    Weight (kg)  Note','--- ------  -----------  ----',
       ...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time.slice(0,5)}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`),
       '',`Total catches : ${catches.length}`,`Total weight  : ${fmt(totalW,2)} kg`,
       ...(hasP?[`Price / kg    : ${currency}${fmt(priceN,2)}`,`TOTAL PRICE   : ${currency}${totalP.toFixed(2)}`]:[]),
-      '',`Generated: ${new Date().toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit",hour12:true})}`];
+      '',`Generated: ${formatDateTime(new Date(), lang)}`];
     const txt = lines.join('\n');
+
+    // 1. Download receipt file
     const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
     a.download=`harvest_${date}_${(vessel||'unnamed').replace(/\s+/g,'_')}.txt`; a.click();
+
     setFinModal(false); toast(t('toastSaved'));
+
+    // 2. Save to sheet
     const res = await pushRecord(user.username,rec);
     if (res?.ok) toast(t('toastSheetOk'));
+
+    // 3. Open email draft if buyer has an email address.
+    // Always use the user's selected email app — mailto: on mobile opens
+    // the native mail composer pre-filled with to/subject/body.
     if (b.email) {
-      const sub=encodeURIComponent(t('rcptSubject',date)), body=encodeURIComponent(txt), to=encodeURIComponent(b.email);
-      const urls={mailto:`mailto:${to}?subject=${sub}&body=${body}`,gmail:`https://mail.google.com/mail/?view=cm&to=${to}&su=${sub}&body=${body}`,outlook:`https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${sub}&body=${body}`,yahoo:`https://compose.mail.yahoo.com/?to=${to}&subject=${sub}&body=${body}`,proton:`https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${sub}&body=${body}`,zoho:`https://mail.zoho.com/zm/#compose;to=${to};subject=${sub};body=${body}`};
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)&&navigator.share) {
-        navigator.share({title:t('rcptSubject',date),text:txt}).catch(()=>{window.location.href=urls.mailto;});
-      } else { window.open(urls[emailApp]||urls.mailto,emailApp==='mailto'?'_self':'_blank'); }
+      // Read the latest emailApp choice fresh — user may have changed it in Settings
+      let currentApp = 'mailto';
+      try { currentApp = (JSON.parse(localStorage.getItem(sk)||'{}').emailApp) || 'mailto'; } catch(e) {}
+      const sub = encodeURIComponent(t('rcptSubject',date));
+      const body = encodeURIComponent(txt);
+      const to = encodeURIComponent(b.email);
+      const urls = {
+        mailto:  `mailto:${to}?subject=${sub}&body=${body}`,
+        gmail:   `https://mail.google.com/mail/?view=cm&to=${to}&su=${sub}&body=${body}`,
+        outlook: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${sub}&body=${body}`,
+        yahoo:   `https://compose.mail.yahoo.com/?to=${to}&subject=${sub}&body=${body}`,
+        proton:  `https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${sub}&body=${body}`,
+        zoho:    `https://mail.zoho.com/zm/#compose;to=${to};subject=${sub};body=${body}`,
+      };
+      const url = urls[currentApp] || urls.mailto;
+      // mailto: must use location.href (window.open blocks it on many mobile browsers);
+      // web mail URLs get a new tab.
+      if (url.startsWith('mailto:')) {
+        window.location.href = url;
+      } else {
+        window.open(url, '_blank');
+      }
     }
+
+    // 4. Reset the form for the next delivery.
+    // Do this last so the receipt/email still sees the data.
+    setTimeout(() => {
+      setCatches([]); setVessel(''); setSpecies(''); setDate(todayISO());
+      setPrice(''); setBuyerName('');
+      localStorage.removeItem(sk);
+      setStep(1);
+    }, 300);
   };
 
   const times = catches.map(c=>c.time.slice(0,5)).sort();
@@ -593,9 +670,10 @@ function HistoryTab({user, lang}) {
   const toISO = d => { try { const p=new Date(d); return isNaN(p)?d:p.toISOString().slice(0,10); } catch(e) { return d; } };
   let filtered = recs.filter(r=>{ const rd=toISO(r.date); return (!from||rd>=from)&&(!to||rd<=to)&&(!fV||r.vessel.toLowerCase().includes(fV.toLowerCase()))&&(!fS||r.species.toLowerCase().includes(fS.toLowerCase())); });
   filtered = [...filtered].sort((a,b)=>{
+    const aD = toISO(a.date), bD = toISO(b.date);
     switch(sort){
-      case 'date-asc': return a.date.localeCompare(b.date);
-      case 'date-desc': return b.date.localeCompare(a.date);
+      case 'date-asc': return aD.localeCompare(bD);
+      case 'date-desc': return bD.localeCompare(aD);
       case 'weight-asc': return a.totalWeight-b.totalWeight;
       case 'weight-desc': return b.totalWeight-a.totalWeight;
       case 'price-asc': return (a.totalPrice??-Infinity)-(b.totalPrice??-Infinity);
@@ -645,7 +723,7 @@ function HistoryTab({user, lang}) {
           const cc=Array.isArray(r.catches)?r.catches.length:0;
           const bm=[r.buyerName,r.buyerEmail,r.buyerPhone].filter(Boolean).join(' · ');
           return <div key={r.id} style={{...card,padding:'14px 16px'}}>
-            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{r.date ? (()=>{ const d = new Date(r.date); const safe = isNaN(d) ? r.date : d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); return safe; })() : ""}</div>
+            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{formatDate(r.date, lang)}</div>
             <div style={{fontSize:'0.9rem',color:C.muted,marginBottom:bm?4:10}}>{r.vessel} · {r.species}</div>
             {bm&&<div style={{fontSize:'0.9rem',color:C.muted,marginBottom:10}}>{bm}</div>}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.5rem',marginTop:'0.5rem'}}>
@@ -836,7 +914,7 @@ function AdminTab({user, lang, toast}) {
                 <div style={{fontWeight:700,fontSize:15}}>{u.username}</div>
                 <div style={{fontSize:12,color:C.muted,marginTop:3}}>
                   <span style={{background:u.isAdmin?'#fff3cd':'#e8f4fd',color:u.isAdmin?'#856404':'#0c63e4',borderRadius:50,padding:'2px 8px',fontSize:12,fontWeight:700}}>{u.isAdmin?t('roleAdmin'):t('roleUser')}</span>
-                  {' · '}{t('addedOn')} {new Date(u.createdAt).toLocaleDateString()}
+                  {' · '}{t('addedOn')} {formatDate(u.createdAt, lang)}
                 </div>
               </div>
               {u.username!==user.username
@@ -910,56 +988,4 @@ function LoginScreen({onLogin, lang, setLang}) {
     </div>
   );
 }
-
-function App() {
-  const [user, setUser] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [lang, setLang] = useState(()=>localStorage.getItem('fish_lang')||'en');
-  const [tab, setTab] = useState('logger');
-  const [toastMsg, setToastMsg] = useState('');
-  const [buyers, setBuyers] = useState([]);
-  const timer = useRef(null);
-
-  const t = k => { const v=TR[lang][k]??TR.en[k]??k; return typeof v==='function'?v:v; };
-  const showToast = msg => { setToastMsg(msg); clearTimeout(timer.current); timer.current=setTimeout(()=>setToastMsg(''),2500); };
-  const logout = () => { localStorage.removeItem('fish_session'); setUser(null); setTab('logger'); setBuyers([]); };
-  const showAdmin = user && (user.isAdmin || users.length===1);
-
-  // Load buyers when user logs in
-  useEffect(() => {
-    if (user) setBuyers(loadBuyers(user.username));
-    else setBuyers([]);
-  }, [user]);
-
-  if (!user) return <LoginScreen onLogin={(u,us)=>{setUser(u);setUsers(us);}} lang={lang} setLang={setLang} />;
-
-  return (
-    <div style={{display:'flex',flexDirection:'column',height:'100dvh',overflow:'hidden'}}>
-      <div style={{background:C.blue,color:'#fff',padding:'0.7rem 0.75rem',display:'flex',alignItems:'center',gap:8,flexShrink:0}}>
-        <div style={{flex:1,fontSize:'1.1rem',fontWeight:700}}>{t('appTitle')}</div>
-        <button onClick={()=>setLang(l=>{const n=l==='en'?'es':'en';localStorage.setItem('fish_lang',n);return n;})} style={{background:'rgba(255,255,255,.15)',color:'#fff',border:'1.5px solid rgba(255,255,255,.35)',borderRadius:7,padding:'0.4rem 0.65rem',fontSize:'0.85rem',fontWeight:600}}>{lang==='en'?'ES':'EN'}</button>
-        <button onClick={logout} style={{background:'rgba(255,255,255,.15)',color:'#fff',border:'1.5px solid rgba(255,255,255,.35)',borderRadius:7,padding:'0.4rem 0.65rem',fontSize:'0.85rem',fontWeight:600,marginLeft:4}}>{t('signOut')}</button>
-      </div>
-      <div style={{background:C.card,display:'flex',borderBottom:`2px solid ${C.border}`,flexShrink:0}}>
-        {['logger','history','settings',...(showAdmin?['admin']:[])].map(k=>(
-          <button key={k} onClick={()=>setTab(k)} style={{flex:1,padding:'0.75rem',background:'none',border:'none',fontSize:'0.9rem',fontWeight:600,color:tab===k?C.blue:C.muted,borderBottom:tab===k?`3px solid ${C.blue}`:'3px solid transparent',marginBottom:-2,cursor:'pointer'}}>
-            {k==='logger'?t('tabLogger'):k==='history'?t('tabHistory'):k==='settings'?t('tabSettings'):t('tabAdmin')}
-          </button>
-        ))}
-      </div>
-      <div style={{display:'flex',flex:1,overflow:'hidden',flexDirection:'column'}}>
-        {tab==='logger'&&<LoggerTab user={user} lang={lang} toast={showToast} buyers={buyers} setBuyers={setBuyers} />}
-        {tab==='history'&&<HistoryTab user={user} lang={lang} />}
-        {tab==='settings'&&<SettingsTab user={user} lang={lang} toast={showToast} buyers={buyers} setBuyers={setBuyers} />}
-        {tab==='admin'&&showAdmin&&<AdminTab user={user} lang={lang} toast={showToast} />}
-      </div>
-      <Toast msg={toastMsg} />
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-</script>
-</body>
-</html>
 

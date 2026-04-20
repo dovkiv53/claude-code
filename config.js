@@ -5,4 +5,4 @@
 
 // Paste your Google Apps Script Web App URL below.
 // Leave empty ("") to use the app without cloud sync (data stays on this device only).
-var FISH_GAS_URL = "https://script.google.com/macros/s/AKfycbwXqpQpW7EDuNnFjroI7_4QYvI8NyDpjYeNpt6N4ZINTt9aOM6eTXqV_85yp_VZeGcBWQ/exec";
+var FISH_GAS_URL = "https://script.google.com/macros/s/AKfycbxv76ypz3Q9KVGSg6ThQt1Xsh3bN5pE2OjQXu8ScXPQixVmzA7skSRM5AwcBEN9dpW4gA/exec";

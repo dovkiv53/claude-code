@@ -16,36 +16,19 @@
       --bg: #f0f4f8; --card: #fff; --text: #1a1a2e; --muted: #6c757d;
       --border: #dee2e6; --radius: 14px; --shadow: 0 2px 12px rgba(0,0,0,.10);
     }
-    html { font-size: 15px; }
+    /* Root font size scales with the smaller viewport dimension (vmin).
+       - vmin keeps size consistent between phone portrait and landscape
+         (uses whichever edge is shorter, which is the "phone" dimension).
+       - clamp() caps the range so tiny browsers stay readable and
+         desktop monitors don't get giant text.
+       Tune: change the middle value (5.2vmin) to scale all type at once. */
+    html { font-size: clamp(14px, 6.5vmin, 26px); }
     html, body, #root { height: 100%; margin: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
     #root { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
     button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     input, select { font-family: inherit; }
   </style>
-  <script>
-    // Set root font size: bigger on phones (thumb-friendly), compact on PC.
-    function setFontSize() {
-      var iw = window.innerWidth;
-      var ih = window.innerHeight;
-      var shorter = Math.min(iw, ih);
-      var size;
-      if (shorter < 500) {
-        // Phone: 18–22px. Scale mildly with width so tiny phones stay readable
-        // and larger phones don't get chunky. Inputs at 1.25rem => 22–27px.
-        size = Math.round(Math.min(22, Math.max(18, iw / 22)));
-      } else if (shorter < 900) {
-        // Tablet / phone landscape: 16–18px
-        size = Math.round(Math.min(18, Math.max(16, shorter / 40)));
-      } else {
-        // Desktop: fixed 15px (inputs 1.25rem => 18.75px — comfortable)
-        size = 15;
-      }
-      document.documentElement.style.fontSize = size + "px";
-    }
-    setFontSize();
-    window.addEventListener('resize', setFontSize);
-  </script>
 </head>
 <body>
 <div id="root"></div>
@@ -232,6 +215,47 @@ function findBuyer(buyers, name) {
 const todayISO = () => new Date().toISOString().slice(0,10);
 const nowTime = () => { const n=new Date(); return `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`; };
 const fmt = (n,dec=1) => Number(n).toFixed(dec);
+
+// Parse a value (ISO string, Date, or sheet-formatted string) into a Date
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  // Handle 'YYYY-MM-DD' specially to avoid timezone shift
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) {
+    const [y,m,d] = v.split('-').map(Number);
+    return new Date(Date.UTC(y, m-1, d));
+  }
+  const p = new Date(v);
+  return isNaN(p) ? null : p;
+}
+
+// Format a date for display. Spanish -> dd/mm/yyyy, English -> "Mon, Jan 15, 2026"
+function formatDate(v, lang) {
+  const d = parseDate(v);
+  if (!d) return typeof v === 'string' ? v : '';
+  if (lang === 'es') {
+    const dd = String(d.getUTCDate()).padStart(2,'0');
+    const mm = String(d.getUTCMonth()+1).padStart(2,'0');
+    const yy = d.getUTCFullYear();
+    return `${dd}/${mm}/${yy}`;
+  }
+  return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+}
+
+// Format a date+time for "generated at" lines on the receipt
+function formatDateTime(v, lang) {
+  const d = v instanceof Date ? v : parseDate(v);
+  if (!d) return '';
+  if (lang === 'es') {
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mi = String(d.getMinutes()).padStart(2,'0');
+    return `${dd}/${mm}/${yy} ${hh}:${mi}`;
+  }
+  return d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+}
 
 const C = {
   blue:'var(--blue)', green:'var(--green)', red:'var(--red)',
@@ -446,26 +470,75 @@ function LoggerTab({user, lang, toast, buyers, setBuyers}) {
   const doFinalise = async () => {
     const b = matchedBuyer || { name: buyerName.trim(), email:'', phone:'' };
     const rec = {id:Date.now(),date,vessel:vessel||'(unnamed)',species:species||'(unknown)',catches:catches.slice(),totalWeight:totalW,pricePerKg:hasP?priceN:null,currency,totalPrice:hasP?parseFloat(totalP.toFixed(2)):null,buyerName:b.name,buyerEmail:b.email||'',buyerPhone:b.phone||'',savedAt:new Date().toISOString()};
-    const lines = [t('rcptTitle'),`Date:       ${date}`,`Vessel:     ${vessel||'(unnamed)'}`,`Species:    ${species||'(unknown)'}`,
+    const lines = [t('rcptTitle'),`Date:       ${formatDate(date, lang)}`,`Vessel:     ${vessel||'(unnamed)'}`,`Species:    ${species||'(unknown)'}`,
       ...(b.name?[`Buyer:      ${b.name}`]:[]),...(b.email?[`Email:      ${b.email}`]:[]),...(b.phone?[`Phone:      ${b.phone}`]:[]),
       '','#   Time    Weight (kg)  Note','--- ------  -----------  ----',
       ...catches.map((c,i)=>`${String(i+1).padStart(3)}  ${c.time.slice(0,5)}   ${fmt(c.weight,2).padStart(10)}  ${c.note||''}`),
       '',`Total catches : ${catches.length}`,`Total weight  : ${fmt(totalW,2)} kg`,
       ...(hasP?[`Price / kg    : ${currency}${fmt(priceN,2)}`,`TOTAL PRICE   : ${currency}${totalP.toFixed(2)}`]:[]),
-      '',`Generated: ${new Date().toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit",hour12:true})}`];
+      '',`Generated: ${formatDateTime(new Date(), lang)}`];
     const txt = lines.join('\n');
+
+    // 1. Open email draft FIRST — while the button-click gesture is still fresh.
+    // Browsers only allow mailto: navigation within a few hundred ms of a user
+    // gesture. If we await a network call first, the mailto: silently fails.
+    if (b.email) {
+      // Read the latest emailApp choice fresh — user may have changed it in Settings
+      let currentApp = 'mailto';
+      try { currentApp = (JSON.parse(localStorage.getItem(sk)||'{}').emailApp) || 'mailto'; } catch(e) {}
+
+      // mailto: URLs have a practical length limit (~2000 chars). If the receipt
+      // body would push us over, use a short body pointing to the .txt download.
+      const MAX_MAILTO = 1800;
+      const sub = encodeURIComponent(t('rcptSubject',date));
+      const to = encodeURIComponent(b.email);
+      const fullBody = encodeURIComponent(txt);
+      const shortBodyText = lang==='es'
+        ? `Adjunto el recibo de entrega de pescado.\n\nComprador: ${b.name}\nFecha: ${formatDate(date,lang)}\nPeso total: ${fmt(totalW,2)} kg${hasP?`\nTotal: ${currency}${totalP.toFixed(2)}`:''}\n\n(Ver el archivo .txt descargado para el detalle completo.)`
+        : `Attached is the fish delivery receipt.\n\nBuyer: ${b.name}\nDate: ${formatDate(date,lang)}\nTotal weight: ${fmt(totalW,2)} kg${hasP?`\nTotal: ${currency}${totalP.toFixed(2)}`:''}\n\n(See the downloaded .txt file for the full breakdown.)`;
+      const shortBody = encodeURIComponent(shortBodyText);
+
+      const urls = (bodyEnc) => ({
+        mailto:  `mailto:${to}?subject=${sub}&body=${bodyEnc}`,
+        gmail:   `https://mail.google.com/mail/?view=cm&to=${to}&su=${sub}&body=${bodyEnc}`,
+        outlook: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${sub}&body=${bodyEnc}`,
+        yahoo:   `https://compose.mail.yahoo.com/?to=${to}&subject=${sub}&body=${bodyEnc}`,
+        proton:  `https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${sub}&body=${bodyEnc}`,
+        zoho:    `https://mail.zoho.com/zm/#compose;to=${to};subject=${sub};body=${bodyEnc}`,
+      });
+
+      // Pick full or short body. mailto: has a stricter limit than web mail.
+      const useShort = currentApp === 'mailto' && (`mailto:${to}?subject=${sub}&body=${fullBody}`.length > MAX_MAILTO);
+      const url = urls(useShort ? shortBody : fullBody)[currentApp] || urls(fullBody).mailto;
+
+      if (url.startsWith('mailto:')) {
+        // Native mail app — same-tab navigation is required (popup blockers
+        // allow this because it's a registered protocol handler, not a URL)
+        window.location.href = url;
+      } else {
+        // Web mail — open in a new tab
+        window.open(url, '_blank');
+      }
+    }
+
+    // 2. Download receipt file
     const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
     a.download=`harvest_${date}_${(vessel||'unnamed').replace(/\s+/g,'_')}.txt`; a.click();
+
     setFinModal(false); toast(t('toastSaved'));
-    const res = await pushRecord(user.username,rec);
-    if (res?.ok) toast(t('toastSheetOk'));
-    if (b.email) {
-      const sub=encodeURIComponent(t('rcptSubject',date)), body=encodeURIComponent(txt), to=encodeURIComponent(b.email);
-      const urls={mailto:`mailto:${to}?subject=${sub}&body=${body}`,gmail:`https://mail.google.com/mail/?view=cm&to=${to}&su=${sub}&body=${body}`,outlook:`https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${sub}&body=${body}`,yahoo:`https://compose.mail.yahoo.com/?to=${to}&subject=${sub}&body=${body}`,proton:`https://mail.proton.me/u/0/inbox#compose?to=${to}&subject=${sub}&body=${body}`,zoho:`https://mail.zoho.com/zm/#compose;to=${to};subject=${sub};body=${body}`};
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)&&navigator.share) {
-        navigator.share({title:t('rcptSubject',date),text:txt}).catch(()=>{window.location.href=urls.mailto;});
-      } else { window.open(urls[emailApp]||urls.mailto,emailApp==='mailto'?'_self':'_blank'); }
-    }
+
+    // 3. Save to sheet (async — happens in background)
+    pushRecord(user.username,rec).then(res => {
+      if (res?.ok) toast(t('toastSheetOk'));
+    });
+
+    // 4. Reset the form for the next delivery.
+    setTimeout(() => {
+      setCatches([]); setVessel(''); setSpecies(''); setDate(todayISO());
+      setPrice(''); setBuyerName('');
+      localStorage.removeItem(sk);
+      setStep(1);
+    }, 300);
   };
 
   const times = catches.map(c=>c.time.slice(0,5)).sort();
@@ -611,9 +684,10 @@ function HistoryTab({user, lang}) {
   const toISO = d => { try { const p=new Date(d); return isNaN(p)?d:p.toISOString().slice(0,10); } catch(e) { return d; } };
   let filtered = recs.filter(r=>{ const rd=toISO(r.date); return (!from||rd>=from)&&(!to||rd<=to)&&(!fV||r.vessel.toLowerCase().includes(fV.toLowerCase()))&&(!fS||r.species.toLowerCase().includes(fS.toLowerCase())); });
   filtered = [...filtered].sort((a,b)=>{
+    const aD = toISO(a.date), bD = toISO(b.date);
     switch(sort){
-      case 'date-asc': return a.date.localeCompare(b.date);
-      case 'date-desc': return b.date.localeCompare(a.date);
+      case 'date-asc': return aD.localeCompare(bD);
+      case 'date-desc': return bD.localeCompare(aD);
       case 'weight-asc': return a.totalWeight-b.totalWeight;
       case 'weight-desc': return b.totalWeight-a.totalWeight;
       case 'price-asc': return (a.totalPrice??-Infinity)-(b.totalPrice??-Infinity);
@@ -663,7 +737,7 @@ function HistoryTab({user, lang}) {
           const cc=Array.isArray(r.catches)?r.catches.length:0;
           const bm=[r.buyerName,r.buyerEmail,r.buyerPhone].filter(Boolean).join(' · ');
           return <div key={r.id} style={{...card,padding:'14px 16px'}}>
-            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{r.date ? (()=>{ const d = new Date(r.date); const safe = isNaN(d) ? r.date : d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}); return safe; })() : ""}</div>
+            <div style={{fontSize:'1.1rem',fontWeight:700,marginBottom:2}}>{formatDate(r.date, lang)}</div>
             <div style={{fontSize:'0.9rem',color:C.muted,marginBottom:bm?4:10}}>{r.vessel} · {r.species}</div>
             {bm&&<div style={{fontSize:'0.9rem',color:C.muted,marginBottom:10}}>{bm}</div>}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.5rem',marginTop:'0.5rem'}}>
@@ -854,7 +928,7 @@ function AdminTab({user, lang, toast}) {
                 <div style={{fontWeight:700,fontSize:15}}>{u.username}</div>
                 <div style={{fontSize:12,color:C.muted,marginTop:3}}>
                   <span style={{background:u.isAdmin?'#fff3cd':'#e8f4fd',color:u.isAdmin?'#856404':'#0c63e4',borderRadius:50,padding:'2px 8px',fontSize:12,fontWeight:700}}>{u.isAdmin?t('roleAdmin'):t('roleUser')}</span>
-                  {' · '}{t('addedOn')} {new Date(u.createdAt).toLocaleDateString()}
+                  {' · '}{t('addedOn')} {formatDate(u.createdAt, lang)}
                 </div>
               </div>
               {u.username!==user.username
